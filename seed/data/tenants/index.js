@@ -3,31 +3,31 @@
 
 export const tenantProfiles = [
   {
-    tenantId: "acme-123",
-    name: "Acme Corp",
+    tenantId: "machine",
+    name: "Strategic Machines",
     status: "active",
     identity: {
-      legalName: "Acme Corp LLC",
-      displayName: "Acme",
-      domain: "acme.com",
-      industry: "ecommerce",
+      legalName: "Strategic Machines, Inc",
+      displayName: "Machine",
+      domain: "strategicmachines.ai",
+      industry: "ai",
       timeZone: "America/Chicago",
       locale: "en-US",
     },
     contacts: {
       primary: {
-        name: "Jane Doe",
-        email: "jane@acme.com",
-        phone: "+1-555-123-4567",
-        role: "Owner",
+        name: "Patrick Howard",
+        email: "strategicmachines@gmail.com",
+        phone: "+1-915-500-5391",
+        role: "Founder",
       },
       billing: {
         name: "Accounts Payable",
-        email: "billing@acme.com",
+        email: "strategicmachines@gmail.com",
       },
       technical: {
-        name: "Tech Lead",
-        email: "devops@acme.com",
+        name: "Technical Support",
+        email: "strategicmachines@gmail.com",
       },
     },
     billing: {
@@ -35,14 +35,14 @@ export const tenantProfiles = [
       customerId: "cus_acme_001",
       defaultPaymentMethodId: "pm_acme_visa_4242",
       currency: "USD",
-      billingEmail: "billing@acme.com",
+      billingEmail: "strategicmachines@gmail.com",
       taxId: "US123456789",
       billingAddress: {
-        line1: "123 Main St",
-        line2: "Suite 400",
-        city: "Chicago",
-        state: "IL",
-        postalCode: "60601",
+        line1: "361 Two Creeks LN",
+        line2: "",
+        city: "Austin",
+        state: "TX",
+        postalCode: "78737",
         country: "US",
       },
       plan: {
@@ -66,16 +66,16 @@ export const tenantProfiles = [
       datastores: [
         {
           type: "mongo",
-          connectionUri: "mongodb+srv://acme-mongo-host/acme_products",
-          databaseName: "acme_products",
-          collectionName: "products",
+          connectionUri: "",
+          databaseName: "",
+          collectionName: "",
           searchDefaults: {
             maxResults: 20,
             minScore: 0.5,
           },
           auth: {
-            userId: "acme_reader",
-            password: "ENCRYPTED_PASSWORD_1",
+            userId: "",
+            password: "",
           },
         },
       ],
@@ -122,6 +122,16 @@ export const tenantProfiles = [
       allowExternalBrandInfo: true,
       allowExperimentalModels: false,
     },
+    widgetKeys: [
+      {
+        id: "machine_site",
+        key: "w_acme_main_7f1b0e9c64f54d1a",
+        origin: "https://strategicmachines.ai",
+        label: "Main marketing site",
+        revoked: false
+      }
+    ],
+
     createdAt: new Date("2025-11-10T00:00:00.000Z"),
     updatedAt: new Date("2025-11-13T00:00:00.000Z"),
   },
@@ -241,6 +251,16 @@ export const tenantProfiles = [
       allowExternalBrandInfo: true,
       allowExperimentalModels: false,
     },
+    widgetKeys: [
+      {
+        id: "shoe_site",
+        key: "w_shoe_main_7f1b0e9c64f54d1a",
+        origin: "https://www.brightshoes.io",
+        label: "Main marketing site",
+        revoked: false
+      }
+    ],
+
     createdAt: new Date("2025-11-11T00:00:00.000Z"),
     updatedAt: new Date("2025-11-13T00:00:00.000Z"),
   },

@@ -1,5 +1,5 @@
 {
-  "name": "voicelab",
+  "name": "voicedocumentation",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,8 @@
     "test": "jest",
     "seeddb": "tsx seed/script/seeddb.ts",
     "seedactions": "tsx seed/script/seedactions.ts",
-    "seedunits": "tsx seed/script/seedunits.ts"
+    "seedunits": "tsx seed/script/seedunits.ts",
+    "seedagentsntenants": "node seed/script/seedAgentsnTenants.js"
   },
   "dependencies": {   
     "class-variance-authority": "^0.7.1",

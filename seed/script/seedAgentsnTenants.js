@@ -1,10 +1,11 @@
-//////////////////////////////////////////////////
-// collect key info for all components         ////
-//   assemble profiles for all agents          ///
-//////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+// post agent profiles rednered to Strategic Machines     //
+//   website as well as tenant profiles used in enabling //
+//     voice agents                                     //
+/////////////////////////////////////////////////////////
 import 'dotenv/config';
 import { MongoClient } from 'mongodb';
-import { agentProfiles } from '../data/agents/index.js';
+import { agentProfiles } from '../data/agentwebdemo/index.js';
 import { tenantProfiles } from '../data/tenants/index.js';
 
 const gradients = [
@@ -28,8 +29,11 @@ async function seedAgents() {
     const tenantCollection = db.collection('tenants');
 
     // Clear existing documents in the collection
-    const deleteResult = await agentCollection.deleteMany({});
-    console.log(`Dropped ${deleteResult.deletedCount} agents`);
+    const deleteAgents = await agentCollection.deleteMany({});
+    console.log(`Dropped ${deleteAgents.deletedCount} agents`);
+     // Clear existing documents in the collection
+    const deleteTenants = await tenantCollection.deleteMany({});
+    console.log(`Dropped ${deleteTenants.deletedCount} tenants`);
 
     // Add unique id to each agent if not present (using lowercase name as id for simplicity)
     const agentsWithId = agentProfiles.map(agent => ({
