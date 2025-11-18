@@ -305,4 +305,11 @@ https://github.com/mongodb-developer/nextjs-news-template-mongodb
 ### UnCommon Components
 https://skiper-ui.com/
 
+### Microsoft Call Center
+Send a phone call from AI agent, in an API call. Or, directly call the bot from the configured phone number!
+https://github.com/microsoft/call-center-ai
+
+### FILE SQL (another tool descriptor?)
+https://github.com/nao1215/filesql
+
 

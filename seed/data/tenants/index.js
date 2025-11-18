@@ -8,7 +8,7 @@ export const tenantProfiles = [
     status: "active",
     identity: {
       legalName: "Strategic Machines, Inc",
-      displayName: "Machine",
+      displayName: "Strategic Machines",
       domain: "strategicmachines.ai",
       industry: "ai",
       timeZone: "America/Chicago",
