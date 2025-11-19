@@ -318,3 +318,22 @@ https://github.com/nao1215/filesql
 /widget/page.tsx - commercial route for clients to render a voice agent on their website and perform magic
 
 Every Business Needs a Voice
+
+======
+
+so we use a dual auth process in guarding the most expensive route which is
+api/session .... either the user is logged in using the (web) route for 
+the demo. Or the /widget route is being by a customer of our tenant
+
+Inside of middleware and api/session we enforce
+Rate-limits per IP for everyone (console + widget).
+Rate-limits per user only when emailFromJwtCookie finds an email.
+For widget flows → no tenant_session cookie, so email is null.
+
+That means no per-user limiter is applied for widget visitors (only IP). We conduct per-identity concurrency inside /api/session, and you can later add a per-tenant limiter if needed.
+
+So nothing breaks:
+
+(Web) sessions: IP + user limit at the edge, plus concurrency & quota in /api/session.
+
+Widget sessions: IP limit at the edge, plus concurrency (per tenant) in /api/session.
