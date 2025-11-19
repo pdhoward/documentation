@@ -72,3 +72,25 @@ https://github.com/abhixdd/UptimeKit/
 Documentation
 https://fumadocs.dev/
 
+---------
+
+1. Big-picture architecture you’re heading toward
+
+
+
+A. Operator / Console UI
+Your current “iPhone shell” page with ControlsBar, logs, transcripts, diagnostics, etc.
+Used by you (and later, your customers) to debug, test, and configure agents.
+
+B. Embedded Website Agent UI
+Triggered by the floating widget button you just shipped.
+Should be minimal, branded, focused on end users.
+Talks to the same agent brain (OpenAI Live + tools), but with fewer controls / debug.
+Behind both, you want a shared Agent Core, which:
+Knows the tenantId
+Loads the tenant’s tools, prompts, defaults
+Connects to OpenAI Live / WebRTC
+Streams transcripts and logs, tagged with tenantId and sessionId
+
+So the roadmap is mostly: extract the Agent Core, then build special UIs on top.
+
