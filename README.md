@@ -312,4 +312,9 @@ https://github.com/microsoft/call-center-ai
 ### FILE SQL (another tool descriptor?)
 https://github.com/nao1215/filesql
 
+==================platform architecture ======
+/(web)/page.tsx - main demo dashboard for cypress resorts -- whoing the power of a voice agent interacting with a user to find, select, and reserve a unit for some date
 
+/widget/page.tsx - commercial route for clients to render a voice agent on their website and perform magic
+
+Every Business Needs a Voice

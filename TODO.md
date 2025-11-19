@@ -94,3 +94,42 @@ Streams transcripts and logs, tagged with tenantId and sessionId
 
 So the roadmap is mostly: extract the Agent Core, then build special UIs on top.
 
+------------
+3. Multi-tenant / production-grade considerations
+
+To make this commercially scalable, keep these in your plan:
+All public widget traffic must use JWT, never raw tenantId.
+Bootstrap returns widgetSessionToken.
+Widget uses that token when:
+Loading /widget
+Hitting /api/voice/session or /api/realtime/...
+
+Server verifies:
+
+Signature (WIDGET_TOKEN_SECRET)
+sub (tenantId) exists and is active
+key is not revoked
+Optional: rate limits per tenantId, per key.
+Every DB write tagged with tenantId + channel.
+Transcripts: tenantId, channel, sessionId.
+Tool logs: same.
+
+Usage: same.
+Later you’ll build admin analytics with simple queries.
+Tenant configuration as the single authority.
+Tools allowed for widget vs console (e.g. agentSettings.allowedTools).
+
+Voice defaults (voice name, language).
+Safety behaviors (fallback, escalation).
+Per-tenant rate limits.
+Middleware for /api/voice/* using IP + tenantId to limit abuse.
+
+Fail with a nice “agent is busy, please try again” message for widget users.
+
+Versioning & migrations.
+By keeping widget logic inside your platform (iframe), you can:
+Deploy new UI,
+Add controls,
+Change agent instructions,
+without customers changing anything on their sites.
+
