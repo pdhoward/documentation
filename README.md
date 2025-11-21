@@ -337,3 +337,14 @@ So nothing breaks:
 (Web) sessions: IP + user limit at the edge, plus concurrency & quota in /api/session.
 
 Widget sessions: IP limit at the edge, plus concurrency (per tenant) in /api/session.
+
+=====================
+
+### AI GATEWAY
+https://github.com/Portkey-AI/gateway
+https://portkey.ai/features/ai-gateway
+
+### SHADCN Calendar
+https://github.com/ln-dev7/square-ui
+https://square.lndev.me/
+https://square-ui-calendar.vercel.app/
