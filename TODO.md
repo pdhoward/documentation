@@ -133,3 +133,21 @@ Add controls,
 Change agent instructions,
 without customers changing anything on their sites.
 
+4. Prompt selection
+> convert the prompt array from promptlibrary to mong
+> in lib/agent/managePrompts ... refactor this function to read from mongo -- or better to search mongo for the right prompt object and then ingest
+export function selectPromptForTenant(
+  tenantId: string,
+  all: StructuredPrompt | StructuredPrompt[] | unknown
+): { name?: string; base: StructuredPrompt } {
+  const arr = Array.isArray(all)
+    ? (all as StructuredPrompt[])
+    : ([all as StructuredPrompt] as StructuredPrompt[]);
+
+  const doc = arr.find(p => p?.agent?.tenantId === tenantId) ?? arr[0];
+  if (!doc) throw new Error("No tenant prompt found");
+
+  return { name: doc.agent?.name, base: doc };
+}
+
+
