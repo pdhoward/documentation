@@ -620,3 +620,186 @@ The flexible JSON returned by your APIs that the agent uses for grounding.
 
 - Flexible JSON from your APIs (e.g., products with name, price, images)  
 - Used for grounding responses
+
+
+//////////////////rate limit management/////////////
+Short answer: these limits are **safe and workable for a pilot hotel widget**, but I’d loosen a couple of them for a real busy resort and rely on your existing abuse controls to protect you.
+
+Let’s go through them one by one in plain English.
+
+---
+
+## 1. Edge firewalls
+
+```bash
+RATE_IP_PER_MIN=60
+RATE_USER_PER_MIN=120   # console only
+RATE_BURST=20
+```
+
+### For the widget:
+
+* `RATE_USER_PER_MIN` doesn’t matter – widget calls don’t use the console JWT cookie.
+* `RATE_IP_PER_MIN=60` means: from one IP, you’ll allow **60 hits to `/api/session` per minute**.
+
+If `/api/session` is **only used to create the realtime session**, then:
+
+* 60 session-creates per minute per IP = 1 new call per second from a single IP.
+* That’s already *very* liberal for a hotel website. It’s extremely unlikely they’ll hit that with legitimate traffic.
+
+**Caveat:** if in the future you start using `/api/session` for more frequent operations (not just session creation), you might want to bump this to something like `120` or `180`. But for “one POST per call start”, `60` is fine.
+
+---
+
+## 2. Widget limits (the important ones)
+
+```bash
+WIDGET_SESSION_PER_MIN=12
+WIDGET_MAX_TOKENS_DAILY=300000
+WIDGET_MAX_DOLLARS_DAILY=20
+WIDGET_MAX_CONCURRENT_SESSIONS=10
+```
+
+### WIDGET_SESSION_PER_MIN=12
+
+This is effectively: **per tenant**, you’ll allow 12 session creations per minute.
+
+* That’s 1 new voice call every ~5 seconds.
+* For a hotel/resort, that’s *already pretty generous*.
+* If traffic grows to “crazy busy”, you can bump this to e.g. `30`, but 12 is not going to clip normal behavior.
+
+👉 I’d keep `12` to start. It’s a good “are we under attack or not?” threshold.
+
+---
+
+### WIDGET_MAX_CONCURRENT_SESSIONS=10
+
+This is the **biggest lever** for a hotel.
+
+* 10 concurrent voice sessions = at most 10 guests talking to the agent at exactly the same time.
+
+Is that enough?
+
+* For a **small/mid-size hotel** or early-stage rollout: probably yes.
+* For a **big resort with lots of web traffic** and strong marketing push: 10 might be tight at peak hours.
+
+**My suggestion:**
+
+* For your *first* commercial installs: set this to **20** instead of 10:
+
+  ```bash
+  WIDGET_MAX_CONCURRENT_SESSIONS=20
+  ```
+* Then log/monitor:
+
+  * Peak concurrent sessions
+  * How often you hit that limit
+
+If you want to start even more conservatively, keep 10 for “free/trial” plans and 20+ for paying customers.
+
+---
+
+### WIDGET_MAX_TOKENS_DAILY=300000
+
+This is your cost fuse. Rough mental math:
+
+* Let’s say one typical booking conversation is ~5 minutes of back-and-forth.
+* That might be ~800–1500 tokens total (hugely approximate, but good enough).
+
+At 1000 tokens per conversation average, `300,000` tokens/day = **~300 conversations per day**.
+
+For a single hotel:
+
+* 300 conv/day is **a lot** for most properties.
+* If they’re bigger / chain-level / heavy marketing, they *could* hit that.
+
+You already also have:
+
+```bash
+WIDGET_MAX_DOLLARS_DAILY=20
+```
+
+So you effectively have **two brakes**, and the *tighter* one wins.
+
+If you want the hotel widget to feel “always on” and let the **$ limit be your real safety valve**, you could:
+
+* Raise tokens and keep dollars as the primary fuse:
+
+  ```bash
+  WIDGET_MAX_TOKENS_DAILY=1000000   # ~1M tokens/day
+  WIDGET_MAX_DOLLARS_DAILY=20       # daily hard cap
+  ```
+
+That way:
+
+* Under normal usage, they’ll never hit the token limit.
+* If something goes off the rails (scripted attacker, runaway integration), the **$20/day** cap kicks in first and stops the bleeding.
+
+If you’re more conservative on cost, your current `300k` is okay; just know it’s “few hundred conversations / day” territory.
+
+---
+
+## 3. Session lifetime
+
+```bash
+MAX_SESSION_MINUTES=15
+MAX_SESSION_IDLE_SEC=300
+```
+
+For a hotel reservation agent:
+
+* 15 minutes per session is **more than enough** for even a messy booking.
+* 5 minutes idle timeout is also fine – user walks away, closes tab, etc.
+
+These are totally reasonable.
+
+---
+
+## 4. Console limits look good
+
+```bash
+CONSOLE_SESSION_PER_MIN=3
+CONSOLE_MAX_TOKENS_DAILY=50000
+CONSOLE_MAX_DOLLARS_DAILY=1
+CONSOLE_MAX_CONCURRENT_SESSIONS=1
+```
+
+Perfect for:
+
+* “Let people demo it, but if someone tries to hammer it, shut it down fast.”
+* One concurrent session per console user is exactly what you want for a personal demo.
+
+No changes needed there.
+
+---
+
+## 5. Overall: are these realistic for a hotel widget?
+
+**Yes**, with two tweaks I’d strongly recommend:
+
+1. **Increase concurrency for widget:**
+
+   ```bash
+   WIDGET_MAX_CONCURRENT_SESSIONS=20
+   ```
+
+   so a busy resort doesn’t get “agent busy” at the first little spike.
+
+2. **Consider loosening the token cap and letting the $ cap be the real fuse:**
+
+   ```bash
+   WIDGET_MAX_TOKENS_DAILY=1000000
+   WIDGET_MAX_DOLLARS_DAILY=20
+   ```
+
+   – or keep `300000` tokens for now, but know you might increase it once you see real usage.
+
+With:
+
+* per-IP 60 req/min,
+* per-tenant session-per-minute limit,
+* per-tenant concurrency limit,
+* per-tenant daily tokens and dollars,
+
+you’re in a good place: **hotel widget feels always-available for normal traffic, but a single bad actor or script can only do limited damage before tripping a fuse.**
+
