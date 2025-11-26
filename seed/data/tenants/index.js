@@ -137,46 +137,46 @@ export const tenantProfiles = [
   },
 
   {
-    tenantId: "brightshoes-456",
-    name: "Bright Shoes Inc",
+    tenantId: "cypress-resorts",
+    name: "Cypress Resorts",
     status: "trial",
     identity: {
-      legalName: "Bright Shoes Inc",
-      displayName: "Bright Shoes",
-      domain: "brightshoes.io",
-      industry: "retail",
-      timeZone: "America/Los_Angeles",
+      legalName: "Cypress Resorts Inc",
+      displayName: "Cypress Resorts",
+      domain: "cypressresort.com",
+      industry: "hospitality",
+      timeZone: "America/Atlanta",
       locale: "en-US",
     },
     contacts: {
       primary: {
-        name: "Sam Smith",
-        email: "sam@brightshoes.io",
-        phone: "+1-555-987-6543",
+        name: "Tanner Cummings",
+        email: "tanner@cypressresort.com",
+        phone: "+1-540-383-8282",
         role: "Founder",
       },
       billing: {
         name: "Finance",
-        email: "finance@brightshoes.io",
+        email: "finance@cypressresort.com",
       },
       technical: {
         name: "CTO",
-        email: "cto@brightshoes.io",
+        email: "cto@cypressresort.com",
       },
     },
     billing: {
-      provider: "braintree",
-      customerId: "cust_bright_001",
-      defaultPaymentMethodId: "pm_bright_master_1111",
+      provider: "Stripe",
+      customerId: "cypress-resort",
+      defaultPaymentMethodId: "cypress_master_1111",
       currency: "USD",
-      billingEmail: "finance@brightshoes.io",
+      billingEmail: "finance@cypressresort.com",
       billingAddress: {
-        line1: "500 Market St",
-        line2: "Floor 5",
-        city: "San Francisco",
-        state: "CA",
-        postalCode: "94105",
-        country: "US",
+        line1: "1773 Hwy 53 East",
+        line2: "",
+        city: "Jasper",
+        state: "GA",
+        postalCode: "30143",
+        country: "USA",
       },
       plan: {
         planId: "voice-starter",
@@ -196,30 +196,9 @@ export const tenantProfiles = [
       nextBillingDate: new Date("2026-01-16T00:00:00.000Z"),
     },
     config: {
-      datastores: [
-        {
-          type: "mongo",
-          connectionUri:
-            "mongodb+srv://brightshoes-mongo-host/brightshoes_catalog",
-          databaseName: "brightshoes_catalog",
-          collectionName: "products",
-          searchDefaults: {
-            maxResults: 15,
-            minScore: 0.6,
-          },
-          auth: {
-            userId: "bright_reader",
-            password: "ENCRYPTED_PASSWORD_2",
-          },
-        },
+      datastores: [        
       ],
-      APIs: [
-        {
-          name: "product_search",
-          description: "Search Bright Shoes catalog",
-          uri: "https://api.voice-platform.com/tenants/brightshoes-456/products/search",
-          key: "ENCRYPTED_API_KEY_BRIGHT_PRODUCT_SEARCH",
-        },
+      APIs: [       
       ],
       voiceAgent: {
         agentId: "674000000000000000000002",
@@ -230,14 +209,16 @@ export const tenantProfiles = [
       },
     },
     agentSettings: {
-      defaultAgentId: "shoe_matcher_v1",
-      allowedTools: ["product_search"],
-      maxParallelSessions: 10,
+       defaultAgentId: "shoe_matcher_v1",
+        agentRepo: {
+          provider: "github",
+          baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_CYPRESSRESORTS"
+        },
       persona: {
         tone: "upbeat_helper",
         greeting:
-          "Hey! I’m here to help you find the perfect pair of shoes.",
-        closing: "Happy walking! Come back to Bright Shoes anytime.",
+          "Hey! Welcome to Cypress Resorts. How can I help upi",
+        closing: "Thank you.",
       },
     },
     limits: {
@@ -253,9 +234,9 @@ export const tenantProfiles = [
     },
     widgetKeys: [
       {
-        id: "shoe_site",
-        key: "w_shoe_main_7f1b0e9c64f54d1a",
-        origin: "https://www.brightshoes.io",
+        id: "cypress-resorts",
+        key: "w_cypress_main_7f1b0e9c64f54d1a",
+        origin: "https://www.cypressresort.com",
         label: "Main marketing site",
         revoked: false
       }
