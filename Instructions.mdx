@@ -803,3 +803,44 @@ With:
 
 you’re in a good place: **hotel widget feels always-available for normal traffic, but a single bad actor or script can only do limited damage before tripping a fuse.**
 
+
+
+=================
+Going to AGENTS_ID.md ... strategy and risks 
+Big pros
+
+Tenant-owned content
+Tenants can iterate on agents, PR their changes, review history, branch, etc. That’s exactly what Git is good at.
+
+Human-friendly editing
+Markdown + some structured conventions is much more approachable for non-devs than JSON with 200 lines of nested arrays/objects.
+
+Environment separation & versioning
+You can point staging to staging branch, prod to main, etc. Rollback is just git revert.
+
+Your platform becomes pure runtime + tooling
+Prompts, persona, policies, etc. are just inputs. You can later support other backends (not only GitHub) with the same parser.
+
+Security / multi-tenant isolation
+Each tenant’s agent spec only affects that tenant. “Jailbreaks” in their prompts only hurt their own bot, which is exactly what they’re paying you to control.
+
+Things to watch out for
+
+Runtime fragility
+If you fetch from GitHub on every connect, you’re now dependent on GitHub latency and outages.
+→ Fix: cache the parsed result per tenantId + agentId (e.g., in Redis or your own DB) and refresh on a timer or when webhook says “new commit”.
+
+Validation
+A tenant can easily break the file (missing YAML, typo in heading, etc.).
+→ Fix: validate after parsing and:
+
+either fail fast with a clear error
+
+or fallback to a safe default agent (like your "unknown" agent) and log the error.
+
+Security
+You’ll probably want to restrict which repos/branches are allowed, and make sure you only fetch from whitelisted hosts.
+
+Given those caveats, I’d absolutely go this route. The key is: treat AGENT_ID.md as a source artifact, but cache + validate before it ever reaches Realtime.
+
+
