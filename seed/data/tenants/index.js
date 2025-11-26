@@ -103,6 +103,10 @@ export const tenantProfiles = [
     },
     agentSettings: {
       defaultAgentId: "product_matcher_v1",
+      agentRepo: {
+        provider: "github",
+        baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_MACHINE"
+      },
       allowedTools: ["product_search", "brand_info"],
       maxParallelSessions: 25,
       persona: {
@@ -209,8 +213,8 @@ export const tenantProfiles = [
       },
     },
     agentSettings: {
-       defaultAgentId: "shoe_matcher_v1",
-        agentRepo: {
+       defaultAgentId: "concierge",
+       agentRepo: {
           provider: "github",
           baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_CYPRESSRESORTS"
         },
