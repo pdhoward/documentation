@@ -101,20 +101,14 @@ export const tenantProfiles = [
         fallbackBehavior: "handoff_to_human",
       },
     },
-    agentSettings: {
-      defaultAgentId: "product_matcher_v1",
+    agentSettings:[ {
+      agentId: "agent_sales_v1",
+      label: "Machine Agent",
       agentRepo: {
         provider: "github",
         baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_MACHINE"
-      },
-      allowedTools: ["product_search", "brand_info"],
-      maxParallelSessions: 25,
-      persona: {
-        tone: "friendly_expert",
-        greeting: "Hi, I’m your Acme product guide. What are you looking for today?",
-        closing: "Thanks for shopping with Acme!",
-      },
-    },
+      },      
+    }],
     limits: {
       maxAgents: 20,
       maxConcurrentCalls: 50,
@@ -212,19 +206,14 @@ export const tenantProfiles = [
         fallbackBehavior: "apologize_and_end",
       },
     },
-    agentSettings: {
-       defaultAgentId: "concierge",
+    agentSettings: [{
+       agentId: "concierge",
+       label: "Cypress Concierge",
        agentRepo: {
           provider: "github",
           baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_CYPRESSRESORTS"
-        },
-      persona: {
-        tone: "upbeat_helper",
-        greeting:
-          "Hey! Welcome to Cypress Resorts. How can I help upi",
-        closing: "Thank you.",
-      },
-    },
+        },      
+    }],
     limits: {
       maxAgents: 5,
       maxConcurrentCalls: 15,
