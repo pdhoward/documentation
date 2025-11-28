@@ -106,7 +106,7 @@ export const tenantProfiles = [
       label: "Machine Agent",
       agentRepo: {
         provider: "github",
-        baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_MACHINE"
+        baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_MACHINE.md"
       },      
     }],
     limits: {
@@ -211,7 +211,7 @@ export const tenantProfiles = [
        label: "Cypress Concierge",
        agentRepo: {
           provider: "github",
-          baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_CYPRESSRESORTS"
+          baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_CYPRESSRESORTS.md"
         },      
     }],
     limits: {
