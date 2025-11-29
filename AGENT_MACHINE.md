@@ -121,9 +121,6 @@ meta:
 ```
 # Tools
 ```json
-# Tools
-
-```json
 [
   {
     "kind": "http_tool",
