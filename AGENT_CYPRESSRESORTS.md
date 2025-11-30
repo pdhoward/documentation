@@ -1,7 +1,7 @@
 ---
 agent:
   tenantId: cypress-resorts
-  agentId: concierge_v1          # your internal ID
+  agentId: concierge          # your internal ID
   name: Cypress Resorts Concierge
   tone: warm, concise, professional
   start: >
