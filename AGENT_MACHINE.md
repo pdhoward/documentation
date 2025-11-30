@@ -99,7 +99,7 @@ meta:
 ```
 # Examples
 
-``` json
+```json
 [
   {
     "user": "What does Strategic Machines do?",
