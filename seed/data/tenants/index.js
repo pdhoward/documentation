@@ -61,46 +61,7 @@ export const tenantProfiles = [
       },
       status: "active",
       nextBillingDate: new Date("2025-12-01T00:00:00.000Z"),
-    },
-    config: {
-      datastores: [
-        {
-          type: "mongo",
-          connectionUri: "",
-          databaseName: "",
-          collectionName: "",
-          searchDefaults: {
-            maxResults: 20,
-            minScore: 0.5,
-          },
-          auth: {
-            userId: "",
-            password: "",
-          },
-        },
-      ],
-      APIs: [
-        {
-          name: "product_search",
-          description: "Search Acme product catalog",
-          uri: "https://api.voice-platform.com/tenants/acme-123/products/search",
-          key: "ENCRYPTED_API_KEY_ACME_PRODUCT_SEARCH",
-        },
-        {
-          name: "brand_info",
-          description: "Fetch Acme brand information",
-          uri: "https://api.voice-platform.com/tenants/acme-123/brand-info",
-          key: "ENCRYPTED_API_KEY_ACME_BRAND_INFO",
-        },
-      ],
-      voiceAgent: {
-        agentId: "674000000000000000000001", // example ObjectId as string
-        defaultLanguage: "en-US",
-        defaultVoice: "friendly_female",
-        maxConversationMinutes: 30,
-        fallbackBehavior: "handoff_to_human",
-      },
-    },
+    },   
     agentSettings:[ {
       agentId: "agent_sales_v1",
       label: "Machine Agent",
@@ -192,20 +153,7 @@ export const tenantProfiles = [
       },
       status: "trialing",
       nextBillingDate: new Date("2026-01-16T00:00:00.000Z"),
-    },
-    config: {
-      datastores: [        
-      ],
-      APIs: [       
-      ],
-      voiceAgent: {
-        agentId: "674000000000000000000002",
-        defaultLanguage: "en-US",
-        defaultVoice: "cheerful_neutral",
-        maxConversationMinutes: 20,
-        fallbackBehavior: "apologize_and_end",
-      },
-    },
+    },    
     agentSettings: [{
        agentId: "concierge",
        label: "Cypress Concierge",
