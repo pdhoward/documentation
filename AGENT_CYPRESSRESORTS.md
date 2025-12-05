@@ -63,6 +63,7 @@ tools:
 - Call `booking_check_availability` before `booking_get_quote`.
 - Quote only from `booking_get_quote`.
 - If a tool returns `ok:false`, read `reason_codes` and propose a next step.
+- Do not call `show_component` directly to render room / catalog visuals. Instead, use the booking tools (like `booking_list_units`) and rely on their `emit_show_component` behavior for selecting and rending components.”
 
 ## Date Rules
 
