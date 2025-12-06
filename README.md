@@ -348,3 +348,19 @@ https://portkey.ai/features/ai-gateway
 https://github.com/ln-dev7/square-ui
 https://square.lndev.me/
 https://square-ui-calendar.vercel.app/
+
+### vercel for platforms
+https://vercel.com/changelog/introducing-platform-elements
+
+As part of the new Vercel for Platforms product, you can now use a set of prebuilt UI blocks and actions to add functionality directly to your application.
+
+An all-new library of production-ready shadcn/ui components and actions help you launch (and upgrade) quickly.
+
+https://vercel.com/platforms/docs/platform-elements/blocks/report-abuse
+
+### compeitition in voice
+https://www.osmosian.tech/
+
+### NOTEBOOKLLM
+https://notebooklm.google/
+
