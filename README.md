@@ -364,3 +364,14 @@ https://www.osmosian.tech/
 ### NOTEBOOKLLM
 https://notebooklm.google/
 
+vibe voice tts
+https://huggingface.co/spaces/anycoderapps/VibeVoice-Realtime-0.5B
+
+### ERD SCHEMA EDITOR
+https://erd-editor.io/
+https://github.com/dineug/erd-editor/
+
+### Visualize documents - knowledge graphs
+https://github.com/ChristopherLyon/graphrag-workbench/
+https://graphrag-workbench-web.vercel.app/
+
