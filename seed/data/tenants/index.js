@@ -177,7 +177,7 @@ export const tenantProfiles = [
       {
         id: "cypress-resorts",
         key: "w_cypress_main_7f1b0e9c64f54d1a",
-        origin: "https://www.cypressresort.com",
+        origin: "https://cypressresort.vercel.app",
         label: "Main marketing site",
         revoked: false
       }

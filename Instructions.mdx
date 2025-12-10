@@ -844,3 +844,142 @@ You’ll probably want to restrict which repos/branches are allowed, and make su
 Given those caveats, I’d absolutely go this route. The key is: treat AGENT_ID.md as a source artifact, but cache + validate before it ever reaches Realtime.
 
 
+=========================
+
+TENANT OBJECT - NOTICE in the widgetKeys
+
+> this object is used by voice-machine to control access to voice agents
+> the key must be loaded by the tenant in their script on their site
+> and the origin must match exactly the url of their site
+
+otherwise an attempt to load the voice agent widget to the tenant site will be
+rejected as unauthorized or CORS error
+
+{
+  _id: {
+    $oid: "6939cb803ac721430154baba"
+  },
+  tenantId: "cypress-resorts",
+  name: "Cypress Resorts",
+  status: "trial",
+  identity: {
+    legalName: "Cypress Resorts Inc",
+    displayName: "Cypress Resorts",
+    domain: "cypressresort.com",
+    industry: "hospitality",
+    timeZone: "America/Atlanta",
+    locale: "en-US"
+  },
+  contacts: {
+    primary: {
+      name: "Tanner Cummings",
+      email: "tanner@cypressresort.com",
+      phone: "+1-540-383-8282",
+      role: "Founder"
+    },
+    billing: {
+      name: "Finance",
+      email: "finance@cypressresort.com"
+    },
+    technical: {
+      name: "CTO",
+      email: "cto@cypressresort.com"
+    }
+  },
+  billing: {
+    provider: "Stripe",
+    customerId: "cypress-resort",
+    defaultPaymentMethodId: "cypress_master_1111",
+    currency: "USD",
+    billingEmail: "finance@cypressresort.com",
+    billingAddress: {
+      line1: "1773 Hwy 53 East",
+      line2: "",
+      city: "Jasper",
+      state: "GA",
+      postalCode: "30143",
+      country: "USA"
+    },
+    plan: {
+      planId: "voice-starter",
+      name: "Voice Agent Starter",
+      interval: "month",
+      seatLimit: {
+        $numberInt: "3"
+      },
+      agentLimit: {
+        $numberInt: "5"
+      },
+      trialEndsAt: {
+        $date: {
+          $numberLong: "1768435200000"
+        }
+      }
+    },
+    cardSnapshot: {
+      brand: "mastercard",
+      last4: "1111",
+      expMonth: {
+        $numberInt: "5"
+      },
+      expYear: {
+        $numberInt: "2028"
+      }
+    },
+    status: "trialing",
+    nextBillingDate: {
+      $date: {
+        $numberLong: "1768521600000"
+      }
+    }
+  },
+  agentSettings: [
+    {
+      agentId: "concierge",
+      label: "Cypress Concierge",
+      agentRepo: {
+        provider: "github",
+        baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_CYPRESSRESORTS.md"
+      }
+    }
+  ],
+  limits: {
+    maxAgents: {
+      $numberInt: "5"
+    },
+    maxConcurrentCalls: {
+      $numberInt: "15"
+    },
+    maxMonthlyMinutes: {
+      $numberInt: "2000"
+    },
+    maxRequestsPerMinute: {
+      $numberInt: "60"
+    }
+  },
+  flags: {
+    betaFeatures: false,
+    allowExternalBrandInfo: true,
+    allowExperimentalModels: false
+  },
+  widgetKeys: [
+    {
+      id: "cypress-resorts",
+      key: "w_cypress_main_7f1b0e9c64f54d1a",
+      origin: "https://cypressresort.vercel.app",
+      label: "Main marketing site",
+      revoked: false
+    }
+  ],
+  createdAt: {
+    $date: {
+      $numberLong: "1762819200000"
+    }
+  },
+  updatedAt: {
+    $date: {
+      $numberLong: "1762992000000"
+    }
+  }
+}
+
