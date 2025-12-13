@@ -375,3 +375,7 @@ https://github.com/dineug/erd-editor/
 https://github.com/ChristopherLyon/graphrag-workbench/
 https://graphrag-workbench-web.vercel.app/
 
+### Shadcn dashboard and templates
+https://github.com/ln-dev7/square-ui/tree/master/templates
+https://square-ui-dashboard-2.vercel.app/
+
