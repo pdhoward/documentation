@@ -379,3 +379,6 @@ https://graphrag-workbench-web.vercel.app/
 https://github.com/ln-dev7/square-ui/tree/master/templates
 https://square-ui-dashboard-2.vercel.app/
 
+### GEMINI
+https://github.com/google-gemini/live-api-web-console
+
