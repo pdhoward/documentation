@@ -30,6 +30,12 @@ export const tenantProfiles = [
         email: "strategicmachines@gmail.com",
       },
     },
+    social: {
+        facebook: "",
+        instagram: "",
+        youtube: "",
+        x: "https://x.com/chaoticbots"
+      },
     billing: {
       provider: "stripe",
       customerId: "cus_acme_001",
@@ -136,6 +142,12 @@ export const tenantProfiles = [
         state: "GA",
         postalCode: "30143",
         country: "USA",
+      },
+      social: {
+        facebook: "https://www.facebook.com/cypressresort",
+        instagram: "https://www.instagram.com/cypressresort/",
+        youtube: "",
+        x: ""
       },
       plan: {
         planId: "voice-starter",
