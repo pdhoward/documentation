@@ -103,11 +103,11 @@ export const tenantProfiles = [
 
   {
     tenantId: "cypress-resorts",
-    name: "Cypress Resorts",
+    name: "Cypress Resort",
     status: "trial",
     identity: {
-      legalName: "Cypress Resorts Inc",
-      displayName: "Cypress Resorts",
+      legalName: "Cypress Resort, Inc",
+      displayName: "Cypress Resort",
       domain: "cypressresort.com",
       industry: "hospitality",
       timeZone: "America/Atlanta",
