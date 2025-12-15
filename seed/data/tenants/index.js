@@ -100,7 +100,6 @@ export const tenantProfiles = [
     createdAt: new Date("2025-11-10T00:00:00.000Z"),
     updatedAt: new Date("2025-11-13T00:00:00.000Z"),
   },
-
   {
     tenantId: "cypress-resorts",
     name: "Cypress Resort",
@@ -129,6 +128,12 @@ export const tenantProfiles = [
         email: "cto@cypressresort.com",
       },
     },
+    social: {
+        facebook: "https://www.facebook.com/cypressresort",
+        instagram: "https://www.instagram.com/cypressresort/",
+        youtube: "",
+        x: ""
+      },
     billing: {
       provider: "Stripe",
       customerId: "cypress-resort",
@@ -142,13 +147,7 @@ export const tenantProfiles = [
         state: "GA",
         postalCode: "30143",
         country: "USA",
-      },
-      social: {
-        facebook: "https://www.facebook.com/cypressresort",
-        instagram: "https://www.instagram.com/cypressresort/",
-        youtube: "",
-        x: ""
-      },
+      },      
       plan: {
         planId: "voice-starter",
         name: "Voice Agent Starter",
