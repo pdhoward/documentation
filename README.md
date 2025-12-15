@@ -382,3 +382,6 @@ https://square-ui-dashboard-2.vercel.app/
 ### GEMINI
 https://github.com/google-gemini/live-api-web-console
 
+### verify accts and numbers
+https://apexverify.com/
+
