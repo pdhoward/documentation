@@ -33,9 +33,13 @@ tools:
       - booking_checkout_init
       - booking_list_units
       - list_things_via_gateway
+
+  - source: core
+    names:
       - show_component
       - scrapeWebsite
       - getCurrentTime
+
 ---
 
 # Goal
