@@ -165,14 +165,24 @@ export const tenantProfiles = [
       status: "trialing",
       nextBillingDate: new Date("2026-01-16T00:00:00.000Z"),
     },    
-    agentSettings: [{
+    agentSettings: [
+      {
        agentId: "concierge",
        label: "Cypress Concierge",
        agentRepo: {
           provider: "github",
           baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_CYPRESSRESORTS.md"
-        },      
-    }],
+        },
+      },
+      {
+        agentId: "conciergev2",
+        label: "Cypress Concierge V2",
+        agentRepo: {
+            provider: "github",
+            baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_CYPRESSRESORT_CONCIERGE.md"
+          },
+      }
+    ],
     limits: {
       maxAgents: 5,
       maxConcurrentCalls: 15,
