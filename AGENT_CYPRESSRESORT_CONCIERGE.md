@@ -32,7 +32,7 @@ tools:
       - booking_get_quote
       - booking_checkout_init
       - booking_list_units
-      - list_things
+      - list_things_via_gateway
       - show_component
       - scrapeWebsite
       - getCurrentTime
@@ -104,7 +104,7 @@ allowed_tools:
   - booking_get_quote
   - booking_checkout_init
   - booking_list_units
-  - list_things
+  - list_things_via_gateway
   - show_component
   - scrapeWebsite
   - getCurrentTime
