@@ -8,12 +8,17 @@ agent:
   tenantId: YOUR_TENANT_ID
   agentId: YOUR_AGENT_ID
   name: YOUR_AGENT_NAME
+  tone:
+  start: >
+  fetch_current_date: >
 audience:
   who: ""
   knowledge_level: low
   languages: ["en"]
 brand:
   tone: ""
+  terminology:
+    USD: dollars
 meta:
   version: 1
   lastUpdatedBy: ""
@@ -21,6 +26,8 @@ meta:
 tools:
   - source: registry
     tenantId: YOUR_TENANT_ID
+    names: []
+  - source: core
     names: []
 ---
 
@@ -58,6 +65,14 @@ tools:
 # Dialog Flow
 
 - (Happy path steps)
+
+# Capabilities
+
+- If a tool is not listed here, do not call it
+
+- For each tool descriptor, specify when it is called, the arguments it is called with, and actions take on success or on error.
+
+- This section ranks as most important in controlling the behavior of the Agent and the expected outcomes
 
 # Response Templates
 

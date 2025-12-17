@@ -676,5 +676,60 @@ export const actions = [
   enabled: true,
   priority: 8,
   version: 1,
-}  
+},
+{
+  kind: "http_tool",
+  tenantId: "machine",
+  name: "list_machine_agents",
+  description:
+    "List all Strategic Machines voice agents, including pricing, skills, availability, and demo links.",
+
+  parameters: {
+    type: "object",
+    required: ["tenant_id"],
+    properties: {
+      tenant_id: {
+        type: "string",
+        description:
+          "tenant identifier for logging or future routing.",
+      },
+    },
+    additionalProperties: false,
+  },
+
+  http: {
+    method: "GET",
+    urlTemplate: "https://product-engine.vercel.app/api/agents/list",
+    headers: {
+      "content-type": "application/json",
+    },
+    timeoutMs: 8000,
+    pruneEmpty: false,
+  },
+
+  ui: {
+    onSuccess: {
+      emit_show_component: {
+        component_name: "catalog_results",
+        title: "Available Strategic Machines Agents",
+        description: "Browse agents, their skills, pricing, and demos.",
+        size: "lg",
+        props: {
+          items: "{{response}}",
+        },
+        meta: {
+          replace: true,
+        },
+      },
+    },
+    onError: {
+      emit_say:
+        "I couldn’t load the agent gallery just now. Please try again in a moment.",
+    },
+  },
+  enabled: true,
+  priority: 5,
+  version: 2,
+}
+
 ];
