@@ -7,51 +7,37 @@
     NOTICE - IF ENABLED===FALSE THE ACTION DOES NOT LOAD
 */
 import 'dotenv/config';
+import { MongoClient } from 'mongodb';
 import { actions } from '../data/actions/index.js';
 import { things } from '../data/things/index.js';
 
-import getMongoConnection from '../../src/db/connections/index.js'; // Adjust path if needed (based on your connects/index.js)
+const uri = process.env.DB || '';
+const DB_NAME = 'strategic_machines';
 
 async function seedActions() {
-  const url = process.env.DB; 
-  const dbName = process.env.MAINDBNAME; 
+  const client = new MongoClient(uri);
 
-  if (!url || !dbName) {
+  if (!uri || !DB_NAME) {
       console.log({ error: 'Missing database configuration' }, { status: 500 });
       return
   }
-  
-  const { client, db } = await getMongoConnection(url, dbName);
-
    console.log('Connected to MongoDB');
-
   try {
-    // Check and drop collections if they exist
-    const collections = await db.listCollections().toArray();
-    const collectionNames = collections.map(c => c.name);
-
-    if (collectionNames.includes('actions')) {
-      await db.collection('actions').drop();
-      console.log('Dropped actions collection');
-    }
-    if (collectionNames.includes('things')) {
-      await db.collection('things').drop();
-      console.log('Dropped things collection');
-    }
-    
-    const actionsCollection = db.collection('actions');
-    const thingsCollection = db.collection('things');
-
-    // Clear existing documents in the collection
-    const deleteResult = await actionsCollection.deleteMany({});
-    console.log(`Dropped ${deleteResult.deletedCount} actions`);    
-    const deleteThings = await actionsCollection.deleteMany({});
+    await client.connect();
+    console.log('Connected to MongoDB');
+    const db = client.db(DB_NAME);
+    const actionCollection = db.collection('actions');   
+    const deleteActions = await actionCollection.deleteMany({});
+    console.log(`Dropped ${deleteActions.deletedCount} http tool descriptors`);
+   
+    const thingsCollection = db.collection('things');       
+    const deleteThings = await thingsCollection.deleteMany({});
     console.log(`Dropped ${deleteThings.deletedCount} things`); 
     
     // filter out any actions where the enable = false
     const actionsEnabled = actions.filter(a=>a.enabled)
     // Bulk insert
-    const insertResult = await actionsCollection.insertMany(actionsEnabled);
+    const insertResult = await actionCollection.insertMany(actionsEnabled);
     console.log(`Inserted ${insertResult.insertedCount} actions`); 
     const insertThings = await thingsCollection.insertMany(things);
     console.log(`Inserted ${insertThings.insertedCount} things`);    

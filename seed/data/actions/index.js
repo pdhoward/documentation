@@ -683,7 +683,6 @@ export const actions = [
   name: "list_machine_agents",
   description:
     "List all Strategic Machines voice agents, including pricing, skills, availability, and demo links.",
-
   parameters: {
     type: "object",
     required: ["tenant_id"],
@@ -696,7 +695,6 @@ export const actions = [
     },
     additionalProperties: false,
   },
-
   http: {
     method: "GET",
     urlTemplate: "https://product-engine.vercel.app/api/agents/list",
@@ -706,7 +704,6 @@ export const actions = [
     timeoutMs: 8000,
     pruneEmpty: false,
   },
-
   ui: {
     onSuccess: {
       emit_show_component: {
