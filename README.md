@@ -385,3 +385,6 @@ https://github.com/google-gemini/live-api-web-console
 ### verify accts and numbers
 https://apexverify.com/
 
+### Lucide animated icons
+https://lucide-animated.com/
+
