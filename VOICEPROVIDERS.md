@@ -1,0 +1,8 @@
+| Provider               | Estimated Market Share (2025) | Cost (Per Million Characters or Equivalent) | Accuracy (MOS Score Estimate) |
+|------------------------|-------------------------------|---------------------------------------------|-------------------------------|
+| Google Cloud TTS      | 20% (Enterprise leader in multilingual TTS) | $16 per million characters (neural voices; ~$4 per million tokens) | 4.5/5 (Excellent prosody via WaveNet) |
+| Amazon Polly          | 17% (Strong AWS integration for e-commerce) | $16 per million characters (neural; ~$4 per million tokens) | 4.4/5 (High intelligibility with sync features) |
+| Microsoft Azure TTS   | 15% (Custom voices and broad integrations) | ~$16 per million characters (neural, tiered; ~$4 per million tokens) | 4.6/5 (Superior emotional depth and customization) |
+| ElevenLabs            | 12% (Hyper-realistic cloning and premium TTS) | $75–300 per million characters (varies by model like Turbo v2 at ~$75/M; ~$18.75–75 per million tokens) | 4.8/5 (Best-in-class realism per benchmarks) |
+| OpenAI Realtime       | 14% (Rapid growth in real-time voice agents via ChatGPT and API) | ~$400 per million characters (based on ~$0.24/min output, ~600 chars/min; equivalent to ~$100 per million audio tokens; full agent use) | 4.7/5 (Near-human conversational quality, >80% accuracy in reasoning evals) |
+| Grok Voice (xAI)      | 3% (Emerging in real-time agents with X/Tesla ties) | ~$83 per million characters (based on $0.05/min flat rate, ~600 chars/min; ~$20.75 per million tokens) | 4.7/5 (Strong low-latency realism for agents) |
