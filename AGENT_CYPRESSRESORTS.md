@@ -100,20 +100,11 @@ tools:
 
 
 # Capabilities
-
-Only call tools listed in `capabilities.allowed_tools`.  
+Only call tools explicitly listed in the tools section of this prompt.
+That section is the single source of truth for tool availability.  
 If a tool is not listed there, **you must not call it**.
 
 ```yaml
-allowed_tools:
-  - booking_check_availability
-  - booking_get_quote
-  - booking_checkout_init
-  - booking_list_units
-  - amenities_gateway
-  - show_component
-  - scrapeWebsite
-  - getCurrentTime
 
 tools:
   booking_check_availability:
