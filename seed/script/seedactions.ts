@@ -30,7 +30,7 @@ async function seedActions() {
     const deleteActions = await actionCollection.deleteMany({});
     console.log(`Dropped ${deleteActions.deletedCount} http tool descriptors`);
    
-    const thingsCollection = db.collection('things');       
+    const thingsCollection = db.collection('amenities');       
     const deleteThings = await thingsCollection.deleteMany({});
     console.log(`Dropped ${deleteThings.deletedCount} amenities`); 
     
