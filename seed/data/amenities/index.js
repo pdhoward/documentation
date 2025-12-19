@@ -1,9 +1,9 @@
 /*
-   synthetic data file to demonstrate definition of things
+   synthetic data file to demonstrate definition of various amenities
    that may be reserved by the voice agent
 */
 
-export const things = [ 
+export const amenities = [ 
 
   // ----- Spa treatments -----
   {
@@ -55,9 +55,9 @@ export const things = [
     type: "media",
     key: "menu",
     mediaType: "image",
-    src: "/images/menu/chef-menu.png",
+    src: "https://res.cloudinary.com/stratmachine/image/upload/v1766158730/cypress/private_chef_menu_q2dywk.png",
     title: "Chef’s Menu",
-    description: "Seasonal menu from our executive chef.",
+    description: "Sample menu from our private executive chef.",
     status: "active",
     updatedAt: "2025-01-01T12:00:00Z",
     createdAt: "2024-12-01T10:00:00Z"

@@ -99,16 +99,16 @@ export const actions = [
           title: "Quote for {{args.unit_id}}",          
           description: "Nightly: {{response.quote.nightly}} · Nights: {{response.quote.nights}} · Total: {{response.quote.total}} {{response.quote.currency}}.\nPolicy: Cancel up to {{response.quote.policy.cancelHours}}h · Fee {{response.quote.policy.cancelFee}}.",
           size: "md",
-           "props": {
-            "quote": {
-              "unit": "{{response.unit.name}}",
-              "check_in": "{{response.quote.window.check_in}}",
-              "check_out": "{{response.quote.window.check_out}}",
-              "nightly_rate": "{{response.quote.nightly}}",
-              "nights": "{{response.quote.nights}}",
-              "total": "{{response.quote.total}}",
-              "currency": "{{response.quote.currency}}",
-              "policy": "Cancel up to {{response.quote.policy.cancelHours}}h · Fee {{response.quote.policy.cancelFee}}"
+           props: {
+            quote: {
+                unit: "{{response.unit.name}}",
+                check_in: "{{response.quote.window.check_in}}",
+                check_out: "{{response.quote.window.check_out}}",
+                nightly_rate: "{{response.quote.nightly}}",
+                nights: "{{response.quote.nights}}",
+                total: "{{response.quote.total}}",
+                currency: "{{response.quote.currency}}",
+                policy: "Cancel up to {{response.quote.policy.cancelHours}}h · Fee {{response.quote.policy.cancelFee}}"
               }     
             },
           meta: { replace: true }
@@ -136,129 +136,156 @@ export const actions = [
         - Error branches: payment_failed, expired_hold, error.
  * ────────────────────────────────────────────────────────────────────────── */
 // actions/booking_checkout_init.ts
-  {
-  "tenantId": "cypress-resorts",
-  "kind": "http_tool",
-  "name": "booking_checkout_init",
-  "description": "Initialize a reservation checkout: create a reservation and open the unified checkout component.",
-  "parameters": {
-    "type": "object",
-    "required": ["tenant_id", "unit_id", "check_in", "check_out", "guest"],
-    "properties": {
-      "tenant_id": { "type": "string" },
-      "unit_id": { "type": "string", "description": "Public unit key (e.g., 'unit-villa-2')." },
-      "check_in": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
-      "check_out": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
-      "guest": {
-        "type": "object",
-        "required": ["first_name", "last_name", "email", "phone"],
-        "properties": {
-          "first_name": { "type": "string" },
-          "last_name": { "type": "string" },
-          "email": { "type": "string", "format": "email" },
-          "phone": { "type": "string" },
-          "address": {
-            "type": "object",
-            "properties": {
-              "line1": { "type": "string" },
-              "line2": { "type": "string" },
-              "city": { "type": "string" },
-              "state": { "type": "string" },
-              "postalCode": { "type": "string" },
-              "country": { "type": "string" }
+{
+  tenantId: 'cypress-resorts',
+  kind: 'http_tool',
+  name: 'booking_checkout_init',
+  description:
+    'Initialize a reservation checkout: create a reservation and open the unified checkout component.',
+
+  parameters: {
+    type: 'object',
+    required: ['tenant_id', 'unit_id', 'check_in', 'check_out', 'guest'],
+    properties: {
+      tenant_id: { type: 'string' },
+
+      unit_id: {
+        type: 'string',
+        description: "Public unit key (e.g., 'unit-villa-2').",
+      },
+
+      check_in: {
+        type: 'string',
+        pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+      },
+
+      check_out: {
+        type: 'string',
+        pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+      },
+
+      guest: {
+        type: 'object',
+        required: ['first_name', 'last_name', 'email', 'phone'],
+        properties: {
+          first_name: { type: 'string' },
+          last_name: { type: 'string' },
+          email: { type: 'string', format: 'email' },
+          phone: { type: 'string' },
+
+          address: {
+            type: 'object',
+            properties: {
+              line1: { type: 'string' },
+              line2: { type: 'string' },
+              city: { type: 'string' },
+              state: { type: 'string' },
+              postalCode: { type: 'string' },
+              country: { type: 'string' },
             },
-            "additionalProperties": false
-          }
+            additionalProperties: false,
+          },
         },
-        "additionalProperties": true
-      }
+        additionalProperties: true,
+      },
     },
-    "additionalProperties": false
+    additionalProperties: false,
   },
-  "http": {
-    "method": "POST",
-    "urlTemplate": "https://cypressbooking.vercel.app/api/booking/{{args.tenant_id}}/reserve",
-    "headers": {
-      "authorization": "Bearer {{secrets.booking_api_key}}",
-      "content-type": "application/json"
+
+  http: {
+    method: 'POST',
+    urlTemplate: 'https://cypressbooking.vercel.app/api/booking/{{args.tenant_id}}/reserve',
+
+    headers: {
+      authorization: 'Bearer {{secrets.booking_api_key}}',
+      'content-type': 'application/json',
     },
-    "jsonBodyTemplate": {
-      "unit_id": "{{args.unit_id}}",
-      "check_in": "{{args.check_in}}",
-      "check_out": "{{args.check_out}}",
-      "pending_payment": true,
-      "guest": {
-        "first_name": "{{args.guest.first_name}}",
-        "last_name": "{{args.guest.last_name}}",
-        "email": "{{args.guest.email}}",
-        "phone": "{{args.guest.phone}}",
-        "address": {
-          "line1": "{{args.guest.address.line1}}",
-          "line2": "{{args.guest.address.line2}}",
-          "city": "{{args.guest.address.city}}",
-          "state": "{{args.guest.address.state}}",
-          "postalCode": "{{args.guest.address.postalCode}}",
-          "country": "{{args.guest.address.country}}"
-        }
-      }
+
+    jsonBodyTemplate: {
+      unit_id: '{{args.unit_id}}',
+      check_in: '{{args.check_in}}',
+      check_out: '{{args.check_out}}',
+      pending_payment: true,
+
+      guest: {
+        first_name: '{{args.guest.first_name}}',
+        last_name: '{{args.guest.last_name}}',
+        email: '{{args.guest.email}}',
+        phone: '{{args.guest.phone}}',
+
+        address: {
+          line1: '{{args.guest.address.line1}}',
+          line2: '{{args.guest.address.line2}}',
+          city: '{{args.guest.address.city}}',
+          state: '{{args.guest.address.state}}',
+          postalCode: '{{args.guest.address.postalCode}}',
+          country: '{{args.guest.address.country}}',
+        },
+      },
     },
-    "okField": "ok",
-    "timeoutMs": 12000,
-    "pruneEmpty": true
+
+    okField: 'ok',
+    timeoutMs: 12000,
+    pruneEmpty: true,
   },
-  "ui": {
-    "onSuccess": {
-      "emit_show_component": {
-        "component_name": "reservation_checkout",
-        "title": "Review & confirm your reservation",
-        "description": "Please review your details and complete payment to confirm.",
-        "size": "md",
-        "props": {
-          "tenant_id": "{{args.tenant_id}}",
-          "reservation_id": "{{response.reservation.id}}",
-          "unit_id": "{{response.reservation.unit.id}}",
-          "unit_name": "{{response.reservation.unit.name}}",
 
-          "check_in": "{{response.reservation.window.check_in}}",
-          "check_out": "{{response.reservation.window.check_out}}",
+  ui: {
+    onSuccess: {
+      emit_show_component: {
+        component_name: 'reservation_checkout',
+        title: 'Review & confirm your reservation',
+        description: 'Please review your details and complete payment to confirm.',
+        size: 'md',
 
-          "nightly_rate": "{{response.reservation.commercial.nightly}}",
-          "currency": "{{response.reservation.commercial.currency | default('USD')}}",
+        props: {
+          tenant_id: '{{args.tenant_id}}',
+          reservation_id: '{{response.reservation.id}}',
+          unit_id: '{{response.reservation.unit.id}}',
+          unit_name: '{{response.reservation.unit.name}}',
 
-          "guest": {
-            "first_name": "{{args.guest.first_name}}",
-            "last_name": "{{args.guest.last_name}}",
-            "email": "{{args.guest.email}}",
-            "phone": "{{args.guest.phone}}"
+          check_in: '{{response.reservation.window.check_in}}',
+          check_out: '{{response.reservation.window.check_out}}',
+
+          nightly_rate: '{{response.reservation.commercial.nightly}}',
+          currency: "{{response.reservation.commercial.currency | default('USD')}}",
+
+          guest: {
+            first_name: '{{args.guest.first_name}}',
+            last_name: '{{args.guest.last_name}}',
+            email: '{{args.guest.email}}',
+            phone: '{{args.guest.phone}}',
           },
 
-          "policy_cancel_hours": "{{response.reservation.policy.cancelHours}}",
-          "policy_cancel_fee": "{{response.reservation.policy.cancelFee}}",
-          "policy_currency": "{{response.reservation.policy.currency | default('USD')}}",
+          policy_cancel_hours: '{{response.reservation.policy.cancelHours}}',
+          policy_cancel_fee: '{{response.reservation.policy.cancelFee}}',
+          policy_currency: "{{response.reservation.policy.currency | default('USD')}}",
 
-          "payment_intent_strategy": "component_fetches"
+          payment_intent_strategy: 'component_fetches',
         },
-        "meta": { "replace": true }
-      }
+
+        meta: { replace: true },
+      },
     },
-    "onError": {
-      "emit_say": "I couldn’t start the checkout with those details. Please confirm the guest information and dates, or choose a different villa, and I’ll try again."
-    }
+
+    onError: {
+      emit_say:
+        "I couldn’t start the checkout with those details. Please confirm the guest information and dates, or choose a different villa, and I’ll try again.",
+    },
   },
-  "enabled": true,
-  "priority": 8,
-  "version": 2
+
+  enabled: true,
+  priority: 8,
+  version: 2,
 },
 
-
   /* ──────────────────────────────────────────────────────────────────────────
-   * 4) Data API for the collection "things"
+   * 4) Data API for the collection "amenities"
    * ────────────────────────────────────────────────────────────────────────── */
   {
     tenantId: "cypress-resorts",
     kind: "http_tool",
-    name: "list_things_via_gateway",
-    description: "Browse catalog items (spa_treatment, media…).",
+    name: "amenities_gateway",
+    description: "Browse catalog of amenities and activities that are available such as spas, private chefs, or site plan for hiking and more.",
     parameters: {
       type: "object",
       required: ["tenant_id"],
@@ -273,7 +300,7 @@ export const actions = [
     },
     http: {
       method: "POST",
-      urlTemplate: "/api/mongo/gateway",
+      urlTemplate: "https://cypressbooking.vercel.app/api/search/mongo",
       headers: { "content-type": "application/json" },
       jsonBodyTemplate: {
         op: "find",
@@ -304,7 +331,7 @@ export const actions = [
         emit_show_component: {
           component_name: "catalog_results",
           title: "Results",
-          description: "Showing the latest items.",
+          description: "Showing information, videos, or images on amentities and activities.",
           size: "lg",
           props: { items: "{{response}}" },
           meta: { replace: true }
@@ -326,51 +353,85 @@ export const actions = [
    *    API: { ok: true, items: [...], count: N }
    * ────────────────────────────────────────────────────────────────────────── */
   {
-    tenantId: "cypress-resorts",
-    kind: "http_tool",
-    name: "booking_list_units",
-    description: "List rooms for a tenant (name, description, amenities, media…).",
+    tenantId: 'cypress-resorts',
+    kind: 'http_tool',
+    name: 'booking_list_units',
+    description: 'List rooms for a tenant (name, description, amenities, media…).',
+
     parameters: {
-      type: "object",
-      required: ["tenant_id"],
+      type: 'object',
+      required: ['tenant_id'],
       properties: {
-        tenant_id: { type: "string" },
-        q: { type: "string", description: "Search across name/description/slug/tags" },
-        limit: { type: "number", minimum: 1, maximum: 100, default: 12 },
-        include_rates: { type: "boolean", description: "If true, include rate and currency in results" },
-        include_media: { type: "boolean", description: "If true, include media in results" }
+        tenant_id: { type: 'string' },
+
+        q: {
+          type: 'string',
+          description: 'Search across name/description/slug/tags',
+        },
+
+        limit: {
+          type: 'number',
+          minimum: 1,
+          maximum: 100,
+          default: 12,
+        },
+
+        include_rates: {
+          type: 'boolean',
+          description: 'If true, include rate and currency in results',
+        },
+
+        include_media: {
+          type: 'boolean',
+          description: 'If true, include media in results',
+        },
       },
-      additionalProperties: false
+      additionalProperties: false,
     },
+
     http: {
-      method: "GET",
+      method: 'GET',
       urlTemplate:
-        "https://cypressbooking.vercel.app/api/booking/{{args.tenant_id}}/rooms?q={{args.q}}&limit={{args.limit}}&includeRates={{args.include_rates}}&includeMedia={{args.include_media}}",
-      headers: { authorization: "Bearer {{secrets.booking_api_key}}" },
-      okField: "ok",
-      timeoutMs: 8000,
-      pruneEmpty: true
-    },
-    ui: {
-      "onSuccess": {
-        "emit_show_component": {
-          "component_name": "room",
-          "props": {
-            "items": "{{response.items}}",
-            "dates": { "check_in": "{{args.check_in}}", "check_out": "{{args.check_out}}" },
-            "highlight": "{{args.q}}"
-          }
-        }
+        'https://cypressbooking.vercel.app/api/booking/{{args.tenant_id}}/rooms' +
+        '?q={{args.q}}' +
+        '&limit={{args.limit}}' +
+        '&includeRates={{args.include_rates}}' +
+        '&includeMedia={{args.include_media}}',
+
+      headers: {
+        authorization: 'Bearer {{secrets.booking_api_key}}',
       },
+
+      okField: 'ok',
+      timeoutMs: 8000,
+      pruneEmpty: true,
+    },
+
+    ui: {
+      onSuccess: {
+        emit_show_component: {
+          component_name: 'room',
+          props: {
+            items: '{{response.items}}',
+            dates: {
+              check_in: '{{args.check_in}}',
+              check_out: '{{args.check_out}}',
+            },
+            highlight: '{{args.q}}',
+          },
+        },
+      },
+
       onError: {
         emit_say:
-          "I couldn’t load the room list right now. " +
-          "Please try again, or tell me what you’re looking for and I’ll refine the search."
-      }
+          'I couldn’t load the room list right now. ' +
+          'Please try again, or tell me what you’re looking for and I’ll refine the search.',
+      },
     },
+
     enabled: true,
     priority: 11,
-    version: 4
+    version: 4,
   },
   // tools/productcoHttpTools.ts
 

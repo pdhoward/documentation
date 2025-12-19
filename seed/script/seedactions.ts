@@ -9,7 +9,7 @@
 import 'dotenv/config';
 import { MongoClient } from 'mongodb';
 import { actions } from '../data/actions/index.js';
-import { things } from '../data/things/index.js';
+import { amenities} from '../data/amenities/index.js';
 
 const uri = process.env.DB || '';
 const DB_NAME = 'strategic_machines';
@@ -32,15 +32,15 @@ async function seedActions() {
    
     const thingsCollection = db.collection('things');       
     const deleteThings = await thingsCollection.deleteMany({});
-    console.log(`Dropped ${deleteThings.deletedCount} things`); 
+    console.log(`Dropped ${deleteThings.deletedCount} amenities`); 
     
     // filter out any actions where the enable = false
     const actionsEnabled = actions.filter(a=>a.enabled)
     // Bulk insert
     const insertResult = await actionCollection.insertMany(actionsEnabled);
     console.log(`Inserted ${insertResult.insertedCount} actions`); 
-    const insertThings = await thingsCollection.insertMany(things);
-    console.log(`Inserted ${insertThings.insertedCount} things`);    
+    const insertThings = await thingsCollection.insertMany(amenities);
+    console.log(`Inserted ${insertThings.insertedCount} amenities`);    
 
   } catch (error) {
     console.error('Error seeding actions:', error);

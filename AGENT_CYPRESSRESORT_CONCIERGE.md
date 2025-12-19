@@ -32,7 +32,7 @@ tools:
       - booking_get_quote
       - booking_checkout_init
       - booking_list_units
-      - list_things_via_gateway
+      - amenities_gateway
 
   - source: core
     names:
@@ -99,20 +99,11 @@ Then respond helpfully to the user’s request.
 
 # Capabilities
 
-Only call tools listed in `capabilities.allowed_tools`.  
+Only call tools explicitly listed in the tools section of this prompt.
+That section is the single source of truth for tool availability.  
 If a tool is not listed there, **you must not call it**.
 
 ```yaml
-allowed_tools:
-  - booking_check_availability
-  - booking_get_quote
-  - booking_checkout_init
-  - booking_list_units
-  - list_things_via_gateway
-  - show_component
-  - scrapeWebsite
-  - getCurrentTime
-
 tools:
   booking_check_availability:
     when:
@@ -153,7 +144,7 @@ tools:
       - User asks about rates/fees/policies (cancellation, pets, check-in/out).
     args: ["tenant_id"]
 
-  list_things:
+  amenities_gateway:
     when:
       - User asks about resort/nearby amenities, events, activities.
       - User asks for site plan.
