@@ -393,3 +393,26 @@ https://dotenvx.com/
 https://1password.com/blog/1password-environments-env-files-public-beta
 
 
+```js
+// AI SDK 6: Agent with OpenAI websearch tool
+
+const openaiWebSearchAgent = new ToolLoopAgent({
+  model: openai("gpt-5"),
+  tools: {
+    webSearch: openai.tools.webSearch({
+      searchContextSize: "low",
+      userLocation: {
+        type: "approximate",
+        city: "San Francisco",
+        region: "California",
+        country: "US",
+      },
+    }),
+  },
+});
+
+```
+
+### create study materials
+https://github.com/CaviraOSS/PageLM/
+
