@@ -388,3 +388,8 @@ https://apexverify.com/
 ### Lucide animated icons
 https://lucide-animated.com/
 
+### share .nev files with devs
+https://dotenvx.com/
+https://1password.com/blog/1password-environments-env-files-public-beta
+
+
