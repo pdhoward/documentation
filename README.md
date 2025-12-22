@@ -416,3 +416,7 @@ const openaiWebSearchAgent = new ToolLoopAgent({
 ### create study materials
 https://github.com/CaviraOSS/PageLM/
 
+### configuring your agent
+https://agents.md/
+https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering
+
