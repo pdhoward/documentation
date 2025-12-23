@@ -420,3 +420,6 @@ https://github.com/CaviraOSS/PageLM/
 https://agents.md/
 https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering
 
+
+### investigate
+polyai - including channel partners
