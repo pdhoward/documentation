@@ -203,6 +203,24 @@ export const tenantProfiles = [
         revoked: false
       }
     ],
+     apiKeys: [
+      {
+        id: "cypress-resorts",
+        key: "e8040afa3e6548ee7d46aa41f7d9ab3b",
+        origin: "https://ws.audioscrobbler.com",
+        label: "Last FM music site",
+        revoked: false,
+        createdAt: new Date("2025-11-11T00:00:00.000Z")
+      },
+      {
+        id: "cypress-resorts",
+        key: "226d775e25014be98ba18cd249adffed",
+        origin: "https://api.spoonacular.com",
+        label: "Food site for meal prep",
+        revoked: false,
+        createdAt: new Date("2025-11-11T00:00:00.000Z")
+      }
+    ],
 
     createdAt: new Date("2025-11-11T00:00:00.000Z"),
     updatedAt: new Date("2025-11-13T00:00:00.000Z"),

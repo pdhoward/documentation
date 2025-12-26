@@ -892,7 +892,7 @@ export const actions = [
   http: {
     method: "GET",
     urlTemplate:
-      "http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag={{args.genre}}&api_key={{secrets.lastfm_api_key}}&format=json&limit=5",
+      "https://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag={{args.genre}}&api_key={{secrets.lastfm_api_key}}&format=json&limit=5",
     headers: {},
     okField: "tracks",
     timeoutMs: 10000
@@ -909,7 +909,5 @@ export const actions = [
   priority: 10,
   version: 1
 }
-
-
 
 ];
