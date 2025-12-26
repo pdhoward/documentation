@@ -788,6 +788,128 @@ export const actions = [
   enabled: true,
   priority: 5,
   version: 2,
+},
+{ 
+  tenantId: "cypress-resorts",
+  kind: "http_tool",
+  name: "chef_search_recipes",
+  description: "Search for elegant, healthy recipes based on query.",
+  parameters: {
+    type: "object",
+    required: ["query"],
+    properties: {
+      query: {
+        type: "string"
+      },
+      cuisine: {
+        type: "string"
+      },
+      diet: {
+        type: "string"
+      },
+      intolerances: {
+        type: "string"
+      }
+    },
+    additionalProperties: false
+  },
+  http: {
+    method: "GET",
+    urlTemplate:
+      "https://api.spoonacular.com/recipes/complexSearch?apiKey={{secrets.spoonacular_api_key}}&query={{args.query}}&cuisine={{args.cuisine}}&diet={{args.diet}}&intolerances={{args.intolerances}}&number=3&addRecipeInformation=true",
+    headers: {},
+    okField: "results",
+    timeoutMs: 10000
+  },
+  ui: {
+    onSuccess: {
+      emit_say: "Here are some elegant recipe suggestions based on your preferences."
+    },
+    onError: {
+      emit_say: "Couldn't find suitable recipes. Let's try different options?"
+    }
+  },
+  enabled: true,
+  priority: 10,
+  version: 1
+},
+{ 
+  tenantId: "cypress-resorts",
+  kind: "http_tool",
+  name: "chef_suggest_wine",
+  description: "Suggest wine pairings for a food, with prices.",
+  parameters: {
+    type: "object",
+    required: ["food"],
+    properties: {
+      food: {
+        type: "string"
+      },
+      maxPrice: {
+        type: "number"
+      }
+    },
+    additionalProperties: false
+  },
+  http: {
+    method: "GET",
+    urlTemplate:
+      "https://api.spoonacular.com/food/wine/pairing?apiKey={{secrets.spoonacular_api_key}}&food={{args.food}}",
+    headers: {},
+    okField: "pairings",
+    timeoutMs: 10000
+  },
+  ui: {
+    onSuccess: {
+      emit_say: "Excellent wine suggestions to complement your meal."
+    },
+    onError: {
+      emit_say: "No wine pairings found. Perhaps another dish?"
+    }
+  },
+  enabled: true,
+  priority: 10,
+  version: 1
+},
+{ 
+  tenantId: "cypress-resorts",
+  kind: "http_tool",
+  name: "chef_suggest_music",
+  description: "Suggest music tracks based on genre or mood.",
+  parameters: {
+    type: "object",
+    required: ["genre"],
+    properties: {
+      genre: {
+        type: "string"
+      },
+      mood: {
+        type: "string"
+      }
+    },
+    additionalProperties: false
+  },
+  http: {
+    method: "GET",
+    urlTemplate:
+      "http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag={{args.genre}}&api_key={{secrets.lastfm_api_key}}&format=json&limit=5",
+    headers: {},
+    okField: "tracks",
+    timeoutMs: 10000
+  },
+  ui: {
+    onSuccess: {
+      emit_say: "Some musical ambiance to enhance your dining experience."
+    },
+    onError: {
+      emit_say: "Couldn't find music suggestions. Try a different genre?"
+    }
+  },
+  enabled: true,
+  priority: 10,
+  version: 1
 }
+
+
 
 ];
