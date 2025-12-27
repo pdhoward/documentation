@@ -4,12 +4,7 @@
 - the visual components are explicitly referenced too many times, like in instructions.mdx,
 visual stage, use visuals, tools.ts, registry.tsx ....simplify this structure -- one source of truth
 
-- The platform provides predefined and prepackaged components (VOX VISUALS) as well as apis for STRIPE
-- THis is problematic my opinion on payments front with Voice Agents in configuring the platform for different customer
-
 - ask groq to generate user docs?
--- note that http tool descriptors connect 3rd party apis to instructions for the AI engine (when to call, how to call, how to handle a response)
--- especially for Reservation component - pretty complex with Stripe (and predefined api routes)
 
 - will need an AI editor to create http tools for user
 
@@ -21,12 +16,7 @@ visual stage, use visuals, tools.ts, registry.tsx ....simplify this structure --
 
 - explore addition of welcome (disclaimer for beta)- and maybe tools education (see garbage/machinetemplate/components)
 
-- upgrade to nextjs 16 use codemod to assist in upgrade
-https://nextjs.org/docs/app/guides/upgrading/version-16
-
 - for Transcript component - created_at is being set to updated_at ,,, debug we need to keep the original create date
-
-
 
 When you need to invoice, join in application code by emailHash.
 // On session creation:
@@ -63,7 +53,6 @@ api end point with this content
 
 9.1 - Also for the product database we need to sort out the images so that they are an array of strings rather than how currectly structured
 
-10. Build a sales agents for my sales agents
 
 11. monitor
 https://github.com/abhixdd/UptimeKit/

@@ -420,6 +420,12 @@ https://github.com/CaviraOSS/PageLM/
 https://agents.md/
 https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering
 
-
 ### investigate
 polyai - including channel partners
+
+### agent prompts -- accelerate development
+sales:
+https://academy.openai.com/public/clubs/work-users-ynjqu/resources/use-cases-sales
+
+marketing:
+https://academy.openai.com/public/clubs/work-users-ynjqu/resources/use-cases-marketing
