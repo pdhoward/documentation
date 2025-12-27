@@ -167,11 +167,11 @@ export const tenantProfiles = [
     },    
     agentSettings: [
       {
-       agentId: "concierge",
-       label: "Cypress Concierge",
+       agentId: "privatechef",
+       label: "Private Chef",
        agentRepo: {
           provider: "github",
-          baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_CYPRESSRESORTS.md"
+          baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/refs/heads/main/AGENT_CYPRESSRESORTS_CHEF.md"
         },
       },
       {
@@ -217,6 +217,14 @@ export const tenantProfiles = [
         key: "226d775e25014be98ba18cd249adffed",
         origin: "https://api.spoonacular.com",
         label: "Food site for meal prep",
+        revoked: false,
+        createdAt: new Date("2025-11-11T00:00:00.000Z")
+      },
+      {
+        id: "cypress-resorts",
+        key: "y40xxiFsqQXMI5l7cX54zucRS5xTlPgz",
+        origin: "https://cypressbooking.vercel.app",
+        label: "Strategic Machines Booking Engine - Test Site",
         revoked: false,
         createdAt: new Date("2025-11-11T00:00:00.000Z")
       }
