@@ -796,20 +796,13 @@ export const actions = [
   description: "Search for elegant, healthy recipes based on query.",
   parameters: {
     type: "object",
-    required: ["query"],
+    required: ["tenant_id","query"],
     properties: {
-      query: {
-        type: "string"
-      },
-      cuisine: {
-        type: "string"
-      },
-      diet: {
-        type: "string"
-      },
-      intolerances: {
-        type: "string"
-      }
+      tenant_id: { type: "string" },
+      query: { type: "string" },
+      cuisine: { type: "string" },
+      diet: { type: "string" },
+      intolerances: { type: "string" }
     },
     additionalProperties: false
   },
@@ -840,14 +833,11 @@ export const actions = [
   description: "Suggest wine pairings for a food, with prices.",
   parameters: {
     type: "object",
-    required: ["food"],
+    required: ["tenant_id", "food"],
     properties: {
-      food: {
-        type: "string"
-      },
-      maxPrice: {
-        type: "number"
-      }
+      tenant_id: { type: "string" },
+      food: {type: "string" },
+      maxPrice: { type: "number" }
     },
     additionalProperties: false
   },
@@ -878,14 +868,11 @@ export const actions = [
   description: "Suggest music tracks based on genre or mood.",
   parameters: {
     type: "object",
-    required: ["genre"],
+    required: ["tenant_id", "genre"],
     properties: {
-      genre: {
-        type: "string"
-      },
-      mood: {
-        type: "string"
-      }
+      tenant_id: { type: "string" },
+      genre: { type: "string" },
+      mood: { type: "string" }
     },
     additionalProperties: false
   },
