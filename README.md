@@ -26,7 +26,23 @@ Runtime behavior (from /api/tools/execute):
 3) For currency, prefer {{args.currency | default('USD') | upper}}.
 4) For nested JSON props, pass structured objects (not stringified), e.g. customer: "{{args.prefill | json}}".
 5) Keep okField aligned with the API’s success shape (e.g., "ok" or "clientSecret").
-6) If your API needs auth, use {{secrets.*}} in headers; the server will inject the secret.
+
+####  JAN 2026 UPDATE ON AUTHORIING - STREAMLINED
+
+1. .md file now used to author prompt, tool list, capabilities (which includes the WHEN rules for tool access)
+2. the website/tenants collection is the registration document with a few very critical items
+- tenantId - referenced throughout the platform (must tie to .md file)
+- agentSettings - agentId must tie to .md file and contains api for .md doc
+- widgetKeys - activates the <script /> on customer site
+> the id === tenantId. 
+> the key=== key in <script />
+> the customer web site === origin
+- apiKeys - register various apis used by customer in their tools
+> the id === tenantId
+> key === api secret key
+> origin === the api
+> revoked === true or false
+3. The http tool descriptor is the set of instructions used by the platform to execute against a defined api. The descriptor identified the set of arguments and the endpoint used in concert to perform an action (query, search, post, transaction)
 
 #### Why this will “just work”
 
@@ -423,9 +439,28 @@ https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering
 ### investigate
 polyai - including channel partners
 
+### agent free apis
+https://github.com/Free-APIs/Free-APIs.github.io/
+
 ### agent prompts -- accelerate development
 sales:
 https://academy.openai.com/public/clubs/work-users-ynjqu/resources/use-cases-sales
 
 marketing:
 https://academy.openai.com/public/clubs/work-users-ynjqu/resources/use-cases-marketing
+
+product
+https://academy.openai.com/public/clubs/work-users-ynjqu/resources/use-cases-product
+
+customer success
+https://academy.openai.com/public/clubs/work-users-ynjqu/resources/use-cases-customer-success
+
+finance
+https://academy.openai.com/public/clubs/work-users-ynjqu/resources/use-cases-customer-success
+
+### cloudflare
+https://workers.cloudflare.com/
+
+### dashboard - shadcn
+https://github.com/ln-dev7/square-ui
+https://square.lndev.me/
