@@ -4,6 +4,34 @@
 
 export const agentProfiles = [
   {
+    name: "SalesAgent",
+    downloads: 223,
+    price: 295.95,
+    level: "Advanced",
+    avatar: "https://res.cloudinary.com/stratmachine/image/upload/v1609950066/logos/stoplight_kcj94f.svg",
+    description:
+      "I am the sales agent for Strategic Machines, helping prospective customers to evaluate and select a Voice Agent for their business. Every Business needs a Voice - but selecting the right voice takes time and needs some guidance. Thats where I come in.",
+    skills: [
+      "Customer voice",
+      "Product selection",
+      "Product evaluation",
+      "Relationship Management"   
+    ],
+    reviews: [
+      { author: "William Finn", content: "Fun! This agent took me through all the options.", rating: 5 },
+      { author: "Sarah T.", content: "What was most helpful were the agent's insights on the art of the possible.", rating: 4 },
+    ],
+    socialLinks: { github: "https://github.com", twitter: "https://twitter.com", linkedin: "https://linkedin.com", website: "https://example.com" },
+    likes: 164,
+    featured: false,
+    // NEW
+    available: true,
+    demo: "live",
+    connections: {
+      video: "https://voice.strategicmachines.ai",
+    },
+  },
+  {
     name: "AnalyticsBot",
     downloads: 1760,
     price: 149.95,
@@ -67,7 +95,7 @@ export const agentProfiles = [
     downloads: 1890,
     price: 299.95,
     level: "Advanced",
-    avatar: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400&h=400&fit=crop",
+    avatar: "https://res.cloudinary.com/stratmachine/image/upload/v1609950122/logos/yeoman_f2jrt2.svg",
     description:
       "Your personal AI concierge service assistant. I handle everything from restaurant reservations to travel planning, ensuring a premium experience for your clients.",
     skills: [
@@ -86,10 +114,10 @@ export const agentProfiles = [
     featured: true,
     // NEW
     available: true,
-    demo: "video",
+    demo: "live",
     connections: {
       video: "https://res.cloudinary.com/stratmachine/video/upload/v1752260506/machine/20250711cypressdemo_q7plge.mp4",
-      liveLink: "https://demo.strategicmachines.ai/concierge",
+      liveLink: "https://voice.strategicmachines.ai",
     },
   },
   {
@@ -115,7 +143,7 @@ export const agentProfiles = [
     likes: 300,
     featured: false,
     // NEW
-    available: true,
+    available: false,
     demo: "video",
     connections: {
       video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
@@ -144,7 +172,7 @@ export const agentProfiles = [
     likes: 278,
     featured: false,
     // NEW
-    available: true,
+    available: false,
     demo: "live",
     connections: {
       liveLink: "https://demo.strategicmachines.ai/contentcraft",
@@ -198,7 +226,7 @@ export const agentProfiles = [
     likes: 154,
     featured: false,
     // NEW
-    available: true,
+    available: false,
     demo: "video",
     connections: {
       video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
@@ -221,7 +249,7 @@ export const agentProfiles = [
     likes: 139,
     featured: false,
     // NEW
-    available: true,
+    available: false,
     demo: "sales",
     connections: {
       video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
@@ -245,7 +273,7 @@ export const agentProfiles = [
     likes: 482,
     featured: false,
     // NEW
-    available: true,
+    available: false,
     demo: "live",
     connections: {
       liveLink: "https://demo.strategicmachines.ai/socialmediapro",
@@ -269,10 +297,33 @@ export const agentProfiles = [
     likes: 82,
     featured: false,
     // NEW
-    available: true,
+    available: false,
     demo: "video",
     connections: {
       video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    },
+  },
+    {
+    name: "PrivateChef",
+    downloads: 120,
+    price: 400.00,
+    level: "Advanced",
+    avatar: "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?w=400&h=400&fit=crop",
+    description:
+      "24/7 I helpmy clients select a menu, pair wines and music for a private dining experience with an Executive Chef.",
+    skills: ["food selections", "menu development", "wine", "music", "perfect pairings"],
+    reviews: [
+      { author: "William Chang", content: "Wow! So helpful in planning for our special eveing.", rating: 5 },
+      { author: "Emily Davis", content: "The best insights on exotic foods, specialty wine and favorite tunes.", rating: 4 },
+    ],
+    socialLinks: { twitter: "https://twitter.com", linkedin: "https://linkedin.com" },
+    likes: 43,
+    featured: false,
+    // NEW
+    available: true,
+    demo: "live",
+    connections: {
+      video: "https://voice.strategicmachines.ai",
     },
   },
 ];

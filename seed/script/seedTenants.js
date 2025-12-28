@@ -1,11 +1,9 @@
 /////////////////////////////////////////////////////////////
-// post agent profiles rednered to Strategic Machines     //
-//   website as well as tenant profiles used in enabling //
-//     voice agents                                     //
-/////////////////////////////////////////////////////////
+// post tenant profiles rendered to Strategic Machines     //
+//   website - the registration document for customers    //
+///////////////////////////////////////////////////////////
 import 'dotenv/config';
 import { MongoClient } from 'mongodb';
-import { agentProfiles } from '../data/agentwebdemo/index.js';
 import { tenantProfiles } from '../data/tenants/index.js';
 
 const gradients = [
@@ -24,32 +22,19 @@ async function seedAgents() {
     await client.connect();
     console.log('Connected to MongoDB');
 
-    const db = client.db(DB_NAME);
-    const agentCollection = db.collection('agents');
+    const db = client.db(DB_NAME);   
     const tenantCollection = db.collection('tenants');
-
-    // Clear existing documents in the collection
-    const deleteAgents = await agentCollection.deleteMany({});
-    console.log(`Dropped ${deleteAgents.deletedCount} agents`);
+  
      // Clear existing documents in the collection
     const deleteTenants = await tenantCollection.deleteMany({});
     console.log(`Dropped ${deleteTenants.deletedCount} tenants`);
-
-    // Add unique id to each agent if not present (using lowercase name as id for simplicity)
-    const agentsWithId = agentProfiles.map(agent => ({
-      ...agent,
-      id: agent.name.toLowerCase().replace(/\s+/g, '-'), // Generate a simple unique id based on name
-    }));
-
-    // Bulk insert the agents
-    const insertResult = await agentCollection.insertMany(agentsWithId);
-    console.log(`Inserted ${insertResult.insertedCount} agents`);
+   
       // Bulk insert the tenants
     const insertTenantResult = await tenantCollection.insertMany(tenantProfiles);
     console.log(`Inserted ${insertTenantResult.insertedCount} tenants`);
 
   } catch (error) {
-    console.error('Error seeding agents:', error);
+    console.error('Error seeding tenants:', error);
   } finally {
     await client.close();
     console.log('MongoDB connection closed');

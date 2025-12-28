@@ -19,7 +19,7 @@ export const agentProfiles = [
         rating: 5
       },
       {
-        author: "Austin Ridge",
+        author: "Joseph V.",
         content: "Very helpful, polite and super knowledgeble ",
         rating: 4
       }
