@@ -308,7 +308,7 @@ export const agentProfiles = [
     downloads: 120,
     price: 400.00,
     level: "Advanced",
-    avatar: "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?w=400&h=400&fit=crop",
+    avatar: "https://res.cloudinary.com/stratmachine/image/upload/v1609950069/logos/stylelint_zkpcbm.svg",
     description:
       "24/7 I helpmy clients select a menu, pair wines and music for a private dining experience with an Executive Chef.",
     skills: ["food selections", "menu development", "wine", "music", "perfect pairings"],
@@ -323,7 +323,7 @@ export const agentProfiles = [
     available: true,
     demo: "live",
     connections: {
-      video: "https://voice.strategicmachines.ai",
+      liveLink: "https://voice.strategicmachines.ai",
     },
   },
 ];
