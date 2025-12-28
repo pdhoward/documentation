@@ -23,7 +23,7 @@ export const agentProfiles = [
     ],
     socialLinks: { github: "https://github.com", twitter: "https://twitter.com", linkedin: "https://linkedin.com", website: "https://example.com" },
     likes: 164,
-    featured: false,
+    featured: true,
     // NEW
     available: true,
     demo: "live",
@@ -318,7 +318,7 @@ export const agentProfiles = [
     ],
     socialLinks: { twitter: "https://twitter.com", linkedin: "https://linkedin.com" },
     likes: 43,
-    featured: false,
+    featured: true,
     // NEW
     available: true,
     demo: "live",
