@@ -28,7 +28,7 @@ export const agentProfiles = [
     available: true,
     demo: "live",
     connections: {
-      video: "https://voice.strategicmachines.ai",
+      liveLink: "https://voice.strategicmachines.ai",
     },
   },
   {
