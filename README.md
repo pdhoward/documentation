@@ -374,8 +374,18 @@ An all-new library of production-ready shadcn/ui components and actions help you
 
 https://vercel.com/platforms/docs/platform-elements/blocks/report-abuse
 
-### compeitition in voice
+### competition in voice
 https://www.osmosian.tech/
+
+create voices
+https://app.resemble.ai/
+
+api
+https://models.hathora.dev/model/resemble-ai-chatterbox-turbo
+
+#### deploy servers and admin pane
+https://github.com/citizenfx/txAdmin
+https://txadmin.gg/
 
 ### NOTEBOOKLLM
 https://notebooklm.google/
