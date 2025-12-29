@@ -50,7 +50,7 @@ export const agentProfiles = [
       { author: "Jim B..", content: " Otto was great! In an instant he narrowed down the options based on my specs, and helped me make a selection.", rating: 4 },
     ],
     socialLinks: { github: "https://github.com", twitter: "https://twitter.com", linkedin: "https://linkedin.com", website: "https://example.com" },
-    likes: 164,
+    likes: 75,
     featured: true,
     // NEW
     available: true,
