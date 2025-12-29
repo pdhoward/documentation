@@ -463,4 +463,7 @@ https://workers.cloudflare.com/
 
 ### dashboard - shadcn
 https://github.com/ln-dev7/square-ui
-https://square.lndev.me/
+https://square.lndev.me/https://supermemory.ai/docs/introduction
+
+### explore
+https://supermemory.ai/docs/introduction
