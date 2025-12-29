@@ -32,6 +32,34 @@ export const agentProfiles = [
     },
   },
   {
+    name: "ProductSalesAgent",
+    downloads: 413,
+    price: 795.00,
+    level: "Advanced",
+    avatar: "https://res.cloudinary.com/stratmachine/image/upload/v1609949992/logos/otto_zchjjw.svg",
+    description:
+      "I am the product sales agent for DIY Warehouse, helping prospective customers to find, evaluate and select products from our vast inventory for home and commercial use. ",
+    skills: [
+      "Customer voice",
+      "Product selection",
+      "Inventory stats",
+      "Relationship Management"   
+    ],
+    reviews: [
+      { author: "Steve R.", content: "The website is informative, but difficult to crawl through with all the infomration. Otto the voice agent was a huge help", rating: 5 },
+      { author: "Jim B..", content: " Otto was great! In an instant he narrowed down the options based on my specs, and helped me make a selection.", rating: 4 },
+    ],
+    socialLinks: { github: "https://github.com", twitter: "https://twitter.com", linkedin: "https://linkedin.com", website: "https://example.com" },
+    likes: 164,
+    featured: true,
+    // NEW
+    available: true,
+    demo: "live",
+    connections: {
+      liveLink: "https://voice.strategicmachines.ai",
+    },
+  },
+  {
     name: "AnalyticsBot",
     downloads: 1760,
     price: 149.95,
