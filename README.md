@@ -467,3 +467,6 @@ https://square.lndev.me/https://supermemory.ai/docs/introduction
 
 ### explore
 https://supermemory.ai/docs/introduction
+
+### learn
+https://www.deeplearning.ai/short-courses/claude-code-a-highly-agentic-coding-assistant/
