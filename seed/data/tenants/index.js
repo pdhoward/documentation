@@ -327,7 +327,7 @@ export const tenantProfiles = [
         revoked: false
       }
     ],
-     apiKeys: [      
+     apiKeys: [
       {
         id: "productco",
         key: "y40xxiFsqQXMI5l7cX54zucRS5xTlPgz",
