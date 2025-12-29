@@ -233,4 +233,111 @@ export const tenantProfiles = [
     createdAt: new Date("2025-11-11T00:00:00.000Z"),
     updatedAt: new Date("2025-11-13T00:00:00.000Z"),
   },
+   {
+    tenantId: "productco",
+    name: "DIY Warehouse",
+    status: "active",
+    identity: {
+      legalName: "DIY Warehouse, Inc",
+      displayName: "DIY Warehouse",
+      domain: "https://product-engine.vercel.app/",
+      industry: "home goods",
+      timeZone: "America/New York",
+      locale: "en-US",
+    },
+    contacts: {
+      primary: {
+        name: "David K",
+        email: "david@gmail.com",
+        phone: "+1-212-200-2000",
+        role: "Merchant",
+      },
+      billing: {
+        name: "Accounts Payable",
+        email: "payables@gmail.com",
+      },
+      technical: {
+        name: "Technical Support",
+        email: "support@gmail.com",
+      },
+    },
+    social: {
+        facebook: "",
+        instagram: "",
+        youtube: "",
+        x: "https://x.com/chaoticbots"
+      },
+    billing: {
+      provider: "stripe",
+      customerId: "cus_acme_001",
+      defaultPaymentMethodId: "pm_acme_visa_4242",
+      currency: "USD",
+      billingEmail: "strategicmachines@gmail.com",
+      taxId: "US123456789",
+      billingAddress: {
+        line1: "1000 Merchant Blvd",
+        line2: "",
+        city: "Atlanta",
+        state: "GA",
+        postalCode: "30303",
+        country: "US",
+      },
+      plan: {
+        planId: "voice-pro",
+        name: "Voice Agent Pro",
+        interval: "month",
+        seatLimit: 10,
+        agentLimit: 20,
+        trialEndsAt: new Date("2025-12-31T00:00:00.000Z"),
+      },
+      cardSnapshot: {
+        brand: "visa",
+        last4: "4242",
+        expMonth: 10,
+        expYear: 2030,
+      },
+      status: "active",
+      nextBillingDate: new Date("2025-12-01T00:00:00.000Z"),
+    },   
+    agentSettings:[ {
+      agentId: "productsales",
+      label: "Product Sales",
+      agentRepo: {
+        provider: "github",
+        baseRawUrl: "https://raw.githubusercontent.com/pdhoward/documentation/main/AGENT_DIYWAREHOUSE_PRODUCTSALES.md"
+      },      
+    }],
+    limits: {
+      maxAgents: 20,
+      maxConcurrentCalls: 50,
+      maxMonthlyMinutes: 10000,
+      maxRequestsPerMinute: 120,
+    },
+    flags: {
+      betaFeatures: true,
+      allowExternalBrandInfo: true,
+      allowExperimentalModels: false,
+    },
+    widgetKeys: [
+      {
+        id: "product_site",
+        key: "w_diy_main_7f1b0e9c64f54d1a",
+        origin: "https://product-engine.vercel.app/",
+        label: "Main marketing site",
+        revoked: false
+      }
+    ],
+     apiKeys: [      
+      {
+        id: "productco",
+        key: "y40xxiFsqQXMI5l7cX54zucRS5xTlPgz",
+        origin: "https://product-engine.vercel.app/",
+        label: "DIY Warehouse Web Site - Test Site",
+        revoked: false,
+        createdAt: new Date("2025-11-11T00:00:00.000Z")
+      }
+    ],
+    createdAt: new Date("2025-12-28T00:00:00.000Z"),
+    updatedAt: new Date("2025-12-29T00:00:00.000Z"),
+  },
 ];
