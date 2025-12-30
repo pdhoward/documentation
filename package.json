@@ -13,7 +13,8 @@
     "seedactions": "tsx seed/script/seedactions.ts",
     "seedunits": "tsx seed/script/seedunits.ts",
     "seedagents": "node seed/script/seedAgents.js",
-    "seedtenants": "node seed/script/seedTenants.js"
+    "seedtenants": "node seed/script/seedTenants.js",
+    "seedVillas": "tsx seed/script/seedVillas.ts"
   },
   "dependencies": {   
     "class-variance-authority": "^0.7.1",

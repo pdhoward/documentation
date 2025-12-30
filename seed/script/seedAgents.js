@@ -13,9 +13,6 @@ const gradients = [
   "bg-gradient-to-br from-green-500 to-teal-600",
 ];
 
-const uri = process.env.DB || '';
-const DB_NAME = 'website';
-
 async function seedAgents() {
   const client = new MongoClient(uri);
   try {
