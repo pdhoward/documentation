@@ -523,9 +523,26 @@ export const actions = [
   http: {
     method: "POST",
     urlTemplate:
-      "https://productco-agents.vercel.app/api/products/search",
+      "https://product-engine.vercel.app/api/products/search",
     headers: {
       "Content-Type": "application/json",
+    },
+   jsonBodyTemplate: {
+      tenantId: "{{args.tenantId}}",
+      query: "{{args.query}}",
+      color: "{{args.color}}",
+      brand: "{{args.brand}}",
+      category: "{{args.category}}",
+      inStock: "{{args.inStock | bool}}",
+      minPrice: "{{args.minPrice | number}}",
+      maxPrice: "{{args.maxPrice | number}}",
+      minRating: "{{args.minRating | number}}",
+      specs: "{{args.specs}}",
+      sort_field: "{{args.sort_field}}",
+      sort_direction: "{{args.sort_direction}}",
+      page: "{{args.page | number}}",
+      pageSize: "{{args.pageSize | number}}",
+      summaryOnly: "{{args.summaryOnly | bool}}"
     },
     okField: "ok",
     timeoutMs: 10000,
@@ -614,7 +631,7 @@ export const actions = [
   http: {
     method: "POST",
     urlTemplate:
-      "https://productco-agents.vercel.app/api/products/stats",
+      "https://product-engine.vercel.app/api/products/stats",
     headers: {
       "Content-Type": "application/json",
     },
@@ -660,7 +677,7 @@ export const actions = [
   http: {
     method: "GET",
     urlTemplate:
-      "https://productco-agents.vercel.app/api/tradeshows/coming-soon",
+      "https://product-engine.vercel.app/api/tradeshows/coming-soon",
     headers: {},
     okField: "ok",
     timeoutMs: 8000,
@@ -711,7 +728,7 @@ export const actions = [
   http: {
     method: "GET",
     urlTemplate:
-      "https://productco-agents.vercel.app/api/tradeshows/{{args.id}}/{{args.section}}",
+      "https://product-engine.vercel.app/api/tradeshows/{{args.id}}/{{args.section}}",
     headers: {},
     okField: "ok",
     timeoutMs: 8000,
