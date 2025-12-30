@@ -635,6 +635,15 @@ export const actions = [
     headers: {
       "Content-Type": "application/json",
     },
+    jsonBodyTemplate: {
+      tenantId: "{{args.tenantId}}",
+      search: "{{args.search}}",
+      category: "{{args.category}}",
+      brand: "{{args.brand}}",
+      specKey: "{{args.specKey}}",
+      specValue: "{{args.specValue}}",
+      groupBy: "{{args.groupBy}}"
+    },
     okField: "ok",
     timeoutMs: 10000,
     pruneEmpty: true,
