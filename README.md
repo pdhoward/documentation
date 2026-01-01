@@ -480,3 +480,11 @@ https://supermemory.ai/docs/introduction
 
 ### learn
 https://www.deeplearning.ai/short-courses/claude-code-a-highly-agentic-coding-assistant/
+
+stanford modern software dev
+https://github.com/mihail911/modern-software-dev-assignments
+
+### calendar
+https://www.getopenyear.com/
+
+
