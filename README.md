@@ -487,4 +487,7 @@ https://github.com/mihail911/modern-software-dev-assignments
 ### calendar
 https://www.getopenyear.com/
 
+### web check
+https://web-check.xyz/
+
 
