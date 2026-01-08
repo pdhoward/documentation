@@ -414,9 +414,10 @@ https://apexverify.com/
 ### Lucide animated icons
 https://lucide-animated.com/
 
-### share .nev files with devs
+### share .env files with devs
 https://dotenvx.com/
 https://1password.com/blog/1password-environments-env-files-public-beta
+https://www.doppler.com/
 
 
 ```js
@@ -490,4 +491,9 @@ https://www.getopenyear.com/
 ### web check
 https://web-check.xyz/
 
+### Claude
+https://www.producttalk.org/how-to-use-claude-code-features/
+https://x.com/rileybrown
+https://x.com/dabit3/status/2009131298250428923?s=58
+https://x.com/ttorres/status/2008965366198743143
 
