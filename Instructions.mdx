@@ -804,6 +804,94 @@ With:
 you’re in a good place: **hotel widget feels always-available for normal traffic, but a single bad actor or script can only do limited damage before tripping a fuse.**
 
 
+For widgets, the right mental model is:
+
+Tenant should feel “unlimited”
+
+…but you still enforce fairness + safety at three levels:
+
+A) Per-session limits (hard safety)
+
+You already have these:
+
+maxSessionMinutes
+
+maxSessionIdleSec
+These are your best “abuse-proof” controls because real users don’t talk for 2 hours nonstop.
+
+✅ Keep these.
+
+B) Per-tenant concurrency (business safety)
+
+A hotel doesn’t need 200 concurrent calls from one page unless something is wrong.
+You already show:
+
+active / maxConcurrent per tenant
+
+✅ This is the best non-disruptive limiter: it protects cost without affecting typical customers.
+
+C) Per-visitor “behavioral” detection (abuse safety) — not blunt rate limiting
+
+Instead of “requests/min”, detect patterns like:
+
+very long sessions repeatedly
+
+repeated sessions from same IP/device across many tenants
+
+repeated “start session” without meaningful usage
+
+extremely high token burn vs typical for that agent (your “predictable use case” point)
+
+What action do you take when detected?
+
+Use “step-up friction”, not a hard block:
+
+require OTP for that visitor
+
+require captcha on session start
+
+temporarily shorten maxSessionMinutes for that visitor/IP
+
+temporarily reduce concurrent sessions for that tenant+ip
+
+This keeps normal bookings unaffected while shutting down a bot.
+=================
+What you can detect today without invasive tracking
+
+IP address
+
+User-Agent (UA)
+
+TenantId (from widget JWT sub)
+
+Widget key (claims.key)
+
+Time-based patterns (sessions started per IP per tenant, etc.)
+
+Optional: a lightweight anonymous visitor id stored in localStorage cookie
+
+A minimal implementation plan (Mongo-backed, fixed window)
+
+Create a new collection: abuse_signals (TTL indexed).
+
+Each doc represents a counter in a time window, similar to your ratelimits approach:
+
+tenant:<tenantId>:ip:<ip>:<winId> → session starts per minute
+
+ip:<ip>:<winId> → session starts per minute across all tenants
+
+tenant:<tenantId>:ip:<ip>:day:<YYYY-MM-DD> → starts per day
+
+tenant:<tenantId>:ip:<ip>:overdur:<YYYY-MM-DD> → “over-duration sessions” count (if you want)
+
+Then at /api/session creation time:
+
+increment these counters
+
+compute a risk score
+
+if risk high → respond with 403 and code: "STEP_UP_REQUIRED" plus a stepUp: { kind: "captcha" | "otp" }
+
 
 =================
 Going to AGENTS_ID.md ... strategy and risks 
