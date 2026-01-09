@@ -534,6 +534,12 @@ npm install -g @anthropic-ai/claude-code
 * Iterate: Review diffs, apply changes, commit via git.
 * For multiple projects: Switch folders and restart claude sessions as needed. Use GitHub Actions integration (via Claude Code docs) for automated CI/CD.
 
+### Claude Skills example
+https://github.com/anthropics/claude-code/blob/main/plugins/ralph-wiggum/README.md
+
+### web scraping
+https://www.omkar.cloud/botasaurus/
+
 
 
 

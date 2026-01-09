@@ -893,6 +893,47 @@ compute a risk score
 if risk high → respond with 403 and code: "STEP_UP_REQUIRED" plus a stepUp: { kind: "captcha" | "otp" }
 
 
+=====================more work on session state ==============
+A practical, consistent definition of session states
+Field meanings (keep exactly as-is)
+
+Age = now - startedAt
+
+Idle = now - lastSeenAt
+
+Session “liveness” states (what the dashboard should show)
+
+We should separate “tracking flag” from “liveness.”
+
+1) Live (Engaged)
+
+active:true
+
+idleSec <= maxSessionIdleSec
+
+2) Live (Idle/Open)
+
+active:true
+
+idleSec > maxSessionIdleSec
+
+idleSec <= staleGraceSec (ex: 1 hour or 24 hours — your choice)
+
+3) Stale (Abandoned)
+
+active:true
+
+idleSec > staleGraceSec OR ageSec > hardMaxAgeSec
+These are not truly active; they are stale docs that should have been closed.
+
+4) Ended
+
+active:false (admin ended or auto-ended)
+
+optionally show endedAt/reason in an “Ended sessions” view
+
+Right now you only show 1–3, but your dataset contains a ton of #3.
+
 =================
 Going to AGENTS_ID.md ... strategy and risks 
 Big pros
