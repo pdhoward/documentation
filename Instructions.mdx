@@ -934,6 +934,20 @@ optionally show endedAt/reason in an “Ended sessions” view
 
 Right now you only show 1–3, but your dataset contains a ton of #3.
 
+1) Who is being measured by idleSec / staleGraceSec?
+
+That “digit” (idle seconds / age seconds) is per session record, i.e. per visitor conversation session (a single Realtime session identified by smSessionId), not the tenant itself.
+
+Tenant (website owner) = tenantId on the session doc (e.g. cypress-resorts)
+
+Visitor (end user on that site) = each realtime_sessions document (one per WebRTC/OpenAI realtime session)
+
+idleSec = “how long since that visitor’s session sent heartbeat”
+
+staleGraceSec = “after how long without heartbeat do we consider that visitor session abandoned/stale”
+
+So: stale applies to visitor sessions, then you aggregate those sessions by tenant to compute tenant-level counts (engaged/idle/stale).
+
 =================
 Going to AGENTS_ID.md ... strategy and risks 
 Big pros

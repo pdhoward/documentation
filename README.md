@@ -537,8 +537,16 @@ npm install -g @anthropic-ai/claude-code
 ### Claude Skills example
 https://github.com/anthropics/claude-code/blob/main/plugins/ralph-wiggum/README.md
 
+Now in VS Code stable: Agent Skills, the open standard created by 
+@AnthropicAI
+.
+
 ### web scraping
 https://www.omkar.cloud/botasaurus/
+
+### time tracking and billing for freelancers
+https://github.com/solidtime-io/solidtime
+https://www.solidtime.io/
 
 
 
