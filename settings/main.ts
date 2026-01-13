@@ -1,5 +1,5 @@
 export const url = "https://voice-machine-docs.vercel.app"
-export const siteicon = "https://res.cloudinary.com/stratmachine/image/upload/v1592332363/machine/icon-512x512_zaffp5.png"
+export const siteicon = "./machine.png"
 
 export const gtm = "GTM-XXXXXXX"
 export const gtmconnected = true
@@ -13,7 +13,7 @@ export const keywords = [
   "voice machine",
   "AI Agents",
 ]
-export const urlimage = "https://res.cloudinary.com/stratmachine/image/upload/v1592332363/machine/icon-512x512_zaffp5.png"
+export const urlimage = "./images/machine.png"
 export const imagealt = "Strategic Machines Documentation"
 export const twitterhandle = "@urban_coder"
 
