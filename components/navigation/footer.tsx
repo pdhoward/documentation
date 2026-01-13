@@ -22,16 +22,16 @@ export function Footer() {
         <div className="hidden items-center md:block">
           <Link
             className="font-semibold"
-            href="https://rubixstudios.com.au"
-            title="Rubix Studios"
-            aria-label="Rubix Studios"
+            href="https://www.strategicmachines.ai/"
+            title="Strategic Machines"
+            aria-label="Strategic Machines"
             target="_blank"
           >
             <Image
-              src="/logo.svg"
-              alt="Rubix Studios logo"
-              title="Rubix Studios logo"
-              aria-label="Rubix Studios logo"
+              src="/machine.png"
+              alt="Machine logo"
+              title="Strategic Machines logo"
+              aria-label="Strategic Machines logo"
               priority={false}
               width={30}
               height={30}

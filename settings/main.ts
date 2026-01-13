@@ -1,8 +1,9 @@
 export const url = "https://voice-machine-docs.vercel.app"
-export const siteicon = "./machine.png"
+export const siteicon = "/machine.png"
 
-export const gtm = "GTM-XXXXXXX"
-export const gtmconnected = true
+// google tag manager
+export const gtm = "GTM-XXXXXXX" 
+export const gtmconnected = false
 
 export const sitename = "documentation"
 export const description =
@@ -13,8 +14,8 @@ export const keywords = [
   "voice machine",
   "AI Agents",
 ]
-export const urlimage = "./images/machine.png"
-export const imagealt = "Strategic Machines Documentation"
+export const urlimage = "/images/machine.png"
+export const imagealt = "SM docs"
 export const twitterhandle = "@urban_coder"
 
 export const companyname = "Strategic Machines"
