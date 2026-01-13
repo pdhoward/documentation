@@ -14,76 +14,76 @@ keywords: ["introduction", "guide", "nextjs", "documents"]
   /> 
 </CardGrid>
 
+## Voice Platform for Business
+
+VOX is a multi-tenant voice agent platform for building production-ready voice experiences—concierge, sales, support, scheduling, and commerce—grounded in your real business data. You define **how the agent behaves** (prompt + dialog flow), **what it can do** (tools), and **what it can show** (UI components). The platform handles the runtime: session creation, safety controls, tool execution, and consistent rendering of results.
+
 ## Documents
-
-**Documents** is a lightweight, modular starter kit built with **Next.js**, **React**, **Tailwind CSS**, and **TypeScript**. It’s designed to help you 
-launch structured, professional documentation without spending time on boilerplate.
-
-Whether you're building product manuals, internal systems guides, or dev documentation, Documents gives you a clean foundation that’s easy to 
-extend and maintain.
 
 <CardGrid>
   <Card
-    subtitle="Instructions"
-    title="Installation"
-    description="Follow the quick start guide to install Documents and get up and running."
-    href="/docs/basic-setup/installation"
+    title="Agent Design"
+    href="/docs/agent-design"
+    description="Plan the agent’s purpose, tone, workflows, and success criteria before you build."
   />
   <Card
-    subtitle="Setup"
-    title="Site Settings"
-    description="Configure your project layout, metadata, and SEO preferences."
-    href="/docs/basic-setup/setup"
+    title="Agent Configuration"
+    href="/docs/agent-configuration"
+    description="Connect tenants, agents, and widget keys. Manage identity, limits, and deployment settings."
   />
   <Card
-    subtitle="Support"
-    title="Rubix Studios"
-    description="Backed by Australia's leading branding, marketing, and development studio."
-    href="https://rubixstudios.com.au"
-    external={true}
+    title="Prompt Design"
+    href="/docs/prompt-design"
+    description="Author the system prompt: tool rules, dialog flow, guardrails, templates, and examples."
+  />
+  <Card
+    title="Tool Design"
+    href="/docs/tool-design"
+    description="Define HTTP tools that connect the agent to your APIs and data with reliable UI outcomes."
   />
 </CardGrid>
 
-## Why use Documents?
 
-This kit was built to simplify how teams manage and publish documentation. It works across projects of all sizes—from a single 
-readme to enterprise knowledge bases.
+## Core Business Features
 
-With MDX, reusable components, and Tailwind styling, it keeps your workflow efficient without compromising flexibility.
+| Business Capability | What it delivers | Business impact |
+|---------------------|------------------|-----------------|
+| **24×7 Customer Coverage** | Voice agents are always available to answer questions, take requests, and complete transactions without staffing constraints. | Improves customer satisfaction while reducing after-hours staffing costs and missed opportunities. |
+| **Higher Conversion and Sales Enablement** | Agents actively guide customers through product discovery, availability, and booking or purchase flows. | Increases conversion rates and average order value by assisting customers at the moment of intent. |
+| **Faster Customer Resolution** | Agents instantly retrieve accurate information about orders, inventory, reservations, and policies. | Reduces wait times, lowers support tickets, and improves first-contact resolution. |
+| **Consistent Brand Representation** | Agents follow defined tone, messaging, and behavior aligned to your brand voice and service standards. | Protects brand reputation and ensures uniform customer experiences across channels. |
+| **Scalable Customer Engagement** | One platform supports thousands of simultaneous conversations without service degradation. | Enables growth without proportional increases in headcount or infrastructure cost. |
+| **Employee Productivity Assistants** | Internal agents help staff find answers, search products, check availability, and complete routine tasks. | Frees employees to focus on higher-value work and reduces onboarding and training time. |
+| **Revenue-Generating Service Automation** | Agents can complete bookings, schedule appointments, process payments, and capture qualified leads. | Turns customer service into a profit center instead of a cost center. |
+| **Personalized, Context-Aware Interactions** | Agents tailor responses using customer context, history, and real-time business data. | Creates more relevant conversations that build trust and improve loyalty. |
+| **Rapid Time-to-Value** | New agents, workflows, and offers can be launched and updated quickly without major system changes. | Allows marketing and operations teams to respond faster to market opportunities. |
+| **Enterprise-grade Reliability and Cost Controls** | Built-in safeguards manage usage, prevent abuse, and keep spending within defined limits. | Protects margins and ensures predictable operating costs as usage scales. |
+| **Monitored** | All conversations are monitored, and escalated for 'human in the loop' intervention where required. | Excellent customer care and responsiveness. |
+| **Secure** | With our powerful tool sets, data and configurations are managed through your set of APIs | Your data. Protected. |
 
-Use it for:
 
-- **Product Guides** – Setup, usage, and troubleshooting
-- **Internal Docs** – Processes, policies, and team references
-- **Technical Manuals** – APIs, SDKs, architecture walkthroughs
 
-Customize the UI and structure to match your brand or workflow—no lock-in.
+## Core Technical Features 
 
-## Core Features
+| Feature | What it provides | Why it matters in production |
+|--------|------------------|------------------------------|
+| **Data-grounded conversations** | Agents retrieve real-time, structured JSON from your systems via tools (availability, inventory, orders, events, pricing). | Prevents hallucinations and ensures answers reflect current business reality. |
+| **HTTP Tool Descriptors (schema-driven)** | Declarative JSON schema for methods, parameters, auth headers, URL/body templates, and timeouts. | Standardizes every integration and avoids one-off runtime code per API. |
+| **Declarative UI rendering** | Tools can declare UI actions on success/error (catalogs, confirmations, payment forms, media galleries). | Turns API responses into consistent customer experiences automatically. |
+| **Built-in core tools** | Platform utilities like time checks, website scraping, opening links, clipboard copy, and component rendering. | Accelerates development without custom setup for common tasks. |
+| **Prompt-driven workflows** | System prompt defines tone, guardrails, tool triggers, dialog flow, and response templates. | Keeps behavior predictable and auditable across updates and versions. |
+| **Strong templating + typing rules** | Stable execution context (`args`, `response`, `status`, `secrets`) with filters for numbers, booleans, currency, and JSON objects. | Prevents integration bugs such as stringified numbers or broken UI props. |
+| **Multi-tenant configuration model** | Tenants, agents, widget keys, origins, limits, and API secrets are centrally managed. | Enables secure isolation and scalable onboarding of many customers. |
+| **Layered security & abuse protection** | Edge + server rate limits, bot verification, session quotas, duration and idle caps, daily spend limits. | Protects reliability and cost without disrupting real users. |
+| **Session observability & lifecycle control** | Realtime session records, heartbeats, stale detection, and mid-session termination. | Keeps dashboards accurate and prevents runaway sessions. |
+| **Fast test-and-iterate loop** | Start agents instantly, inspect tool calls, validate APIs, and refine prompts. | Shortens feedback cycles and de-risks production launches. |
 
-| Feature                              | Description                                                                 |
-| ------------------------------------ | --------------------------------------------------------------------------- |
-| **Write in Markdown/MDX**            | Combine Markdown with components and Mermaid.js for rich content.           |
-| **Flexible Navigation**              | Multi-level menus, page hierarchy, and auto-generated TOCs.                 |
-| **Code Support**                     | Syntax highlighting, code tabs, and one-click copy.                         |
-| **Search**                           | Fuzzy matching with highlight and instant results.                          |
-| **Responsive Design**                | Built-in light/dark mode with mobile support.                               |
-| **Math + Tables**                    | LaTeX rendering and clean table styling.                                    |
-| **SEO Defaults**                     | Preconfigured meta, Open Graph, and structured data.                        |
-| **AI Docs (Upcoming)**               | AI tools for smart search and content generation (coming soon).             |
+## How the platform fits together
 
-## Using This Kit
+- **Agent** — personality, guardrails, and workflow (prompt)  
+- **Tools** — what the agent can do (HTTP descriptors calling your APIs)  
+- **Data** — what the agent can know (structured JSON returned by your systems)  
+- **UI Components** — what the agent can show (forms, confirmations, galleries, results)  
+- **Tenant Configuration** — who can use it and where (tenantId, widget keys, origins, limits)
 
-Navigation is on the left. Pages flow from setup to advanced features, but you're free to jump around.
-
-Use the table of contents on the right to skip through sections.
-
-Start with the [Installation Guide](/docs/basic-setup/installation).
-
-## Community Support
-
-Got questions? Reach out via:
-
-- [GitHub](https://github.com/rubixvi/rubix-documents)
-- [Twitter](https://x.com/rubixstory)
-- [Facebook](https://www.facebook.com/rubixstudios)
+This model keeps your voice experience grounded, secure, and maintainable—while staying flexible enough for bookings, commerce, scheduling, and support across different businesses.
