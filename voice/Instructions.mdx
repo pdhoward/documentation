@@ -200,6 +200,36 @@ One user can abuse from many IPs (mobile, VPN, cloud).
 One IP (office, campus, café) can have many legit users.
 Combine both: block obvious floods at the IP layer (Edge), then apply precise user limits/quota (Server). This is the industry pattern (rate limit template + middleware).
 
+
+### voice consideration Notes
+I’m building an app that uses realtime voice interactions and the biggest bottleneck right now is the speed of response of OpenAI TTS
+
+I need it blazing fast
+
+- This is still a big engineering problem for all companies offering realtime or near realtime low latency STT and TTS, don't expect much difference from any provider.. but maybe with some buffering techniques you can lower the impact a bit?
+
+> eleven labs 
+
+> Depending on your setup, you can consider using a combination of nano models with lightweight STT/TTS libraries. PocketTTS is very small and extremely fast, Vogent’s turn keeping is also lightweight and responsive and if you’re not locked in to OpenAI, Gemini’s nano models have a very low TTFT.
+> https://x.ai/news/grok-voice-agent-api
+Today, we're excited to launch the Grok Voice Agent API, empowering developers to build voice agents that speak dozens of languages, call tools, and search realtime data.
+
+The Grok Voice Agent API is built on the same stack that powers Grok Voice for millions in our mobile apps and Tesla vehicles, and we’re thrilled to open up this proven technology to all via the xAI API.
+
+> @cartesia_ai
+ TTS is pretty good
+
+> Whisper, https://smallest.ai/
+Voice AI Suite
+for Enterprises
+Voice Agents and Models for Real Time Communications
+
+> STT-LLM-TTS pipe is faster then any native audio model.
+
+Use LiveKit, groq, deepgram, and cartesia.
+
+You can achieve sub 500ms latency.
+
 1) Bot + Rate protections (technical)
 Summary
 

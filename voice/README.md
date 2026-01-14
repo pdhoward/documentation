@@ -553,6 +553,10 @@ https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/nrf-
 
 also review announcements of OpenAI with Stripe
 
+### recent
+curate your tech stack and get notified whenever there’s a change in the changelog.
+https://www.recent.dev/
+
 
 
 
