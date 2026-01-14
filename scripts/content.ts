@@ -12,7 +12,7 @@ import { visit } from "unist-util-visit"
 
 import { Paths } from "@/lib/pageroutes"
 
-const docsDir = path.join(process.cwd(), "contents/docs")
+const docsDir = path.join(process.cwd(), "contents/voice")
 const outputDir = path.join(process.cwd(), "public", "search-data")
 
 interface MdxJsxFlowElement extends Node {

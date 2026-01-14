@@ -3,7 +3,7 @@ import { PageRoutes } from "@/lib/pageroutes"
 export const Navigations = [
   {
     title: "Docs",
-    href: `/docs${PageRoutes[0].href}`,
+    href: `/voice${PageRoutes[0].href}`,
   },
   {
     title: "Strategic Machines",

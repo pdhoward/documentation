@@ -3,20 +3,24 @@ import { Paths } from "@/lib/pageroutes"
 export const Documents: Paths[] = [
   {
     heading: "Introduction",
-    title: "Basic Setup",
-    href: "/basic-setup",
+    title: "Getting Started",
+    href: "/start",
     items: [
       {
-        title: "Installation",
-        href: "/installation",
+        title: "Agent Design",
+        href: "/agentdesign",
       },
       {
-        title: "Setup",
-        href: "/setup",
+        title: "Prompt Design",
+        href: "/promptdesign",
       },
       {
-        title: "Changelog",
-        href: "/changelog",
+        title: "Tool Design",
+        href: "/tooldesign",
+      },
+       {
+        title: "Agent Configuration",
+        href: "/agentconfig",
       },
     ],
   },
