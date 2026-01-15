@@ -1,5 +1,3 @@
-Below is a **clean, structured `.mdx` document** you can drop directly into a repo (e.g. for a strategy memo, investor deck source, or internal thesis doc).
-I’ve rewritten and normalized everything into **clear sections, assumptions, tables, and bullets**, optimized for **decision-making and narrative clarity** rather than raw research prose.
 
 ---
 
