@@ -1,7 +1,5 @@
 
----
 
-```mdx
 ---
 title: "Voice Agent Application Market Analysis (U.S. SAM)"
 description: "Bottom-up market sizing and product strategy for voice-first applications across five high-ROI verticals"
@@ -306,5 +304,5 @@ Voice infrastructure is commoditizing.
 
 ---
 
-```
+
 
