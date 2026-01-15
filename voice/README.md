@@ -557,6 +557,12 @@ also review announcements of OpenAI with Stripe
 curate your tech stack and get notified whenever there’s a change in the changelog.
 https://www.recent.dev/
 
+## claude code react best practices
+https://vercel.com/blog/introducing-react-best-practices
+https://github.com/vercel-labs/agent-skills
+https://agentskills.io/home
+
+
 
 
 
