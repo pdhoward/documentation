@@ -142,4 +142,44 @@ Limitations:
 ## Our Position
 
 We sit **above infrastructure** and **below platforms**:
+Infrastructure (commoditized)
+↓
+Application-Layer Voice Agent
+↓
+Real Business Workflows
+
+
+We own:
+- Phone-based workflows
+- Business logic and state
+- Escalation rules
+- Customer trust
+
+**Once embedded, we are difficult to replace.**
+
+---
+
+## Why Now
+
+- Voice finally works
+- Labor shortages are structural
+- Phones still matter
+- Buyers are actively seeking automation
+
+This window did not exist five years ago.
+
+---
+
+## Key Takeaway
+
+The winners in voice will not be the companies with the best models.
+
+They will be the companies that:
+- Quietly run the phones
+- Own the workflows
+- Deliver measurable outcomes
+
+**Voice is the UI.  
+Workflows are the moat.**
+
 
