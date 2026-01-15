@@ -161,7 +161,7 @@ We own:
 - Switching costs rise with usage
 - Value compounds over time
 
-| Dimension      | Infra | Platforms | Your Product |
+| Dimension      | Infra | Platforms | Strategic Machines - VOX |
 | -------------- | ----- | --------- | ------------ |
 | Voice-native   | ✅     | ⚠️        | ✅            |
 | Workflow depth | ❌     | ⚠️        | ✅            |
