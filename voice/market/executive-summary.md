@@ -156,6 +156,20 @@ We own:
 - Customer trust
 
 **Once embedded, we are difficult to replace.**
+- Embedded in daily operations
+- Trained on real workflows
+- Switching costs rise with usage
+- Value compounds over time
+
+| Dimension      | Infra | Platforms | Your Product |
+| -------------- | ----- | --------- | ------------ |
+| Voice-native   | ✅     | ⚠️        | ✅            |
+| Workflow depth | ❌     | ⚠️        | ✅            |
+| Vertical focus | ❌     | ❌         | ✅            |
+| Outcome-based  | ❌     | ❌         | ✅            |
+| Easy to buy    | ❌     | ⚠️        | ✅            |
+| Defensible     | ❌     | ⚠️        | ✅            |
+
 
 ---
 
@@ -178,6 +192,12 @@ They will be the companies that:
 - Quietly run the phones
 - Own the workflows
 - Deliver measurable outcomes
+
+We deliver:
+- Not “AI agents”
+- But operational infrastructure disguised as software
+
+- That’s where enduring value lives.
 
 **Voice is the UI.  
 Workflows are the moat.**
