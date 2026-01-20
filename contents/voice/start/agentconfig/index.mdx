@@ -1,80 +1,45 @@
 ---
-title: Setup
-description: Setting up and configuring your documentation project
+title: Agent Configuration
+description: Linking the components together and activating your Voice Agent
 keywords:
-  ["setup", "configuration", "layout", "Google", "SEO", "nextjs", "documents"]
+  ["widgets", "tenantId"]
 ---
+## Agent Configuration
 
-Setting up your new documentation project is straightforward. Most of the essential project settings can be configured within the `settings` folder.
+This section ties everything together: connect your agent to tenants, set limits, and deploy.
 
-## AGENT CONFIGURATION
+### Step 1: Set Up Tenant Configuration
+Tenants are your business entities. Use MongoDB to store:
+- Tenant ID (e.g., "your-business-id")
+- Widget keys for embedding on your site (must match origin URL for security).
 
-This section provides the core settings for your documentation site, such as defining the site's URL, site icon and title.
-
-```tsx showLineNumbers
-export const url = ""                 // The URL for your documentation site
-export const siteicon = ""            // Icon displayed next to the site name in the header
-export const sitename = ""            // Title of your documentation site
+Example tenant object snippet:
+```json
+{
+  "tenantId": "your-business-id",
+  "widgetKeys": [
+    {
+      "key": "your_widget_key",
+      "origin": "https://your-site.com"
+    }
+  ],
+  "limits": {
+    "maxConcurrentCalls": 15,
+    "maxMonthlyMinutes": 2000
+  }
+}
 ```
 
-## Google Tags
+### Step 2: Connect Agents and Tools
+Link your prompt and tools to the tenant. Specify agent repo if using GitHub for advanced setups (optional for starters).
 
-This section allows you to integrate Google Tag Manager into your documentation project. You can add your GTM code and configure whether it's connected.
+### Step 3: Manage Limits and Security
+Set basics like max sessions or daily tokens to prevent abuse. (e.g., 10 concurrent sessions). Full rate limit details later—focus on defaults for now.
 
-```tsx showLineNumbers
-export const gtm = ""                 // Add your Google Tag Manager code here
-export const gtmconnected = true      // Set to true if GTM is connected, otherwise set to false
+### Step 4: Deploy and Test
+- Embed the widget on your site with the key.
+- Start the agent and test voice interactions.
+- Monitor sessions for issues.
+
+**Tip**: For security, use secrets in tools for API auth. Try a demo at strategicmachines.ai to see configured agents in action.
 ```
-
-## Search Engine
-
-Configure essential SEO settings to ensure your documentation site is optimized for search engines. This includes meta descriptions, keywords and social media sharing details like images and alt text.
-
-```tsx showLineNumbers
-export const description = ""         // Description of your documentation site for SEO
-export const keywords = ["", ""]      // List of SEO keywords for your documentation site
-export const urlimage = ""            // The URL of the image used when sharing on social media)
-export const imagealt = ""            // Alt text for shared images, helpful for screen readers
-export const twitterhandle = ""       // Your company’s Twitter handle for social sharing
-```
-
-## Footer Branding
-
-The footer settings allow you to customize the company information displayed at the bottom of the site. You can add the company name and the URL that the name will link to.
-
-```tsx showLineNumbers
-export const companyname = ""         // The company name displayed in the copyright section
-export const companylink = ""         // The URL your company name should link to
-```
-
-## General Layout
-
-The layout settings control the appearance and functionality of various elements of the documentation site, such as branding, the right sidebar, feedback options, table of contents, and scroll-to-top functionality.
-
-```tsx showLineNumbers
-export const branding = true          // Set to true to display our branding elements
-export const rightsidebar = true      // Set to true to enable the right sidebar with feedback, table of contents and scroll-to-top
-export const feedbackedit = true      // Control to enable/disable feedback on GitHub
-export const tableofcontent = true    // Control to enable/disable the generated table of contents
-export const totopscroll = true       // Control to enable/disable scroll-to-top button
-```
-
-## Github Control
-
-If your MDX files are hosted on GitHub, you can configure the project to load documents directly from there. This option can be useful for syncing documentation updates directly with your repository.
-
-```tsx showLineNumbers
-export const loadfromgithub = false   // Set to true to load your MDX documents directly from GitHub
-```
-
-## Project Structure
-
-<CardGrid>
-  <Card
-    title="Navigation"
-    href="/voice/navigation"
-    icon="alignJustify"
-    variant="small"
-    description="Creating your navigation"
-  />
-</CardGrid>

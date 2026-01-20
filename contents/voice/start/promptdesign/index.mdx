@@ -1,24 +1,56 @@
 ---
-title: Changelog
-description: Changelogs and improvements to the Documents projects.
-keywords: ["changelog", "guide", "nextjs", "documents"]
+title: Prompt Design
+description: Building the Best Set of Instructions for your Voice Agent
+keywords: ["instructions", "guide", "documents"]
 ---
+## Prompt Design
 
-## Added
-**Linting and Formatting**:
-  - Added `pnpm run lint` and `pnpm run lint:fix` scripts to automate linting tasks.
-  - Added `pnpm run format` and `pnpm run format:check` scripts to ensure consistent code formatting.
+The prompt is the "brain" of your agent—it tells it how to behave, what to say, and when to use tools. Keep prompts clear and structured for your first agent.
 
-**SEO Enhancements**:
-  - Added an SEO component to MDX pages to dynamically include `keywords` and `lastModified` metadata for improved SEO generation.
+### Step 1: Understand the Prompt Structure
+Prompts are JSON objects with sections for personality, rules, and examples. Use the JSON Editor tool to create and edit them.
 
-## Updated
-**Next.js Upgrade**:
-  - Upgraded the project from **Next.js 14** to **Next.js 15**, leveraging the latest features and performance improvements.
+Basic template:
+```json
+{
+  "agent": {
+    "name": "Your Agent Name",
+    "tone": "friendly and helpful",
+    "style_rules": ["Always confirm user details before proceeding."]
+  },
+  "capabilities": {
+    "tools": {
+      // References to tools (detailed in Tool Design)
+    }
+  },
+  "dialog_flow": {
+    "high_level": ["Greet user", "Understand intent", "Use tools if needed", "Confirm and close."]
+  },
+  "examples": [
+    // Sample conversations
+  ]
+}
+```
 
-**Codebase Improvements**:
-  - Reordered imports across the project files for better consistency and readability.
+### Step 2: Write the System Prompt
+Define the agent's core instructions:
+- Tone and rules: "Be warm and concise. Never guess—use tools for data."
+- Tool triggers: "If the user asks about products, use the 'search_products' tool."
+- Guardrails: "Escalate to human if the query is complex."
 
-**Mermaid Component**:
-  - Fixed an ID bug that caused rendering issues when multiple Mermaid diagrams were included in MDX pages.
-  - Improved initialization and rendering logic to prevent duplicate diagram rendering.
+### Step 3: Add Examples
+Include 2-3 sample interactions to guide behavior.
+- User: "What's available?" Agent: "Let me check... [Uses tool] Here are the options."
+
+### Step 4: Reference Core Tools
+Core tools like `getCurrentTime` or `show_component` are built-in. Mention them in the prompt if relevant (e.g., "Use `show_component` to display images.").
+
+| Core Tool Example | Description | When to Use |
+|-------------------|-------------|-------------|
+| getCurrentTime    | Gets the current time. | For time-sensitive queries like "What time is check-in?" |
+| show_component    | Renders UI like images or forms. | To show product catalogs visually. |
+
+### Step 5: Test the Prompt
+Save via MongoDB Updater and start the agent. Speak simple queries and refine based on responses.
+
+**Tip**: Start simple—add complexity later. Try a demo agent first to see effective prompts.

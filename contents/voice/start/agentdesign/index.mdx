@@ -1,73 +1,43 @@
 ---
-title: Setup
-description: Setting up and configuring your documentation project
+title: Agent Design
+description: Thinking about and Designing Your Voice Agents
 keywords:
-  ["setup", "configuration", "layout", "Google", "SEO", "nextjs", "documents"]
+  ["setup", "design", "layout", "documents"]
 ---
+## Agent Design
 
-Setting up your new documentation project is straightforward. Most of the essential project settings can be configured within the `settings` folder.
+The Agent Design phase is where you plan the overall structure and purpose of your voice agent. Think of this as the blueprint for your agent's role in your business. Keep it simple: focus on what the agent should achieve, how it should sound, and the key workflows it will handle.
 
-## Settings
+### Step 1: Define the Agent's Purpose
+Start by answering these basic questions:
+- What problem does the agent solve? (e.g., "Handle restaurant reservations" or "Assist with product searches and sales.")
+- Who is the target user? (e.g., Customers browsing your website or internal staff.)
+- What are the success criteria? (e.g., "Complete a booking in under 5 minutes" or "Increase sales conversions by 20%.")
 
-This section provides the core settings for your documentation site, such as defining the site's URL, site icon and title.
+**Tip**: Keep the purpose narrow for your first agent. For example, if you're in hospitality, focus on reservations before adding support queries.
 
-```tsx showLineNumbers
-export const url = ""                 // The URL for your documentation site
-export const siteicon = ""            // Icon displayed next to the site name in the header
-export const sitename = ""            // Title of your documentation site
-```
+### Step 2: Set the Tone and Personality
+Your agent should reflect your brand. Choose a tone like "friendly and helpful" or "professional and efficient." This will guide the prompt design later.
 
-## Google Tags
+- Example for a sales agent: "Enthusiastic, concise, and always ready to recommend products."
+- Example for customer support: "Empathetic, patient, and solution-oriented."
 
-This section allows you to integrate Google Tag Manager into your documentation project. You can add your GTM code and configure whether it's connected.
+### Step 3: Outline Workflows
+Map out the main conversation flows as simple steps. Use bullet points or a flowchart.
+- Greeting and intent detection (e.g., "Hi, how can I help today?")
+- Key actions (e.g., Search products, check availability, confirm details.)
+- Endings (e.g., "Booking confirmed! Anything else?")
 
-```tsx showLineNumbers
-export const gtm = ""                 // Add your Google Tag Manager code here
-export const gtmconnected = true      // Set to true if GTM is connected, otherwise set to false
-```
+**Tip**: Consider edge cases, like what happens if data is unavailable or the user changes their mind.
 
-## Search Engine
+### Step 4: Plan for Data and Tools
+Identify what data the agent needs (e.g., inventory from your API) and what actions it can take (e.g., book a reservation). This sets up the Tool Design section.
 
-Configure essential SEO settings to ensure your documentation site is optimized for search engines. This includes meta descriptions, keywords and social media sharing details like images and alt text.
+### Step 5: Consider Limits and Monitoring
+Note basic safeguards like rate limits to prevent abuse (e.g., max sessions per day). Detailed technical setup comes later, but plan for monitoring conversations to ensure quality.
 
-```tsx showLineNumbers
-export const description = ""         // Description of your documentation site for SEO
-export const keywords = ["", ""]      // List of SEO keywords for your documentation site
-export const urlimage = ""            // The URL of the image used when sharing on social media)
-export const imagealt = ""            // Alt text for shared images, helpful for screen readers
-export const twitterhandle = ""       // Your company’s Twitter handle for social sharing
-```
+Once planned, you're ready to build. Test a demo at strategicmachines.ai to see these concepts in action.
 
-## Footer Branding
-
-The footer settings allow you to customize the company information displayed at the bottom of the site. You can add the company name and the URL that the name will link to.
-
-```tsx showLineNumbers
-export const companyname = ""         // The company name displayed in the copyright section
-export const companylink = ""         // The URL your company name should link to
-```
-
-## General Layout
-
-The layout settings control the appearance and functionality of various elements of the documentation site, such as branding, the right sidebar, feedback options, table of contents, and scroll-to-top functionality.
-
-```tsx showLineNumbers
-export const branding = true          // Set to true to display our branding elements
-export const rightsidebar = true      // Set to true to enable the right sidebar with feedback, table of contents and scroll-to-top
-export const feedbackedit = true      // Control to enable/disable feedback on GitHub
-export const tableofcontent = true    // Control to enable/disable the generated table of contents
-export const totopscroll = true       // Control to enable/disable scroll-to-top button
-```
-
-## Github Control
-
-If your MDX files are hosted on GitHub, you can configure the project to load documents directly from there. This option can be useful for syncing documentation updates directly with your repository.
-
-```tsx showLineNumbers
-export const loadfromgithub = false   // Set to true to load your MDX documents directly from GitHub
-```
-
-## Project Structure
 
 <CardGrid>
   <Card
