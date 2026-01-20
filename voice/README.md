@@ -562,6 +562,15 @@ https://vercel.com/blog/introducing-react-best-practices
 https://github.com/vercel-labs/agent-skills
 https://agentskills.io/home
 
+### vibevoice
+https://github.com/microsoft/VibeVoice
+
+### json render
+https://json-render.dev/
+
+### blackbox agents
+https://agent.blackbox.ai/api
+
 
 
 
