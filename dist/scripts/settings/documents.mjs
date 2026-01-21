@@ -26,31 +26,15 @@ export const Documents = [
         spacer: true,
     },
     {
-        title: "Navigation",
-        href: "/navigation",
-        heading: "Documents",
-    },
-    {
-        title: "Structure",
-        href: "/structure",
+        title: "Overview",
+        href: "/usage",
+        heading: "Usage",
         items: [
             {
-                title: "Deep",
-                href: "/deep",
-                items: [
-                    {
-                        title: "Deeper",
-                        href: "/deeper",
-                        items: [
-                            {
-                                title: "Even deeper",
-                                href: "/even-deeper",
-                            },
-                        ],
-                    },
-                ],
+                title: "Technical Example",
+                href: "/example",
             },
-        ],
+        ]
     },
     {
         spacer: true,

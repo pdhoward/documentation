@@ -1,0 +1,79 @@
+---
+title: Otto - Tooling
+description: An example of a tool by Otto, a product sales voice agent for DIY Warehouse.
+---
+
+Tools provide a set of superpowers to the Voice Agent. The core tools available through the platform are common sets of functions that can be used for actions like scraping websites, fetching the date and time, or copying text to a clipboard. Other common functions will be added with future releases, so watch this space.
+
+The custom tools that you define provide the unique capabilities that differentiate your Voice Agent from any other. These tools, when executed, are structured to execute an API that is available through a 3rd party (such as fetch the weather report for a city), or available through your backend systems (retrieve information about a product). The power of these tools cannot be overstated. Throught these tools that you make available to Agents your systems for booking rooms, shipping products, billing customers, taking orders, returning goods, scheduling services and so on. Rather than order a product through your website, or through your call center, the Agent is able to engage, search, confirm, and compose an order, and equipped to collect the complete set of infomration needed for a valid transaction based on the tool definition. Your APIs are secure, and the transaction are protected through your secret keys that are only accessible through your Profile (more on that in the configuration example).
+
+So lets take a look at Otto's tool example. You'll note that in the prompt, covered in the earlier section, that an explicit reference is made to all the tools (core and custom) that are accessible to the Agent. If a tool is not listed in the prompt, the Agent should be instructed not to use it. This is a best practice in context engineering, and an important guideline to ensuring that your Agent sticks to the scope of the work that it is designed to conduct.
+
+Otto relies on custom HTTP tools for DIY Warehouse APIs, plus core tools. Define them as JSON descriptors.
+
+#### Step 1: Core Tools
+
+Reference these in the prompt — no extra setup:
+
+getCurrentTime: For time-sensitive checks.
+scrapeWebsite: Pull extra details from product pages.
+
+#### Step 2: Custom Tools
+
+Use JSON Editor for descriptors like this for products_search:
+
+```json
+{
+  "kind": "http_tool",
+  "name": "products_search",
+  "description": "Search DIY Warehouse products by query, filters.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "tenantId": { "type": "string" },
+      "query": { "type": "string" },
+      "brand": { "type": "string" },
+      "category": { "type": "string" },
+      "minPrice": { "type": "number" },
+      "maxPrice": { "type": "number" },
+      "specs": { "type": "object" }
+    },
+    "required": ["tenantId"]
+  },
+  "http": {
+    "method": "GET",
+    "urlTemplate": "https://product-engine.vercel.app/api/products?q={{args.query}}&brand={{args.brand}}&category={{args.category}}&minPrice={{args.minPrice}}&maxPrice={{args.maxPrice}}",
+    "headers": { "authorization": "Bearer {{secrets.api_key}}" },
+    "timeoutMs": 8000
+  },
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "catalog_results",
+        "title": "Product Matches",
+        "props": { "items": "{{response.products}}" }
+      }
+    }
+  },
+  "enabled": true
+}
+```
+
+#### Step 3: Data Structure
+
+APIs return JSON like: 
+
+```json 
+{ "ok": true, "products": [{ "name": "Hammer", "price": 22, "specs": { "weight": "16oz" } }] }.
+```
+
+#### Step 4: Save and Test
+
+Upload to MongoDB under tenantId: "productco". 
+
+Test tool calls in the agent.
+
+These tools ground Otto in real data, enabling expert recommendations.
+
+
+

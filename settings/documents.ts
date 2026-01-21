@@ -33,9 +33,23 @@ export const Documents: Paths[] = [
     heading: "Usage",
     items: [
       {
-        title: "Technical Example",
-        href: "/example",
-      },
+        title: "Building Otto",
+        href: "/example",      
+        items: [
+        {
+          title: "Prompt",
+          href: "/prompt",
+        },
+        {
+          title: "Tools",
+          href: "/tools",
+        },
+         {
+          title: "Configuration",
+          href: "/config",
+        },
+      ]
+    },
     ]
   }, 
   {

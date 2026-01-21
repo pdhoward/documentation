@@ -1,0 +1,126 @@
+---
+title: Otto - Config Example
+description: The configuration used by Otto, a product sales voice agent for DIY Warehouse.
+---
+
+
+### Agent Configuration
+
+Whew! We're almost done. IN some ways, maybe we should have started here because you'll see int this one configuration how the piece parts are drawn together to bring your agent to life.
+
+Tie Otto together with tenant settings, keys, and deployment.
+
+#### Step 1: Tenant Configuration
+
+Store in MongoDB (collection: tenants). 
+
+Example object:
+
+```json 
+{
+  "tenantId": "productco",
+  "name": "DIY Warehouse",
+  "status": "active",
+  "identity": {
+    "legalName": "DIY Warehouse, Inc",
+    "displayName": "DIY Warehouse",
+    "domain": "https://product-engine.vercel.app/",
+    "industry": "home goods",
+    "timeZone": "America/New York",
+    "locale": "en-US"
+  },
+  "contacts": { /* ... */ },
+  "billing": { /* ... */ },
+  "agentSettings": [
+    {
+      "agentId": "productsales",
+      "label": "Product Sales",
+      "agentRepo": {
+        "provider": "github",
+        "baseRawUrl": "https://raw.githubusercontent.com/pdhoward/documentation/main/voice/AGENT_DIYWAREHOUSE_PRODUCTSALES.md"
+      }
+    }
+  ],
+  "limits": {
+    "maxAgents": 20,
+    "maxConcurrentCalls": 50,
+    "maxMonthlyMinutes": 10000,
+    "maxRequestsPerMinute": 120
+  },
+  "flags": { /* ... */ },
+  "widgetKeys": [
+    {
+      "id": "product_site",
+      "key": "yoursupersecretagentkey",
+      "origin": "https://product-engine.vercel.app/",
+      "label": "Main marketing site",
+      "revoked": false
+    }
+  ],
+  "apiKeys": [
+    {
+      "id": "productco",
+      "key": "yoursupersecretkey",
+      "origin": "https://product-engine.vercel.app/",
+      "label": "DIY Warehouse Web Site - Test Site",
+      "revoked": false
+    }
+  ]
+}
+```
+
+This isolates Otto to DIY Warehouse, with API keys for secure tool calls.
+
+#### Step 2: Connect Agents and Tools
+
+Link the prompt repo and tools in agentSettings. 
+
+Multiple agents allow versioning (e.g., "productsales-v2").
+
+#### Step 3: Manage Limits and Security
+
+Use limits to cap abuse (e.g., 50 concurrent calls). 
+
+Widget keys authorize embedding; 
+
+API keys secure HTTP calls.
+
+#### Step 4: Deploy via WidgetEmbed on the site with this script (for Next.js or HTML):
+
+```json
+"use client";
+
+import Script from 'next/script';
+
+const widgetBaseUrl = process.env.NODE_ENV === 'production' ? 'https://voice.strategicmachines.ai' : 'https://chaotic.ngrok.io';
+
+export default function Home() {
+  return (
+    <>
+      <Script
+        src={`${widgetBaseUrl}/voice-widget.js`}
+        strategy="afterInteractive"
+        data-tenant-widget-key="w_diy_main_7f1b0e9c64f54d1a"
+        data-agent-id="productsales"
+      />
+
+      {/* HTML version */}
+      <script
+        src="https://yourdomain.com/voice-widget.js"
+        data-tenant-widget-key="w_diy_main_7f1b0e9c64f54d1a"
+        data-agent-id="productsales"
+      ></script>
+    </>
+  );
+}
+```
+This activates Otto on the site. 
+
+Test by visiting and saying, "Find a drill."
+
+With this setup, Otto becomes a engaging expert, ready to help customers shop smarter. 
+
+Try Otto at strategicmachines.ai and build your own!
+
+
+
