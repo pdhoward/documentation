@@ -29,15 +29,32 @@ export const Documents: Paths[] = [
   },
   {
     title: "Overview",
-    href: "/usage",
+    href: "/overview",
     heading: "Usage",
-    items: [
+  },
+  {
+    title: "Technical Example",
+    href: "/techex",   
+     items: [
       {
-        title: "Technical Example",
-        href: "/example",
+        title: "Deep",
+        href: "/deep",
+        items: [
+          {
+            title: "Deeper",
+            href: "/deeper",
+            items: [
+              {
+                title: "Even deeper",
+                href: "/even-deeper",
+              },
+            ],
+          },
+        ],
       },
-    ]
-  }, 
+    ],
+  
+  },
   {
     spacer: true,
   },

@@ -1,0 +1,52 @@
+---
+title: Otto - A Comprehensive Example
+description: A detailed example of building Otto, a product sales voice agent for DIY Warehouse.
+---
+
+<CardGrid>
+  <Card
+    title="Let's Build Otto"
+    image="https://res.cloudinary.com/stratmachine/image/upload/v1747068042/machine/ChatGPT_Image_May_12_2025_11_38_37_AM_fnde7y.png"
+    icon="alignJustify"
+    variant="image"
+    description="Otto the Voice Agent"
+  /> 
+</CardGrid>
+
+
+## Comprehensive Example: Building Otto, the Product Sales Voice Agent
+
+In this section, we'll walk through a complete example of designing, prompting, tooling, and configuring a voice agent named Otto for DIY Warehouse, a popular online retailer and warehouse specializing in tools and specialty items for workshops and commercial maintenance. Their inventory includes hammers, ladders, fasteners, drills, power tools, and more from top brands.
+
+Otto is an expert in maintenance and building, acting as a knowledgeable guide for customers. He helps with product searches, selections, recommendations for upgrades or better-suited alternatives, and engages users in natural conversations to boost shopping experiences. By deploying Otto on the website, DIY Warehouse aims to make browsing more interactive, turning casual visitors into confident buyers.
+
+This example builds on the foundational concepts from the previous sections. We'll follow the same structure: Agent Design, Prompt Design, Tool Design, and Agent Configuration. Once built, Otto ensures data-grounded responses (no hallucinations), uses tools for real-time inventory checks, and renders UI components for visual appeal.
+
+Before building your own, try Otto in action at [strategicmachines.ai](https://strategicmachines.ai) to experience how he searches products, suggests alternatives, and guides purchases. It's a great way to see the power of voice agents firsthand!
+
+### Agent Design
+
+For Otto, the agent design focuses on enhancing the e-commerce experience for DIY Warehouse customers. Start with a clear plan to ensure Otto aligns with business goals.
+
+#### Step 1: Define the Agent's Purpose
+- **Problem Solved**: Customers can search the website effectively, but voice interaction adds personalization. Otto assists with product discovery, comparisons, alternative suggestions (e.g., "This drill is better for heavy-duty use"), and guides toward purchases.
+- **Target Users**: Workshop enthusiasts, commercial maintenance pros, and casual DIYers—mixed knowledge levels.
+- **Success Criteria**: Increase engagement (e.g., longer sessions), higher conversion rates (e.g., more referrals to checkout), and positive feedback on helpfulness. Measure via monitored conversations and escalated human interventions.
+
+#### Step 2: Set the Tone and Personality
+Otto's tone is "friendly, knowledgeable, helpful"—like a trusted workshop advisor. He's practical, trustworthy, and enthusiastic about tools, saying things like, "That's a solid choice for heavy-duty work, but let me suggest an upgrade with better battery life."
+
+#### Step 3: Outline Workflows
+Use simple flows:
+- **Greeting**: Start with a welcoming message to engage.
+- **Intent Detection**: Parse queries for searches, comparisons, or alternatives.
+- **Core Actions**: Search products, check stats, suggest alternatives based on specs.
+- **Visuals and Next Steps**: Show catalogs via UI, offer refinements, or direct to checkout.
+- **Edge Cases**: Handle out-of-stock items by suggesting alternatives; escalate complex queries.
+
+#### Step 4: Plan for Data and Tools
+- **Data Needs**: Real-time inventory, prices, specs from DIY Warehouse APIs.
+- **Tools**: Custom for product search/stats; core for time, scraping, UI rendering.
+- **Limits**: Set concurrent sessions to 50, daily tokens to prevent abuse—monitor for scalability.
+
+This design keeps Otto focused, ensuring he's an asset for shopping without overwhelming users.

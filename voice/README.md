@@ -558,9 +558,16 @@ curate your tech stack and get notified whenever there’s a change in the chang
 https://www.recent.dev/
 
 ## claude code react best practices
+https://code.claude.com/docs/en/vs-code
 https://vercel.com/blog/introducing-react-best-practices
 https://github.com/vercel-labs/agent-skills
 https://agentskills.io/home
+
+- download
+https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code
+
+- remotion with skills
+https://gist.github.com/quuu/1340763972de84d704344970c82b7254
 
 ### vibevoice
 https://github.com/microsoft/VibeVoice
@@ -570,6 +577,15 @@ https://json-render.dev/
 
 ### blackbox agents
 https://agent.blackbox.ai/api
+
+### animejs
+https://github.com/juliangarnier/anime
+https://animejs.com/documentation/layout/
+https://codepen.io/collection/yykPaw
+https://codepen.io/juliangarnier/pen/dPXWQyv
+
+
+
 
 
 
