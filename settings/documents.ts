@@ -63,7 +63,7 @@ export const Documents: Paths[] = [
       {
         title: "Cards",
         href: "/cards",
-      },
+      },     
       {
         title: "Diagrams",
         href: "/diagrams",
