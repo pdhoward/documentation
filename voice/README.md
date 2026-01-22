@@ -562,6 +562,8 @@ https://code.claude.com/docs/en/vs-code
 https://vercel.com/blog/introducing-react-best-practices
 https://github.com/vercel-labs/agent-skills
 https://agentskills.io/home
+https://www.aitmpl.com/skills
+https://skills.sh/
 
 - download
 https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code
@@ -583,6 +585,11 @@ https://github.com/juliangarnier/anime
 https://animejs.com/documentation/layout/
 https://codepen.io/collection/yykPaw
 https://codepen.io/juliangarnier/pen/dPXWQyv
+
+### agent elements
+https://ai-sdk.dev/docs/introduction
+https://ai-sdk.dev/elements/components/agent
+
 
 
 

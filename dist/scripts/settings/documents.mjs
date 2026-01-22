@@ -31,8 +31,22 @@ export const Documents = [
         heading: "Usage",
         items: [
             {
-                title: "Technical Example",
+                title: "Building Otto",
                 href: "/example",
+                items: [
+                    {
+                        title: "Prompt",
+                        href: "/prompt",
+                    },
+                    {
+                        title: "Tools",
+                        href: "/tools",
+                    },
+                    {
+                        title: "Configuration",
+                        href: "/config",
+                    },
+                ]
             },
         ]
     },
