@@ -1,0 +1,242 @@
+---
+title: Agent Builder Wizard
+description: Design your first voice agent with guided prompts for purpose, personality, workflows, and success metrics.
+keywords: ["tutorial", "agent design", "wizard", "interactive"]
+---
+
+## Agent Builder Wizard
+
+This interactive tutorial guides you through designing a complete voice agent from concept to specification. By the end, you'll have a comprehensive agent design document ready for implementation.
+
+**Time to complete:** 20-30 minutes
+
+## How It Works
+
+The wizard walks you through the Five Pillars of Agent Design with guided questions, industry templates, and real-time validation. Your answers are compiled into a downloadable design document.
+
+### The Five Pillars
+
+1. **Purpose & Scope** — Define what problem your agent solves
+2. **Personality & Voice** — Establish tone, style, and brand alignment
+3. **Conversation Workflows** — Map primary conversation paths
+4. **Data & Tools** — Identify required APIs and capabilities
+5. **Success Metrics** — Define how you'll measure performance
+
+## Tutorial Interface
+
+<Note type="info">
+**Interactive Tutorial Coming Soon**
+
+This tutorial is currently in development. The wizard will include:
+- Step-by-step guided questions
+- Industry-specific templates (hospitality, e-commerce, support)
+- Real-time validation and suggestions
+- Side-by-side examples from Otto and Cypress
+- Downloadable design document (JSON + Markdown)
+- Option to start implementation directly
+
+For now, use the [Agent Design Guide](/voice/agent-design) to manually complete your agent design.
+</Note>
+
+## Preview: Tutorial Flow
+
+### Step 1: Choose Your Industry
+
+Select an industry template to pre-populate common patterns:
+
+- **Hospitality** — Hotel bookings, restaurant reservations, concierge services
+- **E-Commerce** — Product sales, recommendations, shopping assistance
+- **Customer Support** — Ticket resolution, FAQ automation, troubleshooting
+- **Healthcare** — Appointment scheduling, patient intake, insurance verification
+- **Real Estate** — Property inquiries, showing scheduling, lead qualification
+- **Custom** — Start from scratch for unique use cases
+
+### Step 2: Define Purpose
+
+Answer guided questions:
+- What specific problem does this agent solve?
+- Who will interact with it? (customers, employees, partners)
+- What does a successful interaction look like?
+- What should the agent NOT do?
+
+**Example Output:**
+```json
+{
+  "purpose": "Enable hotel guests to search available rooms and complete bookings without phone calls or forms",
+  "target_users": ["website visitors", "returning guests", "travel planners"],
+  "success_criteria": ["booking completed", "availability confirmed", "guest information collected"],
+  "out_of_scope": ["cancellations", "complaint handling", "loyalty program management"]
+}
+```
+
+### Step 3: Establish Personality
+
+Define tone, style, and brand voice:
+- Formal or casual?
+- Energetic or calm?
+- Concise or detailed?
+- Empathetic or neutral?
+
+**Example Output:**
+```json
+{
+  "tone": "warm, attentive, professional",
+  "style": "like a luxury hotel concierge — anticipate needs, confirm details",
+  "boundaries": "doesn't handle cancellations or complaints (escalates to human)",
+  "sample_phrases": [
+    "I'd be delighted to help you find the perfect room",
+    "Let me check availability for you"
+  ]
+}
+```
+
+### Step 4: Map Workflows
+
+Build conversation flows with visual flowchart builder:
+1. Greeting & Intent Detection
+2. Information Gathering
+3. Tool Execution (search, book, confirm)
+4. Confirmation & Next Steps
+5. Edge Cases & Escalation
+
+**Example Output:**
+```json
+{
+  "primary_flow": [
+    "Greet warmly and detect booking intent",
+    "Gather check-in/out dates and guest count",
+    "Call search_units tool",
+    "Display available rooms with photos",
+    "Confirm selection and create reservation",
+    "Show booking confirmation"
+  ],
+  "edge_cases": {
+    "no_availability": "Suggest alternative dates or room types",
+    "user_changes_mind": "Gracefully restart search",
+    "complaint": "Empathize and escalate to human support"
+  }
+}
+```
+
+### Step 5: Plan Tools & Data
+
+Identify required integrations:
+- What real-time data does the agent need? (inventory, pricing, availability)
+- What actions must it perform? (create booking, send email, update CRM)
+- What APIs provide this data?
+- What authentication is required?
+
+**Example Output:**
+```json
+{
+  "data_requirements": [
+    "Real-time room availability by dates",
+    "Room details (photos, amenities, pricing)",
+    "Guest reservation management"
+  ],
+  "tools": [
+    {
+      "name": "search_units",
+      "purpose": "Query available rooms by check-in/out dates",
+      "api": "https://your-hotel.com/api/units/search",
+      "auth": "Bearer token"
+    },
+    {
+      "name": "create_reservation",
+      "purpose": "Book a room for the guest",
+      "api": "https://your-hotel.com/api/reservations",
+      "auth": "Bearer token"
+    }
+  ]
+}
+```
+
+### Step 6: Define Success Metrics
+
+Set measurable goals and operational limits:
+- Conversation completion rate target
+- Average session duration
+- Escalation rate threshold
+- Concurrent session limits
+- Budget constraints
+
+**Example Output:**
+```json
+{
+  "metrics": {
+    "completion_rate": "60%+",
+    "avg_session_duration": "less than 5 minutes",
+    "escalation_rate": "less than 10%",
+    "customer_satisfaction": "4.5/5 or higher"
+  },
+  "limits": {
+    "max_concurrent_sessions": 20,
+    "max_session_duration": "15 minutes",
+    "daily_token_cap": 300000
+  }
+}
+```
+
+## Export Options
+
+When you complete the wizard, you can export:
+
+1. **Design Document (Markdown)** — Human-readable specification for stakeholders
+2. **Configuration JSON** — Machine-readable format for direct import
+3. **Implementation Checklist** — Step-by-step tasks for developers
+4. **Agent Prompt Starter** — Pre-filled system prompt template based on your design
+
+## Using Your Design Document
+
+After completing the wizard, proceed to implementation:
+
+<CardGrid>
+  <Card
+    title="Prompt Design"
+    href="/voice/prompt-design"
+    description="Translate your agent design into a system prompt"
+  />
+  <Card
+    title="Tool Design"
+    href="/voice/tool-design"
+    description="Build HTTP descriptors for the tools you identified"
+  />
+  <Card
+    title="Quick Start Templates"
+    href="/voice/quickstart"
+    description="Or use a pre-built template matching your industry"
+  />
+</CardGrid>
+
+## Tips for Success
+
+<CardGrid>
+  <Card
+    title="Start Narrow"
+    description="Your first agent should do one thing excellently. You can expand scope after validation."
+  />
+  <Card
+    title="Use Templates"
+    description="Industry templates provide proven patterns. Customize from there rather than starting blank."
+  />
+  <Card
+    title="Think Real Scenarios"
+    description="Map workflows based on actual customer interactions, not hypothetical ideal cases."
+  />
+  <Card
+    title="Plan for Failure"
+    description="Define edge cases and escalation paths before implementation."
+  />
+</CardGrid>
+
+## Need Help?
+
+If you get stuck during the wizard:
+- Click the "?" icon next to any question for examples and guidance
+- Use "Load Example" to see how Otto or Cypress answered each section
+- Save your progress and return later
+- Reach out to support@strategicmachines.ai for design consultation
+
+**Ready to design your agent?** [Start the Agent Builder Wizard](#) (Coming Soon)
+
+For now, manually work through the [Agent Design Guide](/voice/agent-design).

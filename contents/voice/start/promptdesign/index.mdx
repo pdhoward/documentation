@@ -1,56 +1,295 @@
 ---
 title: Prompt Design
-description: Building the Best Set of Instructions for your Voice Agent
-keywords: ["instructions", "guide", "documents"]
+description: Craft the system prompt that governs your agent's behavior, tool usage, and conversation flow.
+keywords: ["prompt", "system prompt", "instructions", "agent behavior"]
 ---
-## Prompt Design
 
-The prompt is the "brain" of your agent—it tells it how to behave, what to say, and when to use tools. Keep prompts clear and structured for your first agent.
+## Prompt Design: The Agent's Operating System
 
-### Step 1: Understand the Prompt Structure
-Prompts are JSON objects with sections for personality, rules, and examples. Use the JSON Editor tool to create and edit them.
+The system prompt is your agent's brain — it defines personality, decision-making rules, tool usage patterns, and conversation flow. A well-crafted prompt makes the difference between an agent that delights customers and one that confuses them.
 
-Basic template:
+Unlike user-facing chatbots where prompts guide individual responses, VOX system prompts establish **persistent behavioral patterns** across entire conversations. Every tool call, every response, every decision flows from this single source of truth.
+
+## The Anatomy of a VOX Prompt
+
+VOX prompts are structured JSON objects with distinct sections, each serving a specific purpose.
+
+### Core Prompt Structure
+
 ```json
 {
   "agent": {
-    "name": "Your Agent Name",
-    "tone": "friendly and helpful",
-    "style_rules": ["Always confirm user details before proceeding."]
+    "name": "Agent Name",
+    "tenantId": "your-tenant-id",
+    "tone": "warm, professional, concise",
+    "style_rules": [
+      "Always confirm details before taking action",
+      "Use tools for data — never guess or hallucinate",
+      "Keep responses under 3 sentences unless explaining complex topics"
+    ]
   },
   "capabilities": {
     "tools": {
-      // References to tools (detailed in Tool Design)
+      "tool_name": {
+        "when": ["Trigger conditions"],
+        "args": ["required", "parameters"],
+        "success_say": "How to present results",
+        "handle_errors": {
+          "error_code": "How to respond"
+        }
+      }
     }
   },
+  "policy": {
+    "data_rules": [
+      "Always check real-time availability before confirming",
+      "Never share customer data across sessions"
+    ],
+    "escalation": [
+      "Transfer to human for complaints or refund requests"
+    ]
+  },
   "dialog_flow": {
-    "high_level": ["Greet user", "Understand intent", "Use tools if needed", "Confirm and close."]
+    "high_level": [
+      "Greet warmly",
+      "Understand intent",
+      "Gather required information",
+      "Use tools to fulfill request",
+      "Confirm results",
+      "Offer additional help"
+    ]
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm [name], and I'm here to help you [primary purpose]. What can I do for you today?",
+    "no_results": "I checked our system and didn't find matches for [criteria]. Would you like to try different [parameters]?",
+    "success": "Great news! I found [count] options that match what you're looking for."
   },
   "examples": [
-    // Sample conversations
+    {
+      "user": "Example question",
+      "agent_thinking": "What tool to use and why",
+      "agent_says": "The response"
+    }
   ]
 }
 ```
 
-### Step 2: Write the System Prompt
-Define the agent's core instructions:
-- Tone and rules: "Be warm and concise. Never guess—use tools for data."
-- Tool triggers: "If the user asks about products, use the 'search_products' tool."
-- Guardrails: "Escalate to human if the query is complex."
+## Building Your Prompt: Section by Section
 
-### Step 3: Add Examples
-Include 2-3 sample interactions to guide behavior.
-- User: "What's available?" Agent: "Let me check... [Uses tool] Here are the options."
+### 1. Agent Identity and Tone
 
-### Step 4: Reference Core Tools
-Core tools like `getCurrentTime` or `show_component` are built-in. Mention them in the prompt if relevant (e.g., "Use `show_component` to display images.").
+This section establishes who the agent is and how it sounds.
 
-| Core Tool Example | Description | When to Use |
-|-------------------|-------------|-------------|
-| getCurrentTime    | Gets the current time. | For time-sensitive queries like "What time is check-in?" |
-| show_component    | Renders UI like images or forms. | To show product catalogs visually. |
+```json
+{
+  "agent": {
+    "name": "Cypress Concierge",
+    "tenantId": "cypress-resorts",
+    "tone": "warm, attentive, luxury-focused",
+    "style_rules": [
+      "Speak like a five-star hotel concierge",
+      "Anticipate guest needs and offer helpful suggestions",
+      "Always confirm booking details before finalizing",
+      "Use 'we' and 'our property' to build connection",
+      "Celebrate successful bookings warmly"
+    ]
+  }
+}
+```
 
-### Step 5: Test the Prompt
-Save via MongoDB Updater and start the agent. Speak simple queries and refine based on responses.
+**Best Practices:**
+- **Be specific about tone:** "Professional" is vague; "Warm and efficient, like a trusted advisor" paints a clear picture
+- **Give concrete examples:** Include sample phrases the agent should use
+- **Define boundaries:** What the agent should NOT do is as important as what it should do
+- **Match brand voice:** Your agent should sound like your company, not a generic assistant
 
-**Tip**: Start simple—add complexity later. Try a demo agent first to see effective prompts.
+<CardGrid>
+  <Card
+    title="Hospitality Agent"
+    description="Warm, anticipatory, luxury-focused — speaks like a five-star concierge"
+  />
+  <Card
+    title="Tech Support Agent"
+    description="Patient, clear, solution-oriented — explains technical concepts simply"
+  />
+  <Card
+    title="Sales Agent"
+    description="Knowledgeable, enthusiastic, practical — guides customers to the right products"
+  />
+</CardGrid>
+
+### 2. Tool Capabilities and Usage Rules
+
+This section teaches the agent when and how to use each tool.
+
+```json
+{
+  "capabilities": {
+    "tools": {
+      "search_units": {
+        "when": [
+          "User asks about available rooms",
+          "User provides dates for a stay",
+          "User wants to see room options"
+        ],
+        "args": [
+          "check_in (YYYY-MM-DD format)",
+          "check_out (YYYY-MM-DD format)",
+          "guests (number)",
+          "room_type (optional: villa, suite, standard)"
+        ],
+        "success_say": "List matching rooms with key features (view, beds, amenities). Highlight what makes each special. Use show_component to display photos.",
+        "handle_errors": {
+          "no_availability": "Apologize and suggest nearby dates or different room types",
+          "invalid_dates": "Explain the issue gently and ask for corrected dates"
+        }
+      },
+      "show_component": {
+        "when": [
+          "Displaying room photos after search",
+          "Showing booking confirmation",
+          "Presenting visual catalogs or galleries"
+        ],
+        "args": [
+          "component_name (e.g., catalog_results, reservation_confirmation, image_viewer)",
+          "props (data to display)"
+        ],
+        "success_say": "Reference the visual ('As you can see in the photos...') and guide next steps"
+      }
+    }
+  }
+}
+```
+
+**Key Principles:**
+- **"When" must be specific:** Vague triggers lead to incorrect tool calls
+- **List all required args:** The agent needs to know what to collect before calling
+- **Success responses should guide flow:** Tell the agent what to do with results
+- **Error handling prevents confusion:** Every failure mode needs a recovery path
+
+### 3. Policy and Business Rules
+
+Define hard rules about data handling, escalation, and compliance.
+
+```json
+{
+  "policy": {
+    "data_rules": [
+      "Always call search_units to check availability — never assume rooms are available",
+      "Never share pricing from memory — always use current data from tools",
+      "Confirm all booking details verbally before calling create_reservation"
+    ],
+    "escalation": [
+      "Immediately transfer to human for:",
+      "  - Cancellation or refund requests",
+      "  - Complaints about service or staff",
+      "  - Special accessibility needs",
+      "Say: 'Let me connect you with our team who can best help with this.'"
+    ]
+  }
+}
+```
+
+**Why Policy Matters:**
+- **Prevents hallucinations:** Forces tool usage for all data
+- **Protects brand:** Defines what the agent can't handle
+- **Ensures compliance:** Data handling and privacy rules
+- **Manages edge cases:** When automation should give way to humans
+
+### 4. Response Templates
+
+Pre-define common responses for consistency.
+
+```json
+{
+  "response_templates": {
+    "greeting": "Hi! I'm the Cypress Concierge, and I'm here to help you find and book the perfect room for your stay. What dates are you considering?",
+    "no_results": "I checked our availability and didn't find rooms matching [criteria] for [dates]. Would you like to try different dates or a different room type?",
+    "success_booking": "Wonderful! Your reservation is confirmed for [room_name] from [check_in] to [check_out]. You'll receive a confirmation email at [email] with all the details.",
+    "escalation": "I'd like to connect you with our team who can best assist with this. One moment please."
+  }
+}
+```
+
+### 5. Conversation Examples
+
+Show the agent how to handle real scenarios.
+
+```json
+{
+  "examples": [
+    {
+      "scenario": "Happy path booking",
+      "user": "I need a room for next weekend",
+      "agent_thinking": "User wants to book. Need check-in/out dates and guest count. 'Next weekend' is ambiguous — need specific dates.",
+      "agent_says": "I'd be happy to help you find a room! When you say next weekend, do you mean checking in Friday, [date] and checking out Sunday, [date]? And how many guests?"
+    },
+    {
+      "scenario": "No availability",
+      "user": "Do you have anything available July 4th weekend?",
+      "agent_action": "Calls search_units with July 4-7 dates",
+      "result": "No rooms available",
+      "agent_says": "I checked our availability, and July 4th weekend is fully booked — it's one of our busiest times! I do have beautiful rooms available the weekend before (June 27-30) or the following weekend (July 11-14). Would either of those work for you?"
+    }
+  ]
+}
+```
+
+## Prompt Design Best Practices
+
+### Do:
+- ✅ **Be specific and concrete** — "Warm and professional" + examples
+- ✅ **Define boundaries clearly** — What the agent won't do
+- ✅ **Use examples liberally** — Show don't tell
+- ✅ **Test with real queries** — Your prompt should handle actual user language
+
+### Don't:
+- ❌ **Don't be vague** — "Be helpful" doesn't mean anything
+- ❌ **Don't assume context** — Spell out tool usage rules
+- ❌ **Don't skip error handling** — Every tool call can fail
+- ❌ **Don't over-complicate** — Start simple and add complexity as needed
+
+## Testing Your Prompt
+
+Before deployment, validate your prompt with these scenarios:
+
+<CardGrid>
+  <Card
+    title="Happy Path"
+    description="User provides all needed info, tool calls succeed, booking completes smoothly"
+  />
+  <Card
+    title="Missing Information"
+    description="User requests action without required details — agent should gather information naturally"
+  />
+  <Card
+    title="No Results"
+    description="Search returns empty — agent should offer alternatives without being pushy"
+  />
+  <Card
+    title="Tool Failures"
+    description="API errors or timeouts — agent should recover and keep user informed"
+  />
+</CardGrid>
+
+## Next Steps
+
+With your prompt designed, you're ready to build the tools that make it actionable:
+
+<CardGrid>
+  <Card
+    title="Tool Design"
+    href="/voice/tool-design"
+    description="Create HTTP tool descriptors that connect your agent to your APIs and data"
+  />
+  <Card
+    title="Agent Configuration"
+    href="/voice/agent-configuration"
+    description="Configure multi-tenant settings, security, and deploy your agent"
+  />
+  <Card
+    title="See Complete Examples"
+    href="/voice/usage"
+    description="Study full prompt examples from Cypress and Otto agents"
+  />
+</CardGrid>

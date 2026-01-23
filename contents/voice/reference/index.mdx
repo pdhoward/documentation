@@ -1,0 +1,199 @@
+---
+title: API Reference
+description: Complete technical reference for the VOX platform APIs, tools, and components.
+keywords: ["reference", "API", "tools", "components", "technical documentation"]
+---
+
+## VOX Platform Reference Documentation
+
+This section provides comprehensive technical reference for developers building voice agents on the VOX platform. Use these references when implementing agents, designing tools, or integrating UI components.
+
+## What's in the Reference
+
+The VOX reference documentation is organized into four main sections, each covering a critical aspect of the platform's technical capabilities.
+
+<CardGrid>
+  <Card
+    title="API Reference"
+    href="/voice/reference/api"
+    description="Complete REST API documentation for session management, authentication, usage tracking, and monitoring"
+  />
+  <Card
+    title="Core Tools"
+    href="/voice/reference/coretools"
+    description="Reference for all built-in platform tools available to every agent without configuration"
+  />
+  <Card
+    title="HTTP Tools"
+    href="/voice/reference/httptools"
+    description="Complete schema reference for building custom HTTP tool descriptors that connect to your APIs"
+  />
+  <Card
+    title="UI Components"
+    href="/voice/reference/components"
+    description="Catalog of visual components for rendering catalogs, confirmations, media, and interactive forms"
+  />
+</CardGrid>
+
+## Quick Navigation
+
+### For Agent Developers
+
+If you're building your first voice agent, start with these references:
+
+- **Core Tools** — Learn what's available out-of-the-box
+- **HTTP Tools** — Understand how to connect your APIs
+- **UI Components** — Discover how to render rich visuals
+
+### For API Integrators
+
+If you're integrating the VOX platform into your application:
+
+- **API Reference** — Session creation, authentication, rate limiting
+- **HTTP Tools** — Tool descriptor schema and templating rules
+
+### For Platform Engineers
+
+If you're managing multi-tenant deployments:
+
+- **API Reference** — Rate limits, security controls, usage monitoring
+- **HTTP Tools** — Validation rules and error handling
+
+## Reference Conventions
+
+Throughout this documentation, we follow these conventions:
+
+### Required vs Optional
+
+| Notation | Meaning |
+|----------|---------|
+| `fieldName` | Required field |
+| `fieldName?` | Optional field |
+| `fieldName` (default: value) | Has a default value |
+
+### Type Notation
+
+```typescript
+string          // String value
+number          // Numeric value
+boolean         // true or false
+object          // JSON object
+array           // JSON array
+enum            // One of specified values
+pattern         // Must match regex pattern
+```
+
+### HTTP Status Codes
+
+| Code | Meaning | When It Happens |
+|------|---------|-----------------|
+| 200 | Success | Request completed successfully |
+| 400 | Bad Request | Invalid parameters or malformed request |
+| 401 | Unauthorized | Missing or invalid authentication |
+| 403 | Forbidden | Valid auth but insufficient permissions |
+| 429 | Too Many Requests | Rate limit exceeded |
+| 500 | Server Error | Internal platform error |
+
+## Using This Reference
+
+### Code Examples
+
+All examples are production-ready. Copy and adapt them directly:
+
+```json
+{
+  "kind": "http_tool",
+  "name": "example_tool",
+  "description": "Clear description of what this tool does"
+}
+```
+
+### Templating Syntax
+
+The platform uses a templating system with this context:
+
+- `{{args.fieldName}}` — Access tool parameters
+- `{{response.fieldName}}` — Access API response data
+- `{{secrets.keyName}}` — Access secure credentials
+- `{{status}}` — Access HTTP status code
+
+### Filters
+
+Apply type coercion and transformations:
+
+- `{{args.value | number}}` — Coerce to number
+- `{{args.value | bool}}` — Coerce to boolean
+- `{{args.value | json}}` — Pass complex objects
+- `{{args.value | upper}}` — Uppercase string
+- `{{args.value | default('fallback')}}` — Provide default
+
+## Common Patterns
+
+### Authentication Headers
+
+```json
+{
+  "headers": {
+    "authorization": "Bearer {{secrets.api_key}}",
+    "content-type": "application/json"
+  }
+}
+```
+
+### Error Handling
+
+```json
+{
+  "ui": {
+    "onError": {
+      "open": {
+        "component_name": "alert",
+        "title": "Operation Failed",
+        "description": "{{response.message}}"
+      }
+    }
+  }
+}
+```
+
+### Parameter Validation
+
+```json
+{
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "email": { "type": "string", "format": "email" },
+      "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" }
+    },
+    "required": ["email", "date"]
+  }
+}
+```
+
+## Next Steps
+
+Choose the reference section that matches your current task:
+
+<CardGrid>
+  <Card
+    title="Explore Core Tools"
+    href="/voice/reference/coretools"
+    description="See what's available without any configuration"
+  />
+  <Card
+    title="Build Custom Tools"
+    href="/voice/reference/httptools"
+    description="Connect your APIs with HTTP tool descriptors"
+  />
+  <Card
+    title="Design Rich UI"
+    href="/voice/reference/components"
+    description="Render catalogs, galleries, and interactive components"
+  />
+  <Card
+    title="API Integration"
+    href="/voice/reference/api"
+    description="Integrate sessions and authentication into your app"
+  />
+</CardGrid>

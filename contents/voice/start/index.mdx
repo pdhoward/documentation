@@ -1,89 +1,159 @@
 ---
-title: Introduction
-description: This section provides an overview of how to get started with the Strategic Machines AI Voice Agent Platform.
-keywords: ["introduction", "guide", "nextjs", "documents"]
+title: Getting Started
+description: Build production-ready voice agents grounded in your real business data — from sales and fulfillment to reservations and customer support.
+keywords: ["introduction", "guide", "voice agents", "AI platform"]
 ---
 
 <CardGrid>
   <Card
-    title="Creative Design in Voice for Business"
+    title="VOX: Voice Intelligence for Business"
     image="https://res.cloudinary.com/stratmachine/image/upload/v1747068042/machine/ChatGPT_Image_May_12_2025_11_38_37_AM_fnde7y.png"
     icon="alignJustify"
     variant="image"
-    description="Creative Design in Voice"
-  /> 
+    description="Transform customer engagement with intelligent voice agents"
+  />
 </CardGrid>
 
-## Voice Platform for Business
+## Welcome to the VOX Platform
 
-VOX (Latin for Voice or Expression) is a multi-tenant voice agent platform for building production-ready voice experiences — from product sales and fulfillment to reservations and customer support — grounded in your real business data. You define **how the agent behaves** (prompt + dialog flow), **what it can say** (your data as context), **what it can do** (tools), and **what it can show** (UI components). The platform handles the runtime: session creation, safety controls, tool execution, and consistent rendering of results.
+**VOX** (Latin for *Voice* or *Expression*) is a production-grade, multi-tenant voice agent platform designed to power real business outcomes. Whether you're handling product sales, restaurant reservations, hotel bookings, or customer support, VOX transforms how your customers interact with your business through natural voice conversations.
 
-## Documents
+### What Makes VOX Different
+
+Unlike basic chatbots, VOX agents are **data-grounded** — they never hallucinate or guess. Every response is backed by your real-time business data through secure API integrations. You maintain complete control over four key dimensions:
+
+- **Behavior** — Define personality, tone, and conversation flow through prompts
+- **Knowledge** — Ground responses in your actual inventory, availability, and business data
+- **Capabilities** — Connect to your APIs through declarative HTTP tools
+- **Experience** — Render rich UI components like catalogs, confirmations, and media galleries
+
+The platform handles the complex runtime infrastructure: millisecond-response language models, real-time session management, security controls, conversation monitoring, and consistent UI rendering. You focus on designing the agent; we handle the execution.
+
+## Build Your First Agent in Four Steps
+
+Creating a voice agent on VOX follows a structured workflow. Each step builds on the previous one, taking you from concept to deployment.
 
 <CardGrid>
   <Card
-    title="Agent Design"
+    title="1. Agent Design"
     href="/voice/agent-design"
-    description="Plan the agent’s purpose, tone, workflows, and success criteria before you build."
-  /> 
-  <Card
-    title="Prompt Design"
-    href="/voice/prompt-design"
-    description="Author the system prompt: tool rules, dialog flow, guardrails, templates, and examples."
+    description="Define your agent's purpose, personality, and conversation workflows. Establish success criteria and plan for real-world scenarios."
   />
   <Card
-    title="Tool Design"
+    title="2. Prompt Design"
+    href="/voice/prompt-design"
+    description="Craft the system prompt that governs agent behavior: tone, guardrails, tool usage rules, dialog flow, and conversation examples."
+  />
+  <Card
+    title="3. Tool Design"
     href="/voice/tool-design"
-    description="Define HTTP tools that connect the agent to your APIs and data with reliable UI outcomes."
+    description="Build HTTP tool descriptors that connect your agent to your APIs. Define parameters, authentication, and automatic UI rendering."
   />
    <Card
-    title="Agent Configuration"
+    title="4. Agent Configuration"
     href="/voice/agent-configuration"
-    description="Connect tenants, agents, and widget keys. Manage identity, limits, and deployment settings."
+    description="Configure multi-tenant settings, security controls, widget keys, rate limits, and deploy your agent to production."
   />
 </CardGrid>
 
 
-## Core Business Features
+## Business Impact
 
-| Business Capability | What it delivers | Business impact |
-|---------------------|------------------|-----------------|
-| **24×7 Customer Coverage** | Voice agents are always available to answer questions, take requests, and complete transactions without staffing constraints. | Improves customer satisfaction while reducing after-hours staffing costs and missed opportunities. |
-| **Higher Conversion and Sales Enablement** | Agents actively guide customers through product discovery, availability, and booking or purchase flows. | Increases conversion rates and average order value by assisting customers at the moment of intent. |
-| **Faster Customer Resolution** | Agents instantly retrieve accurate information about orders, inventory, reservations, and policies. | Reduces wait times, lowers support tickets, and improves first-contact resolution. |
-| **Consistent Brand Representation** | Agents follow defined tone, messaging, and behavior aligned to your brand voice and service standards. | Protects brand reputation and ensures uniform customer experiences across channels. |
-| **Scalable Customer Engagement** | One platform supports thousands of simultaneous conversations without service degradation. | Enables growth without proportional increases in headcount or infrastructure cost. |
-| **Employee Productivity Assistants** | Internal agents help staff find answers, search products, check availability, and complete routine tasks. | Frees employees to focus on higher-value work and reduces onboarding and training time. |
-| **Revenue-Generating Service Automation** | Agents can complete bookings, schedule appointments, process payments, and capture qualified leads. | Turns customer service into a profit center instead of a cost center. |
-| **Personalized, Context-Aware Interactions** | Agents tailor responses using customer context, history, and real-time business data. | Creates more relevant conversations that build trust and improve loyalty. |
-| **Rapid Time-to-Value** | New agents, workflows, and offers can be launched and updated quickly without major system changes. | Allows marketing and operations teams to respond faster to market opportunities. |
-| **Enterprise-grade Reliability and Cost Controls** | Built-in safeguards manage usage, prevent abuse, and keep spending within defined limits. | Protects margins and ensures predictable operating costs as usage scales. |
-| **Monitored** | All conversations are monitored, and escalated for 'human in the loop' intervention where required. | Excellent customer care and responsiveness. |
-| **Secure** | With our powerful tool sets, data and configurations are managed through your set of APIs | Your data. Protected. |
+VOX delivers measurable business outcomes across customer engagement, operations, and revenue generation.
 
-## Core Technical Features 
+### Customer Experience
 
-| Feature | What it provides | Why it matters in production |
-|--------|------------------|------------------------------|
-| **Data-grounded conversations** | Agents retrieve real-time, structured JSON from your systems via tools (availability, inventory, orders, events, pricing). | Prevents hallucinations and ensures answers reflect current business reality. |
-| **HTTP Tool Descriptors (schema-driven)** | Declarative JSON schema for methods, parameters, auth headers, URL/body templates, and timeouts. | Standardizes every integration and avoids one-off runtime code per API. |
-| **Declarative UI rendering** | Tools can declare UI actions on success/error (catalogs, confirmations, payment forms, media galleries). | Turns API responses into consistent customer experiences automatically. |
-| **Built-in core tools** | Platform utilities like time checks, website scraping, opening links, clipboard copy, and component rendering. | Accelerates your Agent design and configuration without custom setup for common tasks. |
-| **Prompt-driven workflows** | System prompt defines tone, guardrails, tool triggers, dialog flow, and response templates. | Keeps behavior predictable and auditable across updates and versions. |
-| **Strong templating + typing rules** | Stable execution context (`args`, `response`, `status`, `secrets`) with filters for numbers, booleans, currency, and JSON objects. | Prevents integration bugs such as stringified numbers or broken UI props. |
-| **Multi-tenant configuration model** | Tenants, agents, widget keys, origins, limits, and API secrets are centrally managed. | Enables secure isolation and scalable onboarding of many customers. |
-| **Layered security & abuse protection** | Edge + server rate limits, bot verification, session quotas, duration and idle caps, daily spend limits. | Protects reliability and cost without disrupting real users. |
-| **Session observability & lifecycle control** | Realtime session records, heartbeats, stale detection, and mid-session termination. | Keeps dashboards accurate and prevents runaway sessions. |
-| **Fast test-and-iterate loop** | Start agents instantly, inspect tool calls, validate APIs, and refine prompts. | Shortens feedback cycles and de-risks production launches. |
+| Capability | How It Works | Business Value |
+|-----------|--------------|----------------|
+| **24/7 Availability** | Agents handle inquiries, requests, and transactions at any hour without staffing constraints | Capture after-hours revenue and improve customer satisfaction without increasing labor costs |
+| **Instant, Accurate Responses** | Real-time API integration ensures agents access current inventory, orders, and availability | Reduce wait times and support tickets while improving first-contact resolution rates |
+| **Personalized Conversations** | Agents leverage customer context, history, and preferences for tailored interactions | Build trust and loyalty through relevant, context-aware engagement |
+| **Consistent Brand Voice** | Defined personality and guardrails ensure on-brand conversations across all touchpoints | Protect brand reputation with uniform, professional customer experiences |
 
-## How the platform fits together
+### Revenue & Operations
 
-- **Agent** — personality, guardrails, and workflow (prompt)  
-- **Tools** — what the agent can do (HTTP descriptors calling your APIs)  
-- **Data** — what the agent knows (structured JSON returned by your systems)  
-- **UI Components** — what the agent can show (forms, confirmations, galleries, results)  
-- **Tenant Configuration** — who can use it and where (tenantId, widget keys, origins, limits)
+| Capability | How It Works | Business Value |
+|-----------|--------------|----------------|
+| **Active Sales Guidance** | Agents guide customers through discovery, product selection, and purchase flows | Increase conversion rates and average order value by assisting at the moment of intent |
+| **Transaction Completion** | Process bookings, appointments, payments, and lead capture directly through conversation | Transform support from cost center to revenue generator |
+| **Scalable Engagement** | Handle thousands of simultaneous conversations without performance degradation | Enable growth without proportional increases in headcount or infrastructure |
+| **Rapid Iteration** | Launch new workflows, offerings, and seasonal campaigns without code changes | Accelerate time-to-market for marketing and operational initiatives |
 
-This model keeps your voice experience grounded, secure, and maintainable—while staying flexible enough for bookings, commerce, scheduling, and support across different businesses.
+### Security & Control
 
-Before you dive into building your first agent, we recommend trying out our demo agents at [strategicmachines.ai](https://strategicmachines.ai). This will give you a hands-on feel for how voice agents work in real scenarios, such as reservations or product searches. Once you're familiar, follow the sections below to design and configure your own.
+| Capability | How It Works | Business Value |
+|-----------|--------------|----------------|
+| **Real-time Monitoring** | Every conversation is recorded, monitored, and available for human escalation | Ensure quality control and regulatory compliance |
+| **Enterprise Security** | Your data stays in your APIs; agents access via secure, authenticated tool calls | Maintain data sovereignty and security compliance |
+| **Cost Controls** | Configurable rate limits, session caps, and spending thresholds prevent abuse | Predictable operating costs with protection against runaway usage |
+
+## Technical Architecture
+
+VOX is built for production reliability, developer productivity, and enterprise security. Here's what makes the platform robust.
+
+### Data-Grounded Intelligence
+
+| Feature | Technical Implementation | Production Benefit |
+|---------|-------------------------|-------------------|
+| **Zero-Hallucination Design** | Agents retrieve structured JSON from your APIs via HTTP tools; no fabricated data | Customers receive accurate information reflecting real-time business state |
+| **Schema-Driven Tool Descriptors** | Declarative JSON defines methods, parameters, authentication, URL templates, and timeouts | Standardize integrations across all APIs without custom code per endpoint |
+| **Declarative UI Rendering** | Tools specify UI components to render on success/error (catalogs, galleries, confirmations) | Transform API responses into rich visual experiences automatically |
+
+### Developer Experience
+
+| Feature | Technical Implementation | Production Benefit |
+|---------|-------------------------|-------------------|
+| **Built-In Core Tools** | Pre-configured utilities: time checks, web scraping, URL launching, component rendering | Ship agents faster without building common capabilities from scratch |
+| **Prompt-Driven Workflows** | System prompt controls tone, guardrails, tool selection, and dialog structure | Update agent behavior through configuration, not code deployments |
+| **Type-Safe Templating** | Execution context (`args`, `response`, `status`, `secrets`) with type coercion filters | Eliminate integration bugs from type mismatches and malformed data |
+| **Instant Testing** | Start agents immediately; inspect tool calls and API responses in real-time | Rapid iteration cycles reduce time from idea to production |
+
+### Enterprise Operations
+
+| Feature | Technical Implementation | Production Benefit |
+|---------|-------------------------|-------------------|
+| **Multi-Tenant Architecture** | Centralized management of tenants, agents, widget keys, origins, and secrets | Secure isolation enabling SaaS-scale customer onboarding |
+| **Layered Security** | Edge rate limiting, bot detection, session quotas, duration caps, spend limits | Protect against abuse while maintaining seamless experience for legitimate users |
+| **Session Lifecycle Management** | Real-time heartbeats, idle detection, automatic termination, usage tracking | Prevent runaway costs and maintain accurate operational visibility |
+| **Conversation Monitoring** | Full transcripts, real-time alerts, human escalation triggers | Ensure quality and compliance across all customer interactions |
+
+## The VOX Architecture Model
+
+Every voice agent on VOX is composed of five integrated components working together to deliver natural, reliable conversations:
+
+<CardGrid>
+  <Card
+    title="Agent Personality"
+    description="System prompt defining tone, guardrails, conversation flow, and brand voice"
+  />
+  <Card
+    title="Tool Capabilities"
+    description="HTTP descriptors that connect to your APIs for real-time data and actions"
+  />
+  <Card
+    title="Business Data"
+    description="Structured JSON from your systems providing accurate, current information"
+  />
+  <Card
+    title="UI Components"
+    description="Rich visual elements automatically rendered based on API responses"
+  />
+  <Card
+    title="Multi-Tenant Config"
+    description="Security controls, widget keys, rate limits, and deployment settings"
+  />
+</CardGrid>
+
+This architecture keeps your voice experience **grounded in truth**, **secure by design**, and **maintainable at scale** — while remaining flexible enough to power reservations, e-commerce, scheduling, customer support, and more.
+
+## Experience VOX Before You Build
+
+Before diving into development, we strongly recommend experiencing VOX agents in action. Visit [strategicmachines.ai](https://strategicmachines.ai) to interact with live demo agents handling real-world scenarios:
+
+- **Cypress Resorts** — Hotel room reservations with availability checking and booking confirmation
+- **Otto at DIY Warehouse** — Product search, recommendations, and shopping assistance
+- **Restaurant Reservations** — Table booking with party size and time coordination
+
+These demos showcase the natural conversation flow, data-grounded responses, and rich UI rendering you'll build into your own agents. Once you've experienced the platform's capabilities, you'll be ready to design and deploy your first voice agent.
+
+**Ready to build?** Continue to [Agent Design](/voice/agent-design) to start planning your first voice agent.

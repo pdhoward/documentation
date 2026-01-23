@@ -1,0 +1,383 @@
+---
+title: Prompt Tester
+description: Test system prompts against conversation scenarios with simulated agent responses and tool calls.
+keywords: ["tutorial", "prompt", "testing", "scenarios", "interactive"]
+---
+
+## Prompt Tester
+
+This interactive tester lets you experiment with system prompts and see how they influence agent behavior across different conversation scenarios. Test prompt changes without deploying to production.
+
+**Time to complete:** 20-30 minutes
+
+## How It Works
+
+The Prompt Tester provides a conversational simulator where you:
+1. Write or paste your system prompt
+2. Select or create conversation scenarios
+3. See how the agent responds, which tools it calls, and why
+4. Iterate on your prompt based on results
+
+The simulator uses the same language model as production, so results are representative of real-world behavior.
+
+## Tutorial Interface
+
+<Note type="info">
+**Interactive Tester Coming Soon**
+
+This tutorial is currently in development. The prompt tester will include:
+- Full-featured prompt editor with syntax highlighting
+- Pre-built conversation scenarios (happy path, edge cases, errors)
+- Simulated agent responses showing reasoning
+- Tool call visualization (which tools, what parameters)
+- Side-by-side prompt comparison
+- Export validated prompts as JSON
+
+For now, use the [Prompt Design Guide](/voice/prompt-design) and test prompts in a development agent.
+</Note>
+
+## Preview: Tester Features
+
+### Feature 1: Prompt Editor
+
+Write or load system prompts with structured guidance:
+
+**Sections:**
+- **Agent Identity** — Name, tenant, tone, style rules
+- **Capabilities** — Tool definitions with `when`, `args`, `success_say`
+- **Policy** — Data rules and escalation guidelines
+- **Dialog Flow** — High-level conversation structure
+- **Response Templates** — Pre-written phrases for common situations
+- **Examples** — Conversation examples showing ideal behavior
+
+**Editor Features:**
+- Syntax highlighting for JSON
+- Auto-completion for common fields
+- Validation of required sections
+- Character count and token estimation
+- Template library (load Otto, Cypress, or blank)
+
+### Feature 2: Scenario Library
+
+Test your prompt against real-world situations:
+
+**Pre-built Scenarios:**
+
+**Happy Path:**
+- User with clear intent and all required information
+- User provides information incrementally
+- User browses before deciding
+
+**Edge Cases:**
+- User asks for something unavailable
+- User provides contradictory information
+- User changes their mind mid-conversation
+- User asks off-topic questions
+
+**Error Handling:**
+- Tool returns no results
+- Tool times out or fails
+- User provides invalid input (wrong dates, negative quantities)
+- API returns unexpected data structure
+
+**Stress Tests:**
+- User is vague or unclear
+- User asks complex multi-part questions
+- User interrupts or redirects frequently
+- Rapid-fire questions without pausing
+
+### Feature 3: Simulated Conversations
+
+See how your agent handles each scenario:
+
+**Example Scenario: Product Search with Budget**
+
+**User:** "I need a cordless drill for building a deck, under $200"
+
+**Simulated Agent Response:**
+
+```
+Agent Thinking:
+  - User has clear use case: deck building (heavy duty)
+  - Budget constraint: under $200
+  - Need to call search_products tool
+  - Filter to drills suitable for deck work
+  - Use brushless for durability
+
+Tool Call:
+  search_products({
+    query: "brushless cordless drill",
+    category: "drills",
+    max_price: 200,
+    limit: 10
+  })
+
+Mock Tool Response:
+  {
+    "success": true,
+    "count": 8,
+    "products": [...]
+  }
+
+Agent Says:
+  "Great choice for a deck project! For heavy-duty fastening, you'll want a brushless drill with good battery life. I found three excellent options under $200. The DeWalt 20V Max is our top seller for deck work — powerful, long battery life, and a 5-year warranty at $189.99. Let me show you all three."
+
+UI Action:
+  show_component("catalog_results", { items: products })
+
+Quality Check:
+  ✓ Used tools instead of guessing
+  ✓ Acknowledged budget constraint
+  ✓ Recommended based on use case
+  ✓ Explained why (brushless for durability)
+  ✓ Showed top recommendation
+  ✓ Rendered visual component
+```
+
+### Feature 4: Tool Call Visualization
+
+See exactly which tools the agent calls and why:
+
+**Visualization:**
+```
+Conversation Turn 3:
+
+User: "What's the difference between the Makita and Milwaukee?"
+
+Agent Decision Tree:
+  1. User asking for comparison → Need product details
+  2. Two products mentioned → Call get_product_stats twice
+  3. Present comparison focusing on key differences
+
+Tool Calls:
+  [1] get_product_stats({ product_id: "makita-18v-drill" })
+  [2] get_product_stats({ product_id: "milwaukee-18v-drill" })
+
+Responses:
+  [1] { name: "Makita", weight: "7.3 lbs", power: "250 UWO", ... }
+  [2] { name: "Milwaukee", weight: "8.9 lbs", power: "300 UWO", ... }
+
+Agent Synthesizes:
+  "The Makita is lighter at 7.3 lbs — great for overhead cuts and homeowner projects. The Milwaukee is heavier at 8.9 lbs but has more cutting power. For weekend projects, the Makita is perfect. For daily contractor work, the Milwaukee is worth the extra cost."
+
+Quality Check:
+  ✓ Called tools for both products
+  ✓ Compared key differentiators (weight, power)
+  ✓ Explained tradeoffs in plain language
+  ✓ Recommended based on use case
+```
+
+### Feature 5: Side-by-Side Comparison
+
+Test two prompt versions simultaneously:
+
+**Use Case:** You're refining how the agent handles "out of stock" scenarios
+
+**Prompt A (Original):**
+```json
+{
+  "escalation": [
+    "If product is out of stock, apologize and ask if they want an alternative"
+  ]
+}
+```
+
+**Prompt B (Improved):**
+```json
+{
+  "policy": {
+    "data_rules": [
+      "If a product is out of stock, suggest in-stock alternatives with similar specs",
+      "Mention why the alternative is comparable or better"
+    ]
+  },
+  "response_templates": {
+    "out_of_stock": "[Product] is currently out of stock, but we have [similar product] available now. It's in the same price range and has [comparable or better feature]. Would you like to see that?"
+  }
+}
+```
+
+**Scenario:** User asks for out-of-stock item
+
+**Results:**
+
+| Aspect | Prompt A | Prompt B |
+|--------|----------|----------|
+| **Response** | "I'm sorry, that item is out of stock. Would you like to see alternatives?" | "The Ryobi 18V is currently out of stock, but we have a DeWalt 20V impact driver available now. It's in the same price range ($99) and actually has better torque at 1,825 in-lbs. Would you like me to show you that?" |
+| **Proactivity** | Waits for user to ask | Immediately suggests alternative |
+| **Detail** | Vague | Specific product, price, key spec |
+| **Value** | Low (user must ask) | High (agent does the work) |
+| **Winner** | ❌ | ✅ |
+
+### Feature 6: Conversation Export
+
+Save successful test conversations:
+- Export as training examples to add to your prompt
+- Save edge case handling for documentation
+- Share with team for review
+- Use in regression testing
+
+## Guided Tutorial Flow
+
+### Step 1: Load or Write Your Prompt
+
+**Option A:** Load a template (Otto, Cypress, Support Agent)
+**Option B:** Paste your existing prompt
+**Option C:** Start blank and build section by section
+
+### Step 2: Test Happy Path Scenarios
+
+Start with straightforward conversations:
+- User with clear intent
+- All information provided
+- Tools return expected results
+- Successful outcome
+
+**Goal:** Ensure basic functionality works
+
+### Step 3: Test Edge Cases
+
+Challenge your prompt:
+- Vague user requests
+- Missing information
+- User changes mind
+- Out of stock or unavailable
+
+**Goal:** Verify graceful handling of uncertainty
+
+### Step 4: Test Error Scenarios
+
+Simulate failures:
+- Tool returns no results
+- Tool timeout
+- Invalid user input
+- API errors
+
+**Goal:** Ensure user never sees broken experience
+
+### Step 5: Refine and Iterate
+
+Based on test results:
+- Adjust tone or phrasing
+- Add handling for missed cases
+- Clarify tool usage rules
+- Add response templates
+
+### Step 6: Validate and Export
+
+When satisfied with behavior:
+- Run full scenario suite (10-15 tests)
+- Export validated prompt
+- Add passing conversation examples to prompt
+- Deploy to staging environment
+
+## Common Prompt Issues to Test For
+
+<CardGrid>
+  <Card
+    title="Tool Hallucination"
+    description="Agent guesses product details instead of calling tools — test data_rules enforcement"
+  />
+  <Card
+    title="Verbose Responses"
+    description="Agent talks too much — test style_rules for conciseness"
+  />
+  <Card
+    title="Off-Topic"
+    description="Agent handles unrelated questions — test boundary enforcement"
+  />
+  <Card
+    title="Unclear Tool Selection"
+    description="Agent calls wrong tool or skips tools — test capability definitions"
+  />
+</CardGrid>
+
+## Advanced Testing Techniques
+
+### A/B Testing Response Templates
+
+Compare different phrasings:
+- Formal vs casual greetings
+- Short vs detailed explanations
+- Proactive vs reactive suggestions
+
+### Stress Testing
+
+Rapid conversation changes:
+- User interrupts mid-flow
+- User asks three questions at once
+- User provides contradictory information
+
+### Tone Consistency
+
+Test brand voice across scenarios:
+- Does formality remain consistent?
+- Are sample phrases used appropriately?
+- Does personality shine through in all situations?
+
+## Scenario Authoring
+
+Create custom test scenarios:
+
+```json
+{
+  "scenario": {
+    "name": "Budget-Conscious DIYer",
+    "description": "User wants a drill but is price-sensitive",
+    "turns": [
+      {
+        "user": "I need a drill for home projects",
+        "expected": "Agent asks clarifying questions about use case and budget"
+      },
+      {
+        "user": "Just small repairs, I don't want to spend a lot",
+        "expected": "Agent searches for budget-friendly drills and explains value"
+      }
+    ],
+    "success_criteria": [
+      "Agent calls search_products with appropriate filters",
+      "Agent recommends based on value, not features",
+      "Agent explains why budget option is sufficient"
+    ]
+  }
+}
+```
+
+## Quality Rubric
+
+Evaluate agent responses on:
+
+| Criterion | Good | Bad |
+|-----------|------|-----|
+| **Accuracy** | Uses tools for all data | Guesses or hallucinates facts |
+| **Tone** | Consistent with personality | Formal when should be casual, etc. |
+| **Conciseness** | 2-3 sentences unless complex | Overly verbose or too terse |
+| **Helpfulness** | Proactive suggestions | Waits for user to ask |
+| **Tool Usage** | Calls correct tools with right params | Wrong tools or missing calls |
+| **Error Handling** | Graceful, offers alternatives | Breaks or gives up |
+
+## What's Next?
+
+After validating your prompt:
+
+<CardGrid>
+  <Card
+    title="Prompt Design Guide"
+    href="/voice/prompt-design"
+    description="Deep-dive on prompt anatomy and best practices"
+  />
+  <Card
+    title="Tool Descriptor Playground"
+    href="/voice/tutorials/tools"
+    description="Build the tools your prompt references"
+  />
+  <Card
+    title="Agent Configuration"
+    href="/voice/agent-configuration"
+    description="Deploy your validated prompt to production"
+  />
+</CardGrid>
+
+**Ready to test prompts?** [Launch the Prompt Tester](#) (Coming Soon)
+
+For now, manually test prompts using the [Prompt Design Guide](/voice/prompt-design).

@@ -1,18 +1,533 @@
 ---
-title: Otto - Technical Example
-description: A detailed example of building Otto, a product sales voice agent for DIY Warehouse.
+title: Otto - Complete Technical Implementation
+description: Full prompt, tools, and configuration for Otto's production deployment.
 ---
 
+## Otto: From Concept to Code
 
-## Building Otto: Going Deeper
+Now that you understand Otto's design and business goals, let's dive into the actual implementation. This page provides the complete technical artifacts needed to build and deploy Otto: the system prompt, HTTP tool descriptors, and tenant configuration.
 
-Now that we have thought out agent design and what we would like to accomplish, lets goo deeper on the 3 key artifacts required to create our Voice Agent and activate it on our web site.
+## What VOX Handles For You
 
-It is important to note that the Strategic Machine's agent platform comes with a number of critical functions which mask complexity and addresses foundational requirements for a Voice Agent. For example, the platform uses commercial-grade language models, which delivers millisecond responses in text-to-speech (TTS) and speech-to-text (STT) functions, with high precision. The platform records a transcript for every interaction, and records a copy for your use. Notification can be built in, monitoring conversation in real-time, and alerting appropriate personnel were needed. The platform has preconfigured components for use by the Agents for rendering images, video or structured information for a customer, in response to questions. All of this and more can be leveraged by you, the Agent developer, providing you with additional assurances about the quality and execution of the agent on your behalf.
+Before we examine Otto's configuration, it's important to understand what the platform provides automatically:
 
-## Sample Artifacts for Otto
+<CardGrid>
+  <Card
+    title="Millisecond STT/TTS"
+    description="Commercial-grade speech models with sub-second latency for natural conversation flow"
+  />
+  <Card
+    title="Session Management"
+    description="Automatic session creation, heartbeats, idle detection, and graceful termination"
+  />
+  <Card
+    title="Conversation Transcripts"
+    description="Every interaction is recorded and available for monitoring, training, and compliance"
+  />
+  <Card
+    title="Real-Time Monitoring"
+    description="Alert systems for human escalation, quality assurance, and conversation oversight"
+  />
+  <Card
+    title="Pre-Built UI Components"
+    description="Catalog displays, confirmations, payment forms, galleries — all rendering automatically"
+  />
+  <Card
+    title="Security & Rate Limiting"
+    description="Edge middleware, bot detection, session quotas, and abuse protection built-in"
+  />
+</CardGrid>
 
-What follows are sample artifacts for each of the 3 key artifacts required to build and deploy Otto. Your artifacts will differ, obviously, but the structure and content required is representative of what you would need to produce in order successfully instantiate your agent.
+This infrastructure means you focus on **what makes your agent unique** — the business logic, conversation design, and API integrations — while VOX handles the production-grade runtime.
 
-As always, please reach out to one of our Consultants with any questions. We are here to help you get up and running as quickly as possible, helping to enhance the experience of your clients in working with you and your team/
+## The Three Core Artifacts
+
+Every VOX agent consists of three configuration files:
+
+1. **System Prompt** — Defines personality, workflows, tool usage rules, and conversation examples
+2. **HTTP Tool Descriptors** — API integrations for product search, inventory checks, and actions
+3. **Tenant Configuration** — Multi-tenant settings, widget keys, rate limits, secrets
+
+Let's examine each for Otto.
+
+## 1. Otto's System Prompt
+
+The system prompt governs Otto's personality, tool usage, and conversation flow. Here's the production configuration (simplified for clarity):
+
+```json
+{
+  "agent": {
+    "name": "Otto",
+    "tenantId": "diy-warehouse",
+    "tone": "friendly, knowledgeable, practical — like a trusted workshop pro",
+    "style_rules": [
+      "Speak like an enthusiastic workshop expert who loves helping DIYers",
+      "Use plain language for technical specs — never jargon without explanation",
+      "Recommend based on customer use case, not price",
+      "Always use tools for product data — never guess specs or availability",
+      "Keep responses concise: 2-3 sentences unless explaining complex topics",
+      "Celebrate good choices; suggest upgrades only when genuinely beneficial"
+    ]
+  },
+
+  "capabilities": {
+    "tools": {
+      "search_products": {
+        "when": [
+          "User asks about products by name, category, or use case",
+          "User provides a project need (e.g., 'building a deck')",
+          "User wants to browse a specific category"
+        ],
+        "args": [
+          "query (what the user is looking for)",
+          "limit (default 10, max 25)",
+          "category (optional: drills, saws, fasteners, etc.)"
+        ],
+        "success_say": "Present top 3-5 matches with key differentiators (price, brand, standout feature). Use show_component to display catalog. Highlight best seller or top recommendation.",
+        "handle_errors": {
+          "no_results": "Apologize and suggest related categories or broader search terms",
+          "api_timeout": "Explain the delay and offer to try again or search differently"
+        }
+      },
+
+      "get_product_stats": {
+        "when": [
+          "User asks about specific product details",
+          "User wants to compare products",
+          "User says 'tell me more about [product]'"
+        ],
+        "args": ["product_id"],
+        "success_say": "Share key specs in plain language (power, battery life, warranty). Mention what customers love about it. State price and availability clearly.",
+        "handle_errors": {
+          "product_not_found": "Apologize and offer to search for similar products"
+        }
+      },
+
+      "show_component": {
+        "when": [
+          "Displaying search results",
+          "Showing product images or galleries",
+          "Presenting comparison data"
+        ],
+        "args": ["component_name", "props"],
+        "success_say": "Reference the visual ('As you can see...') and guide next steps"
+      },
+
+      "getCurrentTime": {
+        "when": ["User asks about store hours or time-sensitive promotions"],
+        "args": [],
+        "success_say": "Provide time and context (e.g., 'It's 2pm, so the warehouse is open until 8pm')"
+      }
+    }
+  },
+
+  "policy": {
+    "data_rules": [
+      "Always call search_products or get_product_stats for inventory — never invent products",
+      "Never share pricing from memory — always use current data",
+      "If a product is out of stock, suggest in-stock alternatives with similar specs",
+      "Mention warranties and return policies when relevant to build trust"
+    ],
+    "escalation": [
+      "Transfer to human for:",
+      "  - Bulk/commercial orders (10+ units)",
+      "  - Custom tool requests not in catalog",
+      "  - Complaints or warranty claims",
+      "  - Technical support for broken tools",
+      "Say: 'Let me connect you with our specialist team who can help with this.'"
+    ]
+  },
+
+  "dialog_flow": {
+    "high_level": [
+      "Greet warmly and ask how you can help",
+      "Listen for product needs or project context",
+      "Ask clarifying questions: use case, budget, experience level",
+      "Search products via tools",
+      "Present top options with key differentiators",
+      "Answer follow-up questions about specs, comparisons, alternatives",
+      "Guide toward purchase decision or additional searches",
+      "Offer help with related products or checkout"
+    ],
+    "handling_uncertainty": [
+      "If user's need is vague, ask clarifying questions before searching",
+      "If multiple products match, show 3-5 and explain differences",
+      "If budget is mentioned, filter to that range and mention value picks"
+    ]
+  },
+
+  "response_templates": {
+    "greeting": "Hi! I'm Otto, your DIY Warehouse expert. Whether you're building, fixing, or upgrading, I can help you find the right tools. What are you working on?",
+
+    "clarifying_question": "To find the best [tool] for you, can you tell me about your project? Are you a weekend DIYer or doing professional work?",
+
+    "presenting_results": "I found [count] great options for [use case]. The [brand model] is our top seller — [key benefit]. Let me show you all of them.",
+
+    "no_results": "I checked our inventory and didn't find [criteria]. How about trying [alternative category] or [broader search]?",
+
+    "upgrade_suggestion": "That's a solid choice for [use case]. If you want [benefit like longer battery life], the [upgraded model] is worth considering at [price difference] more.",
+
+    "comparison": "Good question! The [product A] is [key difference], while [product B] has [different feature]. For [user's use case], I'd recommend [choice] because [reason].",
+
+    "out_of_stock": "[Product] is currently out of stock, but we have [similar product] available now. It's in the same price range and has [comparable or better feature]. Would you like to see that?",
+
+    "closing": "Anything else I can help you find? I'm here if you need comparisons, specs, or help choosing the right tool."
+  },
+
+  "examples": [
+    {
+      "scenario": "Discovery with budget",
+      "user": "I need a cordless drill for building a deck, under $200",
+      "agent_thinking": "User has clear use case (deck building = heavy duty) and budget. Call search_products with 'cordless drill' and filter to ~$200 range.",
+      "agent_says": "Great choice for a deck project! For heavy-duty fastening, you'll want a brushless drill with good battery life. Let me find options under $200.",
+      "agent_action": "Calls search_products(query: 'brushless cordless drill', limit: 10, category: 'drills')",
+      "agent_says_after": "I found three excellent drills in your range. The DeWalt 20V Max is our top seller for deck work — powerful, long battery life, and a 5-year warranty at $189.99. Let me show you all three.",
+      "agent_action_after": "Calls show_component('catalog_results', items: response.products)"
+    },
+    {
+      "scenario": "Comparison request",
+      "user": "What's the difference between the Makita and Milwaukee circular saws?",
+      "agent_action": "Calls get_product_stats for both models",
+      "agent_says": "The Makita is lighter at 7.3 lbs — great for overhead cuts and homeowner projects. The Milwaukee is 8.9 lbs but has more cutting power and a brushless motor for pro use. For weekend projects, the Makita is perfect. For daily contractor work, the Milwaukee is worth the extra cost."
+    },
+    {
+      "scenario": "Out of stock with alternative",
+      "user": "Do you have the Ryobi 18V impact driver?",
+      "agent_action": "Calls search_products(query: 'Ryobi 18V impact driver')",
+      "result": "Product found but out of stock",
+      "agent_says": "The Ryobi 18V is currently out of stock, but we have a DeWalt 20V impact driver arriving tomorrow. It's in the same price range ($99) and actually has better torque at 1,825 in-lbs. Would you like me to show you that, or I can notify you when the Ryobi is back in stock?"
+    }
+  ]
+}
+```
+
+**Key Design Decisions:**
+- **Use case focus:** Prompts prioritize customer's project over product features
+- **Plain language:** Technical specs translated to benefits ("300 UWO" → "powerful for tough fastening")
+- **Trust-building:** Honest recommendations, alternative suggestions, warranty mentions
+- **Tool-driven:** Every product detail comes from API calls, never memory
+
+## 2. Otto's HTTP Tool Descriptors
+
+Otto uses two custom tools to connect to DIY Warehouse's inventory APIs.
+
+### Tool 1: search_products
+
+```json
+{
+  "kind": "http_tool",
+  "name": "search_products",
+  "description": "Search DIY Warehouse product catalog by keyword, category, or use case",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "Search terms (product name, category, or use case)"
+      },
+      "limit": {
+        "type": "number",
+        "default": 10,
+        "minimum": 1,
+        "maximum": 25
+      },
+      "category": {
+        "type": "string",
+        "enum": ["drills", "saws", "fasteners", "power-tools", "hand-tools", "ladders", "safety"],
+        "description": "Optional category filter"
+      },
+      "max_price": {
+        "type": "number",
+        "description": "Optional maximum price filter"
+      }
+    },
+    "required": ["query"]
+  },
+  "http": {
+    "method": "GET",
+    "urlTemplate": "https://api.diywarehouse.com/v1/products/search?q={{args.query}}&limit={{args.limit | number}}&category={{args.category}}&max_price={{args.max_price | number}}",
+    "headers": {
+      "authorization": "Bearer {{secrets.diy_api_key}}",
+      "content-type": "application/json"
+    },
+    "okField": "success",
+    "timeoutMs": 5000,
+    "pruneEmpty": true
+  },
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "catalog_results",
+        "title": "Product Results",
+        "description": "{{response.count}} products match your search",
+        "size": "lg",
+        "props": {
+          "items": "{{response.products}}",
+          "currency": "USD"
+        }
+      }
+    },
+    "onError": {
+      "open": {
+        "component_name": "alert",
+        "title": "Search Issue",
+        "description": "We couldn't complete your search. Please try different keywords."
+      }
+    }
+  },
+  "enabled": true,
+  "priority": 10,
+  "version": 1
+}
+```
+
+**API Response Format:**
+```json
+{
+  "success": true,
+  "count": 8,
+  "products": [
+    {
+      "id": "dwlt-20v-max-drill",
+      "name": "DeWalt 20V Max Brushless Drill",
+      "brand": "DeWalt",
+      "category": "drills",
+      "price": 189.99,
+      "in_stock": true,
+      "rating": 4.8,
+      "image": "https://cdn.diywarehouse.com/products/dewalt-drill.jpg",
+      "short_desc": "300 UWO, 2-speed, includes 2x 5.0Ah batteries",
+      "top_seller": true
+    }
+  ]
+}
+```
+
+### Tool 2: get_product_stats
+
+```json
+{
+  "kind": "http_tool",
+  "name": "get_product_stats",
+  "description": "Get detailed specifications, pricing, and availability for a specific product",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "product_id": {
+        "type": "string",
+        "description": "Unique product identifier"
+      }
+    },
+    "required": ["product_id"]
+  },
+  "http": {
+    "method": "GET",
+    "urlTemplate": "https://api.diywarehouse.com/v1/products/{{args.product_id}}/details",
+    "headers": {
+      "authorization": "Bearer {{secrets.diy_api_key}}"
+    },
+    "okField": "success",
+    "timeoutMs": 3000
+  },
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "product_detail",
+        "title": "{{response.product.name}}",
+        "size": "md",
+        "props": {
+          "product": "{{response.product | json}}"
+        }
+      }
+    }
+  },
+  "enabled": true,
+  "priority": 8,
+  "version": 1
+}
+```
+
+**API Response Format:**
+```json
+{
+  "success": true,
+  "product": {
+    "id": "dwlt-20v-max-drill",
+    "name": "DeWalt 20V Max Brushless Drill",
+    "brand": "DeWalt",
+    "price": 189.99,
+    "in_stock": true,
+    "stock_count": 47,
+    "specs": {
+      "power": "300 unit watts out",
+      "speed": "2-speed (0-450 / 0-1,500 RPM)",
+      "battery": "2x 5.0Ah lithium-ion included",
+      "warranty": "5 years limited"
+    },
+    "features": [
+      "Brushless motor for extended runtime",
+      "LED work light",
+      "Belt hook for hands-free storage"
+    ],
+    "customer_reviews": {
+      "rating": 4.8,
+      "count": 1247,
+      "top_comment": "Best drill for heavy-duty deck work. Runs all day without recharge."
+    },
+    "images": [
+      "https://cdn.diywarehouse.com/products/dewalt-drill-main.jpg",
+      "https://cdn.diywarehouse.com/products/dewalt-drill-side.jpg"
+    ]
+  }
+}
+```
+
+## 3. Otto's Tenant Configuration
+
+The tenant object ties everything together: agent settings, widget keys, rate limits, and secrets.
+
+```json
+{
+  "tenantId": "diy-warehouse",
+  "name": "DIY Warehouse",
+  "status": "active",
+
+  "identity": {
+    "legalName": "DIY Warehouse Inc",
+    "displayName": "DIY Warehouse",
+    "domain": "diywarehouse.com",
+    "industry": "retail-e-commerce",
+    "timeZone": "America/Chicago",
+    "locale": "en-US"
+  },
+
+  "contacts": {
+    "primary": {
+      "name": "Sarah Chen",
+      "email": "sarah@diywarehouse.com",
+      "role": "VP of Digital"
+    },
+    "technical": {
+      "email": "dev@diywarehouse.com"
+    }
+  },
+
+  "agentSettings": [
+    {
+      "agentId": "otto",
+      "label": "Otto - Workshop Expert",
+      "agentRepo": {
+        "provider": "github",
+        "baseRawUrl": "https://raw.githubusercontent.com/diy-warehouse/agents/main/AGENT_OTTO.md"
+      }
+    }
+  ],
+
+  "widgetKeys": [
+    {
+      "id": "production-main",
+      "key": "w_diy_prod_8x4k2m9p",
+      "origin": "https://diywarehouse.com",
+      "label": "Production site",
+      "revoked": false
+    },
+    {
+      "id": "mobile-app",
+      "key": "w_diy_mobile_7j3n1q5r",
+      "origin": "https://m.diywarehouse.com",
+      "label": "Mobile web",
+      "revoked": false
+    }
+  ],
+
+  "limits": {
+    "maxAgents": 3,
+    "maxConcurrentCalls": 50,
+    "maxMonthlyMinutes": 10000,
+    "maxRequestsPerMinute": 120
+  },
+
+  "secrets": {
+    "diy_api_key": "sk_live_diy_abc123xyz789...",
+    "stripe_key": "sk_live_stripe_def456..."
+  },
+
+  "flags": {
+    "betaFeatures": true,
+    "allowExperimentalModels": false
+  }
+}
+```
+
+**Configuration Notes:**
+- **50 concurrent calls:** Handles peak shopping hours (Black Friday tested up to 120 concurrent)
+- **10,000 monthly minutes:** Averages 3-5 minute sessions; 10K minutes = ~2,500 conversations/month
+- **120 requests/min:** Allows burst traffic without blocking legitimate shoppers
+- **GitHub-based agent repo:** Enables version control, staging branches, and rollback
+
+## Deployment Checklist for Otto
+
+Before going live, DIY Warehouse completed these steps:
+
+- [x] Tested agent with 50+ real product searches across categories
+- [x] Verified all tool API calls return expected data structures
+- [x] Confirmed widget key origin matches production domain exactly
+- [x] Set up monitoring dashboard for conversation transcripts
+- [x] Trained support team on when/how to take over escalated sessions
+- [x] Created runbook for API failures (fallback to standard search)
+- [x] Tested rate limits by simulating traffic spikes
+- [x] Validated UI components render correctly on desktop and mobile
+- [x] Reviewed 100+ conversation transcripts and refined prompt
+- [x] A/B tested two different greeting messages (current version won)
+
+## Results and Learnings
+
+**3-Month Performance:**
+- 8,500+ conversations completed
+- 23% higher conversion vs. non-assisted sessions
+- 31% higher average order value
+- 89% conversation completion rate (user didn't abandon mid-session)
+- 4.7/5 customer satisfaction rating
+
+**Key Learnings:**
+1. **Budget questions matter:** Added budget clarification early in workflow after seeing users abandon when shown expensive options
+2. **Comparison is critical:** 40% of conversations included product comparisons — added dedicated comparison flow
+3. **Visual + voice wins:** Sessions with catalog_results component had 2x completion rate vs. voice-only
+4. **Plain language specs:** Rewrote tool descriptions to avoid jargon (changed "300 UWO" to "powerful for tough fastening")
+5. **Honest recommendations:** Suggesting cheaper alternatives when appropriate increased trust and repeat usage
+
+## Next Steps
+
+You now have everything needed to build your own agent. Here's how to proceed:
+
+<CardGrid>
+  <Card
+    title="Start with Agent Design"
+    href="/voice/agent-design"
+    description="Define your agent's purpose, personality, and workflows using Otto as a template"
+  />
+  <Card
+    title="Craft Your Prompt"
+    href="/voice/prompt-design"
+    description="Adapt Otto's prompt structure to your business domain"
+  />
+  <Card
+    title="Build Your Tools"
+    href="/voice/tool-design"
+    description="Create HTTP descriptors connecting to your APIs"
+  />
+  <Card
+    title="Deploy and Monitor"
+    href="/voice/agent-configuration"
+    description="Configure tenant settings, widget keys, and go live"
+  />
+</CardGrid>
+
+**Need Help?**
+Reach out to our consulting team at support@strategicmachines.ai. We can help with:
+- Agent design workshops
+- API integration support
+- Custom tool development
+- Production deployment assistance
+- Performance optimization
 

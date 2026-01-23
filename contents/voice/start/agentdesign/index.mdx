@@ -1,50 +1,243 @@
 ---
 title: Agent Design
-description: Thinking about and Designing Your Voice Agents
-keywords:
-  ["setup", "design", "layout", "documents"]
+description: Plan your voice agent's purpose, personality, workflows, and success criteria before building.
+keywords: ["agent design", "planning", "voice agent", "workflow"]
 ---
-## Agent Design
 
-The Agent Design phase is where you plan the overall structure and purpose of your voice agent. Think of this as the blueprint for your agent's role in your business. Keep it simple: focus on what the agent should achieve, how it should sound, and the key workflows it will handle.
+## Agent Design: Blueprint for Success
 
-### Step 1: Define the Agent's Purpose
-Start by answering these basic questions:
-- What problem does the agent solve? (e.g., "Handle restaurant reservations" or "Assist with product searches and sales.")
-- Who is the target user? (e.g., Customers browsing your website or internal staff.)
-- What are the success criteria? (e.g., "Complete a booking in under 5 minutes" or "Increase sales conversions by 20%.")
+Agent design is where strategy meets execution. Before writing a single line of configuration, you need a clear blueprint that defines your agent's role, personality, and operational boundaries. This planning phase prevents costly rework and ensures your agent delivers real business value.
 
-**Tip**: Keep the purpose narrow for your first agent. For example, if you're in hospitality, focus on reservations before adding support queries.
+Think of agent design as writing a job description for your newest team member — one who never sleeps, never forgets, and represents your brand in every conversation.
 
-### Step 2: Set the Tone and Personality
-Your agent should reflect your brand. Choose a tone like "friendly and helpful" or "professional and efficient." This will guide the prompt design later.
+## The Five Pillars of Agent Design
 
-- Example for a sales agent: "Enthusiastic, concise, and always ready to recommend products."
-- Example for customer support: "Empathetic, patient, and solution-oriented."
+### Pillar 1: Define Purpose and Scope
 
-### Step 3: Outline Workflows
-Map out the main conversation flows as simple steps. Use bullet points or a flowchart.
-- Greeting and intent detection (e.g., "Hi, how can I help today?")
-- Key actions (e.g., Search products, check availability, confirm details.)
-- Endings (e.g., "Booking confirmed! Anything else?")
+Start with clarity about what problem your agent solves. Narrow, focused agents outperform generalists.
 
-**Tip**: Consider edge cases, like what happens if data is unavailable or the user changes their mind.
-
-### Step 4: Plan for Data and Tools
-Identify what data the agent needs (e.g., inventory from your API) and what actions it can take (e.g., book a reservation). This sets up the Tool Design section.
-
-### Step 5: Consider Limits and Monitoring
-Note basic safeguards like rate limits to prevent abuse (e.g., max sessions per day). Detailed technical setup comes later, but plan for monitoring conversations to ensure quality.
-
-Once planned, you're ready to build. Test a demo at strategicmachines.ai to see these concepts in action.
-
+**Ask yourself:**
+- What specific business problem does this agent solve?
+- Who will interact with it? (customers, employees, partners)
+- What does success look like? (completed bookings, resolved tickets, qualified leads)
 
 <CardGrid>
   <Card
-    title="Navigation"
-    href="/voice/navigation"
-    icon="alignJustify"
-    variant="small"
-    description="Creating your navigation"
+    title="Good Scope"
+    description="Handle restaurant reservations for parties of 1-12, check availability, confirm bookings"
+  />
+  <Card
+    title="Too Broad"
+    description="Answer all customer questions about everything, handle complaints, take orders, manage loyalty"
+  />
+</CardGrid>
+
+**Pro Tip:** Your first agent should do *one thing excellently* rather than many things poorly. You can always expand scope after validating the core workflow.
+
+**Examples of Well-Scoped Agents:**
+- **Cypress Resorts Concierge** — Handle room availability queries and booking reservations
+- **Otto (DIY Warehouse)** — Search products, recommend alternatives, guide to purchase
+- **Restaurant Host** — Check table availability, book reservations, handle party size changes
+
+### Pillar 2: Establish Personality and Brand Voice
+
+Your agent's personality should mirror your brand while fitting its specific role. This isn't about creativity — it's about consistency and trust.
+
+**Define these attributes:**
+
+| Attribute | Questions to Answer | Example |
+|-----------|-------------------|---------|
+| **Tone** | Formal or casual? Energetic or calm? | "Warm, professional, concise" |
+| **Language Style** | Short responses or detailed? Technical or simple? | "Conversational but efficient — 2-3 sentences max" |
+| **Emotional Range** | Empathetic? Enthusiastic? Neutral? | "Helpful and patient, celebratory on booking success" |
+| **Boundaries** | What won't it do? When does it escalate? | "Won't handle complaints; escalates policy questions" |
+
+**Example Personalities:**
+
+<CardGrid>
+  <Card
+    title="Cypress Concierge"
+    description="Warm, attentive, luxury-focused. Like a five-star hotel concierge who anticipates needs."
+  />
+  <Card
+    title="Otto (Tools Expert)"
+    description="Knowledgeable, practical, enthusiastic. Like a workshop pro who loves helping DIYers find the right tool."
+  />
+  <Card
+    title="Support Agent"
+    description="Patient, empathetic, solution-oriented. Stays calm under pressure and prioritizes resolution."
+  />
+</CardGrid>
+
+**Writing Your Personality Guide:**
+```
+Agent: Cypress Concierge
+Tone: Warm, attentive, professional
+Style: Speak like a luxury hotel concierge — anticipate needs, confirm details, celebrate bookings
+Boundaries: Doesn't handle cancellations or complaints (escalates to human)
+Sample Phrases: "I'd be delighted to help you find the perfect room," "Let me check availability for you"
+```
+
+### Pillar 3: Map Conversation Workflows
+
+Document the primary conversation paths your agent will handle. Use simple flowcharts or bullet points — this doesn't need to be complex.
+
+**Core Workflow Template:**
+
+1. **Greeting & Intent Detection**
+   - How does the agent open? ("Hi! I'm here to help you find and book the perfect room.")
+   - How does it identify what the user wants?
+
+2. **Information Gathering**
+   - What details does the agent need? (dates, party size, preferences)
+   - How does it handle missing information? (prompt gently vs. assume defaults)
+
+3. **Action Execution**
+   - What tools get called? (search availability, check inventory, create booking)
+   - What data gets displayed? (room photos, product specs, confirmation details)
+
+4. **Confirmation & Next Steps**
+   - How does the agent confirm success? (show booking confirmation, payment link)
+   - What are the exit phrases? ("Is there anything else I can help with?")
+
+5. **Edge Cases & Escalation**
+   - Out of stock / unavailable? (suggest alternatives, capture lead)
+   - User changes mind mid-flow? (gracefully restart)
+   - Angry customer? (empathize and escalate to human)
+
+**Example: Restaurant Reservation Flow**
+
+```
+1. Greeting
+   → "Hi! I'm here to help you reserve a table. What day works for you?"
+
+2. Gather Requirements
+   → Date, time, party size
+   → If date unavailable → suggest nearby dates
+
+3. Check Availability (Tool: check_tables)
+   → If available → confirm details
+   → If not → offer alternatives
+
+4. Create Reservation (Tool: create_booking)
+   → Show confirmation
+   → Send confirmation email
+
+5. Close
+   → "Your table is booked! See you [date] at [time]."
+   → Offer additional help
+```
+
+### Pillar 4: Plan Data and Tool Requirements
+
+Identify what data your agent needs access to and what actions it must perform. This bridges design to implementation.
+
+**Data Requirements:**
+- Real-time inventory/availability from your systems
+- Pricing, product specs, policies
+- Customer context (if personalized)
+
+**Tool Requirements:**
+- Core platform tools (time check, UI rendering, web scraping)
+- Custom HTTP tools connecting to your APIs
+- Authentication needs (API keys, bearer tokens)
+
+**Example: Otto (Product Sales)**
+| Need | Solution |
+|------|----------|
+| Product search | Custom tool: `search_products` calling inventory API |
+| Product details | Custom tool: `get_product_stats` for specs and pricing |
+| Visual display | Core tool: `show_component` rendering product catalog |
+| Current time | Core tool: `getCurrentTime` for time-sensitive offers |
+
+### Pillar 5: Define Success Metrics and Safeguards
+
+How will you measure whether this agent is working? What limits prevent abuse?
+
+**Success Metrics:**
+- Conversation completion rate (% of sessions ending in booking/purchase)
+- Average session duration (should match expected workflow)
+- Customer satisfaction (post-conversation survey or implicit signals)
+- Escalation rate (% requiring human intervention)
+- Revenue impact (conversions, AOV increase)
+
+**Operational Safeguards:**
+- **Concurrent Sessions:** Max simultaneous conversations (prevents runaway costs)
+- **Session Duration:** Hard cap per conversation (15 minutes is typical)
+- **Daily Quotas:** Token/dollar limits per user or tenant
+- **Rate Limits:** Requests per minute (blocks abusive scripts)
+
+**Example Limits for a Hotel Agent:**
+```
+Max Concurrent Sessions: 20 (busy resort)
+Max Session Duration: 15 minutes
+Daily Token Cap: 300,000 tokens
+Requests per Minute: 12 (per tenant)
+```
+
+## Validation Checklist
+
+Before moving to implementation, validate your design:
+
+- [ ] **Purpose is specific** — Can you explain what the agent does in one sentence?
+- [ ] **Personality is documented** — Would a stranger understand how the agent should sound?
+- [ ] **Workflows are mapped** — Can you sketch the happy path and 2-3 edge cases?
+- [ ] **Data sources identified** — Do you know which APIs provide the required data?
+- [ ] **Success criteria defined** — How will you know if this agent is succeeding?
+- [ ] **Limits are reasonable** — Do quotas protect cost without blocking real users?
+
+## Real-World Example: Cypress Resorts Concierge
+
+Let's see a complete design in action:
+
+**Purpose:** Enable website visitors to search available rooms and complete bookings without phone calls or forms.
+
+**Personality:** Warm, attentive, luxury-focused — like a five-star concierge.
+
+**Core Workflow:**
+1. Greet → detect booking intent
+2. Gather dates, guests, room type
+3. Search availability (tool call)
+4. Show matching rooms with photos
+5. Confirm selection and create reservation
+6. Display confirmation and escalate payment
+
+**Tools Needed:**
+- `search_units` — Query availability by dates/type
+- `get_unit_details` — Fetch room specs and photos
+- `create_reservation` — Book the room
+- `show_component` — Display room catalog and confirmation
+
+**Success Metrics:**
+- 60%+ of conversations result in bookings
+- Less than 5 minute average session duration
+- Less than 10% escalation rate
+
+**Limits:**
+- 20 concurrent sessions (peak website traffic)
+- 15 minute session cap
+- 300K daily tokens
+
+This design gives the implementation team everything needed to build, test, and deploy the agent successfully.
+
+## Next Steps
+
+With your agent design complete, you're ready to move into implementation:
+
+<CardGrid>
+  <Card
+    title="Prompt Design"
+    href="/voice/prompt-design"
+    description="Translate your design into a system prompt that governs agent behavior"
+  />
+  <Card
+    title="Tool Design"
+    href="/voice/tool-design"
+    description="Build HTTP tool descriptors connecting your agent to your APIs"
+  />
+  <Card
+    title="See Examples"
+    href="/voice/usage"
+    description="Study Otto and Cypress agents to see design principles in action"
   />
 </CardGrid>

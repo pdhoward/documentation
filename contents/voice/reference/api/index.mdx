@@ -1,0 +1,546 @@
+---
+title: API Reference
+description: Complete REST API reference for the VOX platform including session management, authentication, and monitoring.
+keywords: ["API", "REST", "endpoints", "authentication", "sessions"]
+---
+
+## VOX Platform API Reference
+
+The VOX platform exposes RESTful APIs for session creation, authentication, usage tracking, and real-time monitoring. This reference documents all available endpoints, request/response formats, and security controls.
+
+## Base URL
+
+```
+Production: https://your-domain.com/api
+Development: http://localhost:3000/api
+```
+
+## Authentication
+
+The platform supports two authentication modes:
+
+### Widget Authentication (Public)
+
+Widget-based agents authenticate using JWT tokens embedded in widget keys. No user authentication required.
+
+**Headers:**
+```http
+Content-Type: application/json
+```
+
+**Widget Key in Request Body:**
+```json
+{
+  "widgetKey": "w_cypress_main_7f1b0e9c64f54d1a"
+}
+```
+
+### Console Authentication (Protected)
+
+Console users authenticate via OTP and maintain session cookies.
+
+**Headers:**
+```http
+Content-Type: application/json
+Cookie: tenant_session=<jwt_token>
+```
+
+## Core Endpoints
+
+### Session Management
+
+#### Create Realtime Session
+
+Creates a new voice agent session with OpenAI Realtime API.
+
+**Endpoint:** `POST /api/session`
+
+**Request Body:**
+```json
+{
+  "model": "gpt-4o-realtime-preview-2024-12-17",
+  "voice": "verse",
+  "tenantId": "cypress-resorts",
+  "agentId": "concierge",
+  "widgetKey": "w_cypress_main_7f1b0e9c64f54d1a",
+  "tools": [
+    {
+      "kind": "http_tool",
+      "name": "search_units",
+      "description": "Search available rooms"
+    }
+  ],
+  "instructions": "You are a helpful hotel concierge..."
+}
+```
+
+**Response (200):**
+```json
+{
+  "id": "sess_CXAlw7f1b0e9c64f54d1a",
+  "sm_session_id": "s:dca6...7621:sess_CXAlw...",
+  "client_secret": {
+    "value": "ey...",
+    "expires_at": 1737654321
+  }
+}
+```
+
+**Response (429 - Rate Limited):**
+```json
+{
+  "error": "Too many requests",
+  "code": "RATE_LIMIT_EXCEEDED",
+  "userMessage": "Please wait a moment before starting a new session.",
+  "retryAfter": 60
+}
+```
+
+**Response (403 - Bot Blocked):**
+```json
+{
+  "error": "Bot verification failed",
+  "code": "BOT_BLOCKED",
+  "userMessage": "We couldn't verify this device. Please refresh and try again."
+}
+```
+
+**Response (429 - Concurrent Sessions):**
+```json
+{
+  "error": "Too many active sessions",
+  "code": "MAX_CONCURRENT_SESSIONS",
+  "userMessage": "You have reached the maximum number of active voice sessions."
+}
+```
+
+#### Session Heartbeat
+
+Keeps session alive and enforces duration/idle limits.
+
+**Endpoint:** `POST /api/realtime/heartbeat`
+
+**Request Body:**
+```json
+{
+  "sm_session_id": "s:dca6...7621:sess_CXAlw...",
+  "email": "user@example.com"
+}
+```
+
+**Response (200):**
+```json
+{
+  "ok": true,
+  "session": {
+    "active": true,
+    "startedAt": "2025-01-23T10:00:00Z",
+    "lastSeenAt": "2025-01-23T10:05:00Z",
+    "durationSec": 300,
+    "idleSec": 5
+  }
+}
+```
+
+**Response (403 - Session Exceeded Limits):**
+```json
+{
+  "error": "Session limit exceeded",
+  "code": "SESSION_DURATION_EXCEEDED",
+  "userMessage": "Your session has reached the maximum duration.",
+  "reason": "duration_exceeded",
+  "maxMinutes": 15
+}
+```
+
+**Heartbeat Enforcement Rules:**
+- Send heartbeat every 45 seconds
+- Session auto-closes if idle > `MAX_SESSION_IDLE_SEC` (default: 300s)
+- Session auto-closes if duration > `MAX_SESSION_MINUTES` (default: 15 min)
+- Session auto-closes if daily quota exceeded
+
+### Authentication
+
+#### Send OTP
+
+Initiates one-time password flow for console authentication.
+
+**Endpoint:** `POST /api/auth/otp/send`
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+**Response (200):**
+```json
+{
+  "ok": true,
+  "message": "OTP sent to user@example.com",
+  "expiresIn": 600
+}
+```
+
+**Response (429):**
+```json
+{
+  "error": "Too many OTP requests",
+  "code": "RATE_LIMIT_EXCEEDED",
+  "retryAfter": 60
+}
+```
+
+#### Verify OTP
+
+Verifies OTP code and establishes authenticated session.
+
+**Endpoint:** `POST /api/auth/otp/verify`
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "code": "123456"
+}
+```
+
+**Response (200):**
+```json
+{
+  "ok": true,
+  "session": {
+    "email": "user@example.com",
+    "sessionId": "auth_7f1b0e9c64f54d1a",
+    "expiresAt": "2025-01-24T10:00:00Z"
+  }
+}
+```
+
+Sets cookie: `tenant_session=<jwt_token>`
+
+**Response (401):**
+```json
+{
+  "error": "Invalid or expired code",
+  "code": "INVALID_OTP"
+}
+```
+
+#### Check Session
+
+Validates current authentication session.
+
+**Endpoint:** `GET /api/auth/session`
+
+**Headers:**
+```http
+Cookie: tenant_session=<jwt_token>
+```
+
+**Response (200):**
+```json
+{
+  "ok": true,
+  "email": "user@example.com",
+  "sessionId": "auth_7f1b0e9c64f54d1a",
+  "expiresAt": "2025-01-24T10:00:00Z"
+}
+```
+
+**Response (401):**
+```json
+{
+  "ok": false,
+  "error": "No active session"
+}
+```
+
+### Usage Tracking
+
+#### Report Usage
+
+Reports token and dollar usage for a session.
+
+**Endpoint:** `POST /api/auth/usage`
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "tokens": 1500,
+  "dollars": 0.15
+}
+```
+
+**Response (200):**
+```json
+{
+  "ok": true,
+  "usage": {
+    "tokens": 15000,
+    "dollars": 1.50,
+    "dailyTokenLimit": 150000,
+    "dailyDollarLimit": 15.00
+  }
+}
+```
+
+**Response (429 - Quota Exceeded):**
+```json
+{
+  "error": "Daily quota exceeded",
+  "code": "DAILY_QUOTA_EXCEEDED",
+  "userMessage": "You have reached your daily usage limit."
+}
+```
+
+## Rate Limits
+
+The platform enforces layered rate limiting for security and cost control.
+
+### Edge Rate Limits (Upstash)
+
+Applied at the CDN edge before requests reach the application server.
+
+| Scope | Limit | Window | Environment Variable |
+|-------|-------|--------|---------------------|
+| Per IP | 60 requests | 1 minute | `RATE_IP_PER_MIN` |
+| Per User (Console) | 120 requests | 1 minute | `RATE_USER_PER_MIN` |
+
+**Headers Returned:**
+```http
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 45
+X-RateLimit-Reset: 1737654321
+Retry-After: 60
+```
+
+### Server Rate Limits (MongoDB)
+
+Applied at the application layer with persistent counters.
+
+| Scope | Widget Limit | Console Limit | Environment Variable |
+|-------|--------------|---------------|---------------------|
+| Sessions per minute | 12 | 3 | `WIDGET_SESSION_PER_MIN`, `CONSOLE_SESSION_PER_MIN` |
+| Daily tokens | 300,000 | 50,000 | `WIDGET_MAX_TOKENS_DAILY`, `CONSOLE_MAX_TOKENS_DAILY` |
+| Daily dollars | $20 | $1 | `WIDGET_MAX_DOLLARS_DAILY`, `CONSOLE_MAX_DOLLARS_DAILY` |
+| Concurrent sessions | 10 | 1 | `WIDGET_MAX_CONCURRENT_SESSIONS`, `CONSOLE_MAX_CONCURRENT_SESSIONS` |
+
+### Session Limits
+
+| Limit | Default | Environment Variable |
+|-------|---------|---------------------|
+| Max session duration | 15 minutes | `MAX_SESSION_MINUTES` |
+| Max idle time | 300 seconds | `MAX_SESSION_IDLE_SEC` |
+
+## Error Codes
+
+All errors follow this format:
+
+```json
+{
+  "error": "Human-readable error message",
+  "code": "MACHINE_READABLE_CODE",
+  "userMessage": "User-friendly explanation"
+}
+```
+
+### Common Error Codes
+
+| Code | HTTP Status | Meaning | User Action |
+|------|-------------|---------|-------------|
+| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests | Wait and retry |
+| `BOT_BLOCKED` | 403 | Bot detection triggered | Refresh browser |
+| `MAX_CONCURRENT_SESSIONS` | 429 | Too many active sessions | Close existing sessions |
+| `SESSION_DURATION_EXCEEDED` | 403 | Session too long | Start new session |
+| `DAILY_QUOTA_EXCEEDED` | 429 | Usage limit reached | Try again tomorrow |
+| `INVALID_OTP` | 401 | Wrong or expired OTP | Request new code |
+| `INVALID_WIDGET_KEY` | 401 | Widget key invalid | Check configuration |
+| `ORIGIN_MISMATCH` | 403 | Origin doesn't match widget | Update widget origin |
+
+## Security Controls
+
+### Bot Protection
+
+The platform uses BotID to detect and block automated clients.
+
+**Client Requirements:**
+- Include BotID client library
+- Pass BotID headers with requests
+
+**Server Validation:**
+```json
+{
+  "verdict": {
+    "isBot": false,
+    "isVerifiedBot": false,
+    "confidence": 0.95
+  }
+}
+```
+
+**Blocking Policy:**
+- Block if `isBot: true` and `isVerifiedBot: false`
+- Allow verified bots (search engines)
+- Log all bot verdicts for analysis
+
+### CORS Protection
+
+Widget keys enforce strict origin matching.
+
+**Tenant Configuration:**
+```json
+{
+  "widgetKeys": [
+    {
+      "key": "w_cypress_main_7f1b0e9c64f54d1a",
+      "origin": "https://cypressresort.vercel.app",
+      "revoked": false
+    }
+  ]
+}
+```
+
+**Validation:**
+- Request origin must exactly match widget key origin
+- Wildcards not supported for security
+- Multiple keys supported for multiple domains
+
+### Session Security
+
+**JWT Tokens:**
+- Signed with `JWT_SECRET`
+- Include expiration timestamps
+- Auto-cleared on quota/limit violations
+
+**Session Cookies:**
+- HTTPOnly (not accessible via JavaScript)
+- Secure (HTTPS only in production)
+- SameSite=Lax (CSRF protection)
+
+## Monitoring & Analytics
+
+### Session States
+
+Sessions progress through these states:
+
+| State | Description | Conditions |
+|-------|-------------|------------|
+| Live (Engaged) | Active conversation | `active: true`, `idleSec <= maxIdleSec` |
+| Live (Idle) | Connected but quiet | `active: true`, `idleSec > maxIdleSec` |
+| Stale | Abandoned | `idleSec > staleGraceSec` (1 hour default) |
+| Ended | Explicitly closed | `active: false` |
+
+### MongoDB Collections
+
+**`realtime_sessions`** — Active session registry
+```json
+{
+  "_id": "s:<emailHash>:<sessionId>",
+  "emailHash": "dca6...7621",
+  "tenantId": "cypress-resorts",
+  "agentId": "concierge",
+  "startedAt": "2025-01-23T10:00:00Z",
+  "lastSeenAt": "2025-01-23T10:05:00Z",
+  "active": true
+}
+```
+
+**`usage_daily`** — Daily quota tracking
+```json
+{
+  "_id": "d:<emailHash>:2025-01-23",
+  "tokens": 15000,
+  "dollars": 1.50
+}
+```
+
+**`ratelimits`** — Fixed-window counters
+```json
+{
+  "_id": "ip:127.0.0.1:29367014",
+  "count": 5,
+  "windowSec": 60,
+  "createdAt": "2025-01-23T10:00:00Z"
+}
+```
+
+## Environment Variables
+
+### Required
+
+```bash
+# Database
+MONGODB_URI=mongodb+srv://...
+DATABASE_NAME=voicedb
+
+# OpenAI
+OPENAI_API_KEY=sk-...
+
+# Security
+JWT_SECRET=<random-secret>
+
+# Transport (for widget embedding)
+TRANSPORT_API_URL=https://your-domain.com/api
+```
+
+### Optional Rate Limits
+
+```bash
+# Edge Limits
+RATE_IP_PER_MIN=60
+RATE_USER_PER_MIN=120
+RATE_BURST=20
+
+# Widget Limits
+WIDGET_SESSION_PER_MIN=12
+WIDGET_MAX_TOKENS_DAILY=300000
+WIDGET_MAX_DOLLARS_DAILY=20
+WIDGET_MAX_CONCURRENT_SESSIONS=10
+
+# Console Limits
+CONSOLE_SESSION_PER_MIN=3
+CONSOLE_MAX_TOKENS_DAILY=50000
+CONSOLE_MAX_DOLLARS_DAILY=1
+CONSOLE_MAX_CONCURRENT_SESSIONS=1
+
+# Session Limits
+MAX_SESSION_MINUTES=15
+MAX_SESSION_IDLE_SEC=300
+
+# Upstash (for edge rate limiting)
+UPSTASH_REDIS_REST_URL=https://...
+UPSTASH_REDIS_REST_TOKEN=...
+```
+
+### Optional Features
+
+```bash
+# Require authentication for all sessions
+REQUIRE_AUTH_FOR_SESSION=false
+
+# Enable debug metrics
+DEBUG_METRICS=false
+```
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Core Tools Reference"
+    href="/voice/reference/coretools"
+    description="Explore built-in platform tools"
+  />
+  <Card
+    title="HTTP Tools Schema"
+    href="/voice/reference/httptools"
+    description="Build custom API integrations"
+  />
+  <Card
+    title="UI Components"
+    href="/voice/reference/components"
+    description="Render rich visual experiences"
+  />
+</CardGrid>

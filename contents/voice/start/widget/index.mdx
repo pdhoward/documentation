@@ -1,0 +1,523 @@
+---
+title: Widget Integration
+description: Embed your voice agent on your website with the VOX widget — step-by-step embedding, customization, and troubleshooting.
+keywords: ["widget", "embedding", "integration", "javascript", "cors"]
+---
+
+## Widget Integration: Bringing Your Agent to Life
+
+The VOX widget is the customer-facing entry point for your voice agent. It's a lightweight JavaScript component that embeds seamlessly into your website, handles microphone permissions, streams audio to the VOX platform, and renders UI components returned by your agent's tools.
+
+This guide covers everything you need to embed, customize, and troubleshoot the widget across different environments and frameworks.
+
+## Quick Start: Basic Embedding
+
+The simplest way to embed the VOX widget is to add a script block to your HTML:
+
+```html
+<!-- Add this snippet before the closing </body> tag -->
+<script>
+  (function() {
+    window.voxConfig = {
+      tenantId: 'your-tenant-id',
+      agentId: 'your-agent-id',
+      widgetKey: 'w_your_widget_key_here'
+    };
+    var script = document.createElement('script');
+    script.src = 'https://vox.strategicmachines.ai/widget.js';
+    script.async = true;
+    document.head.appendChild(script);
+  })();
+</script>
+```
+
+**Required Configuration:**
+- `tenantId` — Your unique tenant identifier (e.g., `'cypress-resorts'`)
+- `agentId` — The specific agent to load (e.g., `'concierge'`)
+- `widgetKey` — The widget key tied to your domain origin
+
+**What Happens Next:**
+1. Widget loads asynchronously (no blocking)
+2. A voice button appears on your page (bottom-right by default)
+3. When clicked, the widget requests microphone permissions
+4. User speaks → audio streams to VOX → agent responds → UI renders
+
+## Configuration Options
+
+Customize the widget's appearance, behavior, and positioning:
+
+```html
+<script>
+  window.voxConfig = {
+    // Required
+    tenantId: 'your-tenant-id',
+    agentId: 'your-agent-id',
+    widgetKey: 'w_your_widget_key_here',
+
+    // Optional Customization
+    position: 'bottom-right', // 'bottom-left', 'top-right', 'top-left'
+    theme: 'light', // 'light', 'dark', 'auto'
+    primaryColor: '#0066CC', // Hex color for widget accent
+    buttonSize: 'medium', // 'small', 'medium', 'large'
+    autoOpen: false, // Auto-start conversation on page load
+    greeting: 'Hi! How can I help you today?', // Initial message
+    zIndex: 9999, // CSS z-index for widget overlay
+
+    // Advanced Options
+    sessionMetadata: {
+      page: window.location.pathname,
+      referrer: document.referrer,
+      customerId: getUserId() // Your function to get user context
+    }
+  };
+</script>
+```
+
+### Configuration Reference
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `tenantId` | string | **required** | Your tenant identifier |
+| `agentId` | string | **required** | Which agent to load |
+| `widgetKey` | string | **required** | Widget authentication key |
+| `position` | string | `'bottom-right'` | Widget button placement |
+| `theme` | string | `'light'` | Color theme |
+| `primaryColor` | string | `'#0066CC'` | Accent color for buttons and highlights |
+| `buttonSize` | string | `'medium'` | Size of the voice button |
+| `autoOpen` | boolean | `false` | Start conversation immediately on load |
+| `greeting` | string | Agent-defined | Override the agent's default greeting |
+| `zIndex` | number | `9999` | CSS stacking order |
+| `sessionMetadata` | object | `{}` | Custom data passed to agent session |
+
+## Framework-Specific Integration
+
+### React
+
+Create a dedicated widget component:
+
+```jsx
+// components/VoxWidget.jsx
+import { useEffect } from 'react';
+
+export default function VoxWidget({ tenantId, agentId, widgetKey }) {
+  useEffect(() => {
+    // Configure the widget
+    window.voxConfig = {
+      tenantId,
+      agentId,
+      widgetKey,
+      position: 'bottom-right',
+      theme: 'auto'
+    };
+
+    // Load the widget script
+    const script = document.createElement('script');
+    script.src = 'https://vox.strategicmachines.ai/widget.js';
+    script.async = true;
+    document.head.appendChild(script);
+
+    // Cleanup on unmount
+    return () => {
+      const existingScript = document.querySelector('script[src*="vox.strategicmachines.ai"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+      // Cleanup widget instance
+      if (window.voxWidget) {
+        window.voxWidget.destroy();
+      }
+    };
+  }, [tenantId, agentId, widgetKey]);
+
+  return null; // Widget renders itself
+}
+```
+
+Usage:
+```jsx
+// app/layout.jsx or pages/_app.jsx
+import VoxWidget from '@/components/VoxWidget';
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <VoxWidget
+          tenantId="your-tenant-id"
+          agentId="your-agent-id"
+          widgetKey={process.env.NEXT_PUBLIC_VOX_WIDGET_KEY}
+        />
+      </body>
+    </html>
+  );
+}
+```
+
+### Vue
+
+```vue
+<!-- components/VoxWidget.vue -->
+<template>
+  <div></div> <!-- Widget renders itself via script -->
+</template>
+
+<script>
+export default {
+  name: 'VoxWidget',
+  props: {
+    tenantId: String,
+    agentId: String,
+    widgetKey: String
+  },
+  mounted() {
+    window.voxConfig = {
+      tenantId: this.tenantId,
+      agentId: this.agentId,
+      widgetKey: this.widgetKey,
+      position: 'bottom-right'
+    };
+
+    const script = document.createElement('script');
+    script.src = 'https://vox.strategicmachines.ai/widget.js';
+    script.async = true;
+    document.head.appendChild(script);
+  },
+  beforeUnmount() {
+    const script = document.querySelector('script[src*="vox.strategicmachines.ai"]');
+    if (script) script.remove();
+    if (window.voxWidget) window.voxWidget.destroy();
+  }
+};
+</script>
+```
+
+### Angular
+
+```typescript
+// app/components/vox-widget.component.ts
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-vox-widget',
+  template: ''
+})
+export class VoxWidgetComponent implements OnInit, OnDestroy {
+  @Input() tenantId!: string;
+  @Input() agentId!: string;
+  @Input() widgetKey!: string;
+
+  ngOnInit() {
+    (window as any).voxConfig = {
+      tenantId: this.tenantId,
+      agentId: this.agentId,
+      widgetKey: this.widgetKey
+    };
+
+    const script = document.createElement('script');
+    script.src = 'https://vox.strategicmachines.ai/widget.js';
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
+  ngOnDestroy() {
+    const script = document.querySelector('script[src*="vox.strategicmachines.ai"]');
+    if (script) script.remove();
+    if ((window as any).voxWidget) {
+      (window as any).voxWidget.destroy();
+    }
+  }
+}
+```
+
+## Multi-Environment Setup
+
+Use environment-specific widget keys to isolate development, staging, and production traffic:
+
+### Development
+```javascript
+// Local development (http://localhost:3000)
+window.voxConfig = {
+  tenantId: 'your-tenant-id',
+  agentId: 'your-agent-id',
+  widgetKey: 'w_dev_local_abc123'
+};
+```
+
+### Staging
+```javascript
+// Staging environment (https://staging.yoursite.com)
+window.voxConfig = {
+  tenantId: 'your-tenant-id',
+  agentId: 'your-agent-id',
+  widgetKey: 'w_staging_def456'
+};
+```
+
+### Production
+```javascript
+// Production (https://yoursite.com)
+window.voxConfig = {
+  tenantId: 'your-tenant-id',
+  agentId: 'your-agent-id',
+  widgetKey: 'w_prod_ghi789'
+};
+```
+
+**Best Practice:** Use environment variables to manage keys:
+
+```javascript
+window.voxConfig = {
+  tenantId: 'your-tenant-id',
+  agentId: 'your-agent-id',
+  widgetKey: process.env.NEXT_PUBLIC_VOX_WIDGET_KEY // Next.js
+  // or import.meta.env.VITE_VOX_WIDGET_KEY // Vite
+  // or process.env.REACT_APP_VOX_WIDGET_KEY // Create React App
+};
+```
+
+## Widget API and Events
+
+The widget exposes a JavaScript API for programmatic control:
+
+### Opening and Closing
+
+```javascript
+// Open the widget programmatically
+window.voxWidget.open();
+
+// Close the widget
+window.voxWidget.close();
+
+// Toggle the widget
+window.voxWidget.toggle();
+```
+
+### Event Listeners
+
+```javascript
+// Widget loaded and ready
+window.addEventListener('vox:ready', () => {
+  console.log('VOX widget is ready');
+});
+
+// Session started
+window.addEventListener('vox:session:start', (event) => {
+  console.log('Session started:', event.detail.sessionId);
+});
+
+// Session ended
+window.addEventListener('vox:session:end', (event) => {
+  console.log('Session ended:', event.detail);
+  // event.detail includes: sessionId, duration, messageCount
+});
+
+// Agent message received
+window.addEventListener('vox:message', (event) => {
+  console.log('Agent said:', event.detail.text);
+});
+
+// Error occurred
+window.addEventListener('vox:error', (event) => {
+  console.error('Widget error:', event.detail.message);
+});
+```
+
+### Custom Triggers
+
+Trigger the widget from your own UI elements:
+
+```html
+<button onclick="window.voxWidget.open()">
+  Talk to Our Assistant
+</button>
+
+<a href="#" onclick="event.preventDefault(); window.voxWidget.open();">
+  Need help? Chat with us
+</a>
+```
+
+## Troubleshooting
+
+### Widget Key Rejected
+
+**Error:** `Widget key validation failed` or `Unauthorized`
+
+**Causes:**
+- Widget key doesn't match the configured origin
+- Key has been revoked
+- Tenant is inactive
+
+**Solutions:**
+1. Verify the key in your tenant configuration matches the embedded key exactly
+2. Ensure the `origin` in the widget key config matches your website URL precisely:
+   - `https://yoursite.com` ≠ `https://www.yoursite.com`
+   - `https://yoursite.com` ≠ `http://yoursite.com`
+3. Create separate widget keys for `www` and non-`www` versions if needed
+4. Check that the tenant status is `active` not `trial` or `suspended`
+
+### CORS Errors
+
+**Error:** `Access to fetch at 'https://vox.strategicmachines.ai' has been blocked by CORS policy`
+
+**Causes:**
+- Origin mismatch between your domain and the widget key configuration
+- Missing protocol (http vs https)
+
+**Solutions:**
+1. Ensure your widget key's `origin` field exactly matches your website's URL
+2. Update the origin in your tenant config:
+   ```json
+   {
+     "widgetKeys": [
+       {
+         "origin": "https://yoursite.com" // Must match exactly
+       }
+     ]
+   }
+   ```
+3. For local development, add a key with `origin: "http://localhost:3000"`
+
+### Microphone Permission Denied
+
+**Error:** User sees "Microphone access denied" message
+
+**Causes:**
+- Browser doesn't support microphone API
+- User explicitly denied permission
+- Site is not served over HTTPS (required for microphone access)
+
+**Solutions:**
+1. Ensure your site uses HTTPS in production (HTTP blocks microphone access)
+2. For local development, use `localhost` (allowed over HTTP)
+3. Provide clear messaging about why microphone access is needed
+4. Test microphone permissions with:
+   ```javascript
+   navigator.mediaDevices.getUserMedia({ audio: true })
+     .then(() => console.log('Microphone access granted'))
+     .catch(err => console.error('Microphone access denied:', err));
+   ```
+
+### Widget Not Appearing
+
+**Error:** Widget script loads but no button appears
+
+**Causes:**
+- CSS z-index conflict
+- Element positioning issue
+- JavaScript error preventing initialization
+
+**Solutions:**
+1. Check browser console for errors
+2. Increase `zIndex` in config:
+   ```javascript
+   window.voxConfig = {
+     zIndex: 99999
+   };
+   ```
+3. Verify the widget script loaded:
+   ```javascript
+   console.log('Widget loaded:', !!window.voxWidget);
+   ```
+4. Try a different position:
+   ```javascript
+   window.voxConfig = {
+     position: 'bottom-left'
+   };
+   ```
+
+### Session Fails to Start
+
+**Error:** Widget opens but conversation doesn't start
+
+**Causes:**
+- Rate limit exceeded
+- Tenant concurrent session limit reached
+- Agent configuration error
+
+**Solutions:**
+1. Check browser console and network tab for error responses
+2. Verify tenant limits:
+   - `maxConcurrentCalls` not exceeded
+   - `maxMonthlyMinutes` not exhausted
+3. Confirm agent configuration is valid (test with different agent if available)
+4. Review session start errors in the VOX platform monitoring dashboard
+
+## Performance Optimization
+
+### Lazy Loading
+
+Load the widget only when needed to improve initial page load:
+
+```javascript
+// Load widget on user interaction
+document.getElementById('chat-button').addEventListener('click', function() {
+  if (!window.voxWidget) {
+    window.voxConfig = { /* config */ };
+    const script = document.createElement('script');
+    script.src = 'https://vox.strategicmachines.ai/widget.js';
+    script.onload = () => window.voxWidget.open();
+    document.head.appendChild(script);
+  } else {
+    window.voxWidget.open();
+  }
+});
+```
+
+### Defer Loading
+
+Load the widget after the page is interactive:
+
+```javascript
+// Load after DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+  window.voxConfig = { /* config */ };
+  const script = document.createElement('script');
+  script.src = 'https://vox.strategicmachines.ai/widget.js';
+  script.async = true;
+  document.head.appendChild(script);
+});
+```
+
+## Security Best Practices
+
+<CardGrid>
+  <Card
+    title="Never Expose Secrets"
+    description="Widget keys are public (embedded in HTML). Never use API secrets or tenant secrets in the widget config."
+  />
+  <Card
+    title="Validate Origins"
+    description="Always configure the exact origin for each widget key. Don't use wildcards or overly broad origins."
+  />
+  <Card
+    title="Rotate Keys Regularly"
+    description="Update widget keys quarterly and revoke old keys to limit exposure from compromised keys."
+  />
+  <Card
+    title="Monitor Usage"
+    description="Track widget session patterns to detect unusual traffic that might indicate abuse."
+  />
+</CardGrid>
+
+## Next Steps
+
+With your widget embedded, complete the deployment process:
+
+<CardGrid>
+  <Card
+    title="Agent Configuration"
+    href="/voice/agent-configuration"
+    description="Configure multi-tenant settings, rate limits, and security controls"
+  />
+  <Card
+    title="Monitoring"
+    href="/voice/monitoring"
+    description="Track session metrics, review transcripts, and optimize agent performance"
+  />
+  <Card
+    title="Troubleshooting Guide"
+    href="/voice/monitoring/troubleshooting"
+    description="Diagnose and resolve common widget and session issues"
+  />
+</CardGrid>

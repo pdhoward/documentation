@@ -1,0 +1,412 @@
+---
+title: Tool Descriptor Playground
+description: Build and test HTTP tool descriptors with live validation, template testing, and API simulation.
+keywords: ["tutorial", "tools", "HTTP", "playground", "interactive"]
+---
+
+## Tool Descriptor Playground
+
+This interactive playground lets you build, test, and validate HTTP tool descriptors in real-time. Experiment with parameter schemas, template syntax, and UI rendering without deploying to production.
+
+**Time to complete:** 15-20 minutes per tool
+
+## How It Works
+
+The playground provides a split-screen interface:
+- **Left:** JSON editor for your tool descriptor
+- **Right:** Live validation, template preview, and simulated API responses
+
+As you type, the playground validates syntax, tests template interpolation, and shows what the agent will see when the tool executes.
+
+## Tutorial Interface
+
+<Note type="info">
+**Interactive Playground Coming Soon**
+
+This tutorial is currently in development. The playground will include:
+- Live JSON editor with syntax highlighting
+- Real-time validation and error messages
+- Template context simulator (test {{args.*}} and {{secrets.*}})
+- Mock API response generator
+- UI component preview (see how catalog_results, alerts, etc. render)
+- Export to clipboard or download as JSON
+
+For now, use the [Tool Design Guide](/voice/tool-design) and test tools in a development environment.
+</Note>
+
+## Preview: Playground Features
+
+### Feature 1: Live Validation
+
+Get instant feedback as you build:
+
+**Validates:**
+- JSON syntax errors
+- Required field presence (`kind`, `name`, `description`, `parameters`, `http`)
+- Parameter schema correctness (JSON Schema compliance)
+- URL template validity (`{{args.*}}` references)
+- Type coercion filter syntax (`| number`, `| json`, `| bool`)
+- Header format
+- `okField` presence and type
+
+**Example Feedback:**
+```
+✓ Tool name is unique and descriptive
+✗ Error: Missing required field 'okField' in http section
+✗ Error: Parameter 'max_price' referenced in URL template but not defined in parameters
+✓ Template syntax correct: {{args.query}}
+✗ Warning: No type coercion on numeric parameter — use {{args.limit | number}}
+```
+
+### Feature 2: Template Context Simulator
+
+Test template interpolation with sample data:
+
+**Input Tool:**
+```json
+{
+  "http": {
+    "urlTemplate": "https://api.example.com/search?q={{args.query}}&limit={{args.limit | number}}&category={{args.category}}",
+    "headers": {
+      "authorization": "Bearer {{secrets.api_key}}"
+    }
+  }
+}
+```
+
+**Simulated Args:**
+```json
+{
+  "query": "cordless drill",
+  "limit": "10",
+  "category": "tools"
+}
+```
+
+**Simulated Secrets:**
+```json
+{
+  "api_key": "sk_test_abc123"
+}
+```
+
+**Rendered Output:**
+```
+GET https://api.example.com/search?q=cordless%20drill&limit=10&category=tools
+
+Headers:
+  authorization: Bearer sk_test_abc123
+```
+
+**Playground shows:**
+- URL encoding applied correctly
+- Type coercion (`"10"` → `10`)
+- Secret interpolation (masked in display)
+- Empty parameter handling (if `pruneEmpty: true`)
+
+### Feature 3: Mock API Responses
+
+Simulate success and error responses:
+
+**Define Mock Response:**
+```json
+{
+  "success": true,
+  "count": 3,
+  "products": [
+    {
+      "id": "drill-123",
+      "name": "DeWalt 20V Drill",
+      "price": 189.99
+    }
+  ]
+}
+```
+
+**Test okField Detection:**
+- If `okField: "success"` and response has `"success": true` → onSuccess UI
+- If `"success": false` → onError UI
+- Preview UI component rendering with this data
+
+**Playground shows:**
+- Which UI path is triggered (onSuccess vs onError)
+- Component preview with interpolated props
+- Missing field warnings (`{{response.missing_field}}` highlighted)
+
+### Feature 4: UI Component Preview
+
+See how your tool's UI will render:
+
+**Tool UI Config:**
+```json
+{
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "catalog_results",
+        "title": "Product Results",
+        "description": "{{response.count}} products match your search",
+        "props": {
+          "items": "{{response.products}}",
+          "currency": "USD"
+        }
+      }
+    }
+  }
+}
+```
+
+**Playground renders:**
+- Visual preview of the `catalog_results` component
+- Shows how `{{response.count}}` interpolates ("3 products match your search")
+- Displays product cards based on `{{response.products}}`
+- Highlights missing or incorrect prop mappings
+
+### Feature 5: Template Library
+
+Load pre-built tool templates:
+
+**Available Templates:**
+- **Product Search** (e-commerce)
+- **Room Availability** (hospitality)
+- **Appointment Booking** (scheduling)
+- **CRM Lookup** (customer data)
+- **Payment Processing** (Stripe integration)
+- **Email Notification** (SendGrid, Resend)
+- **Database Query** (MongoDB, Postgres)
+
+**Each template includes:**
+- Complete tool descriptor
+- Example parameters
+- Mock API response
+- UI configuration
+
+## Guided Tutorial Flow
+
+### Step 1: Choose a Template or Start Blank
+
+**Beginner:** Load the "Product Search" template to see a complete example
+**Intermediate:** Start blank and reference the [Tool Design Guide](/voice/tool-design)
+
+### Step 2: Define Tool Metadata
+
+```json
+{
+  "kind": "http_tool",
+  "name": "search_products",
+  "description": "Search product catalog by keyword and category",
+  "priority": 10,
+  "enabled": true,
+  "version": 1
+}
+```
+
+**Playground validates:**
+- `name` is unique (compares against other tools in your config)
+- `description` is clear and actionable
+- `priority` is reasonable (1-10 range)
+
+### Step 3: Design Parameters Schema
+
+```json
+{
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "Search keywords"
+      },
+      "category": {
+        "type": "string",
+        "enum": ["drills", "saws", "fasteners"]
+      },
+      "max_price": {
+        "type": "number",
+        "minimum": 0
+      }
+    },
+    "required": ["query"]
+  }
+}
+```
+
+**Playground validates:**
+- JSON Schema syntax
+- Required fields are reasonable
+- Enums are restrictive enough
+- Parameter descriptions are helpful
+
+**Test with sample args:**
+```json
+{
+  "query": "cordless drill",
+  "category": "drills",
+  "max_price": 200
+}
+```
+
+### Step 4: Build HTTP Configuration
+
+```json
+{
+  "http": {
+    "method": "GET",
+    "urlTemplate": "https://api.shop.com/products?q={{args.query}}&cat={{args.category}}&max={{args.max_price | number}}",
+    "headers": {
+      "authorization": "Bearer {{secrets.shop_api_key}}"
+    },
+    "okField": "success",
+    "timeoutMs": 5000,
+    "pruneEmpty": true
+  }
+}
+```
+
+**Playground tests:**
+- URL template with sample args → shows rendered URL
+- Type coercion applied correctly
+- Headers interpolated with masked secrets
+- Timeout is reasonable for the operation
+
+### Step 5: Configure UI Rendering
+
+```json
+{
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "catalog_results",
+        "title": "Search Results",
+        "props": {
+          "items": "{{response.products}}"
+        }
+      }
+    },
+    "onError": {
+      "open": {
+        "component_name": "alert",
+        "title": "Search Failed",
+        "description": "{{response.error_message}}"
+      }
+    }
+  }
+}
+```
+
+**Playground previews:**
+- Success case with mock products → renders catalog
+- Error case with mock error → renders alert
+
+### Step 6: Test with Mock API
+
+Load or create mock responses:
+
+**Success Response:**
+```json
+{
+  "success": true,
+  "products": [
+    { "id": "1", "name": "DeWalt Drill", "price": 189.99 },
+    { "id": "2", "name": "Makita Drill", "price": 149.99 }
+  ]
+}
+```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "error_message": "No products found matching your criteria"
+}
+```
+
+**Playground shows:**
+- Which UI path triggers
+- Rendered component
+- Interpolated values
+
+### Step 7: Export and Deploy
+
+Download your validated tool descriptor:
+- Copy JSON to clipboard
+- Download as `.json` file
+- Add to agent configuration directly
+
+## Common Patterns to Practice
+
+<CardGrid>
+  <Card
+    title="GET with Query Params"
+    description="Search, filter, and list operations — most common pattern"
+  />
+  <Card
+    title="POST with JSON Body"
+    description="Create resources like bookings, orders, or records"
+  />
+  <Card
+    title="Nested Object Parameters"
+    description="Complex data like guest info, shipping addresses"
+  />
+  <Card
+    title="Array Handling"
+    description="Passing lists of items or multiple selections"
+  />
+</CardGrid>
+
+## Tips for Success
+
+**Do:**
+- Always use type coercion filters (`| number`, `| json`, `| bool`)
+- Test with realistic mock data, not minimal examples
+- Define both `onSuccess` and `onError` UI
+- Use descriptive parameter names and descriptions
+
+**Don't:**
+- Forget to define `okField` for consistent success detection
+- Hardcode secrets in the tool descriptor
+- Skip testing edge cases (empty results, timeouts, errors)
+- Make tools too broad — split complex operations into multiple tools
+
+## Advanced Features
+
+Once comfortable with basics, explore:
+- **Conditional fields** — Optional parameters that change behavior
+- **Response transformation** — Using filters to reshape API data
+- **Chained tools** — One tool's response feeds another
+- **Pagination** — Handling large result sets
+- **Retry logic** — Configuring automatic retries on failure
+
+## Export to Production
+
+When your tool is validated:
+
+1. **Copy JSON** to your agent's tool configuration
+2. **Add to tenant secrets** — Add real API keys to `secrets` object
+3. **Update agent prompt** — Reference the tool in `capabilities.tools`
+4. **Test in staging** — Deploy to staging environment first
+5. **Monitor performance** — Track success rate, latency, errors
+
+## What's Next?
+
+<CardGrid>
+  <Card
+    title="Tool Design Guide"
+    href="/voice/tool-design"
+    description="Detailed reference for HTTP tool descriptors and best practices"
+  />
+  <Card
+    title="Prompt Tester"
+    href="/voice/tutorials/prompt"
+    description="Test how your agent decides when to use this tool"
+  />
+  <Card
+    title="Agent Configuration"
+    href="/voice/agent-configuration"
+    description="Add your tools to a complete agent deployment"
+  />
+</CardGrid>
+
+**Ready to build tools?** [Launch the Tool Descriptor Playground](#) (Coming Soon)
+
+For now, manually create tools using the [Tool Design Guide](/voice/tool-design).

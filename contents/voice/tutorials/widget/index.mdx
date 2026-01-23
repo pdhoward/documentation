@@ -1,0 +1,492 @@
+---
+title: Widget Configurator
+description: Generate widget embedding code with visual customization and instant preview.
+keywords: ["tutorial", "widget", "configurator", "embedding", "interactive"]
+---
+
+## Widget Configurator
+
+This interactive configurator generates production-ready widget embedding code with visual customization and live preview. No coding required — customize appearance, test behavior, and copy the code.
+
+**Time to complete:** 10-15 minutes
+
+## How It Works
+
+The configurator provides a visual interface where you:
+1. Select your tenant and agent
+2. Customize appearance (position, colors, size, theme)
+3. Configure behavior (auto-open, greeting, metadata)
+4. Preview the widget in real-time
+5. Generate framework-specific code (vanilla JS, React, Vue, Angular)
+6. Copy and paste into your website
+
+Changes update the preview instantly, so you see exactly what your users will experience.
+
+## Tutorial Interface
+
+<Note type="info">
+**Interactive Configurator Coming Soon**
+
+This tutorial is currently in development. The widget configurator will include:
+- Visual customization interface (drag-and-drop positioning)
+- Live widget preview with real interactions
+- Framework-specific code generation (React, Vue, Angular, vanilla JS)
+- Environment-specific configurations (dev, staging, production)
+- Widget key management (create, test, revoke)
+- Copy-to-clipboard for instant deployment
+
+For now, use the [Widget Integration Guide](/voice/widget) for manual embedding.
+</Note>
+
+## Preview: Configurator Features
+
+### Feature 1: Visual Customization
+
+Point-and-click interface for all widget options:
+
+**Appearance:**
+- **Position** — Drag the widget button to bottom-right, bottom-left, top-right, or top-left
+- **Theme** — Toggle light, dark, or auto (matches user's system preference)
+- **Primary Color** — Color picker for brand accent (buttons, highlights)
+- **Button Size** — Small, medium, or large
+- **Icon Style** — Microphone, chat bubble, or custom icon upload
+
+**Live Preview:**
+- See changes instantly in embedded iframe
+- Test different screen sizes (mobile, tablet, desktop)
+- Dark mode toggle to preview theme variants
+
+### Feature 2: Behavior Configuration
+
+Control how the widget acts:
+
+**Options:**
+- **Auto-Open** — Start conversation on page load (toggle on/off)
+- **Greeting Message** — Customize first message (or use agent default)
+- **Trigger Delay** — Open widget X seconds after page load
+- **Exit Intent** — Show widget when user moves to leave page
+- **Scroll Trigger** — Activate after user scrolls X% of page
+
+**Advanced:**
+- **Session Metadata** — Pass page URL, referrer, user ID automatically
+- **Custom CSS** — Override widget styles for pixel-perfect brand match
+- **z-Index** — Set stacking order for sites with complex overlays
+
+### Feature 3: Framework Code Generation
+
+Generate code for your stack:
+
+**Vanilla JavaScript:**
+```html
+<script>
+  (function() {
+    window.voxConfig = {
+      tenantId: 'your-tenant-id',
+      agentId: 'your-agent-id',
+      widgetKey: 'w_your_widget_key',
+      position: 'bottom-right',
+      theme: 'auto',
+      primaryColor: '#0066CC',
+      buttonSize: 'medium'
+    };
+    var script = document.createElement('script');
+    script.src = 'https://vox.strategicmachines.ai/widget.js';
+    script.async = true;
+    document.head.appendChild(script);
+  })();
+</script>
+```
+
+**React Component:**
+```jsx
+// components/VoxWidget.jsx
+import { useEffect } from 'react';
+
+export default function VoxWidget() {
+  useEffect(() => {
+    window.voxConfig = {
+      tenantId: 'your-tenant-id',
+      agentId: 'your-agent-id',
+      widgetKey: process.env.NEXT_PUBLIC_VOX_WIDGET_KEY,
+      position: 'bottom-right',
+      theme: 'auto',
+      primaryColor: '#0066CC'
+    };
+
+    const script = document.createElement('script');
+    script.src = 'https://vox.strategicmachines.ai/widget.js';
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      const existingScript = document.querySelector('script[src*="vox.strategicmachines.ai"]');
+      if (existingScript) existingScript.remove();
+      if (window.voxWidget) window.voxWidget.destroy();
+    };
+  }, []);
+
+  return null;
+}
+```
+
+**Vue Component:**
+```vue
+<!-- components/VoxWidget.vue -->
+<template><div></div></template>
+
+<script>
+export default {
+  name: 'VoxWidget',
+  mounted() {
+    window.voxConfig = {
+      tenantId: 'your-tenant-id',
+      agentId: 'your-agent-id',
+      widgetKey: process.env.VUE_APP_VOX_WIDGET_KEY,
+      position: 'bottom-right',
+      theme: 'auto',
+      primaryColor: '#0066CC'
+    };
+
+    const script = document.createElement('script');
+    script.src = 'https://vox.strategicmachines.ai/widget.js';
+    script.async = true;
+    document.head.appendChild(script);
+  },
+  beforeUnmount() {
+    const script = document.querySelector('script[src*="vox.strategicmachines.ai"]');
+    if (script) script.remove();
+    if (window.voxWidget) window.voxWidget.destroy();
+  }
+};
+</script>
+```
+
+**Angular Component:**
+```typescript
+// app/components/vox-widget.component.ts
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { environment } from 'src/environments/environment';
+
+@Component({
+  selector: 'app-vox-widget',
+  template: ''
+})
+export class VoxWidgetComponent implements OnInit, OnDestroy {
+  ngOnInit() {
+    (window as any).voxConfig = {
+      tenantId: 'your-tenant-id',
+      agentId: 'your-agent-id',
+      widgetKey: environment.voxWidgetKey,
+      position: 'bottom-right',
+      theme: 'auto',
+      primaryColor: '#0066CC'
+    };
+
+    const script = document.createElement('script');
+    script.src = 'https://vox.strategicmachines.ai/widget.js';
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
+  ngOnDestroy() {
+    const script = document.querySelector('script[src*="vox.strategicmachines.ai"]');
+    if (script) script.remove();
+    if ((window as any).voxWidget) {
+      (window as any).voxWidget.destroy();
+    }
+  }
+}
+```
+
+### Feature 4: Environment Manager
+
+Configure keys for different environments:
+
+**Setup:**
+```
+Development (localhost:3000)
+  Widget Key: w_dev_local_abc123
+  Origin: http://localhost:3000
+
+Staging (staging.yoursite.com)
+  Widget Key: w_staging_def456
+  Origin: https://staging.yoursite.com
+
+Production (yoursite.com)
+  Widget Key: w_prod_ghi789
+  Origin: https://yoursite.com
+
+Production WWW (www.yoursite.com)
+  Widget Key: w_prod_www_jkl012
+  Origin: https://www.yoursite.com
+```
+
+**Generated Code (Next.js example):**
+```javascript
+const widgetKey = process.env.NODE_ENV === 'production'
+  ? process.env.NEXT_PUBLIC_VOX_WIDGET_KEY_PROD
+  : process.env.NEXT_PUBLIC_VOX_WIDGET_KEY_DEV;
+
+window.voxConfig = {
+  widgetKey: widgetKey,
+  // ... other config
+};
+```
+
+### Feature 5: Widget Key Management
+
+Create and manage widget keys:
+
+**Actions:**
+- **Create New Key** — Generate key for a new origin
+- **Test Key** — Verify key works from your domain
+- **Revoke Key** — Disable compromised or old keys
+- **View Usage** — See session count per key
+
+**Key Testing:**
+```
+Test Widget Key: w_test_abc123
+
+Origin: https://yoursite.com
+Status: ✓ Valid
+Last Used: 2 hours ago
+Sessions Today: 47
+Total Sessions: 1,203
+
+Test Connection:
+  [Test from Current Domain] → Opens test widget
+  ✓ Origin matches: https://yoursite.com
+  ✓ Key is active
+  ✓ Tenant is active
+  ✓ Agent is configured
+  ✓ Session can start
+```
+
+### Feature 6: Live Widget Preview
+
+Interactive preview panel:
+
+**Features:**
+- **Click to Interact** — Test voice flow without deploying
+- **Device Previews** — See mobile, tablet, desktop layouts
+- **Theme Toggle** — Switch light/dark to test contrast
+- **Screen Recording** — Record demo video for stakeholders
+- **Share Preview** — Generate temporary URL for team review
+
+**Preview Controls:**
+```
+[Desktop] [Tablet] [Mobile]
+[Light] [Dark] [Auto]
+[Record Demo] [Share Preview]
+
+Preview Window:
+  ┌─────────────────────────┐
+  │                         │
+  │   Your Website Preview  │
+  │                         │
+  │                         │
+  │              [🎤]       │ ← Widget Button
+  └─────────────────────────┘
+```
+
+## Guided Tutorial Flow
+
+### Step 1: Select Tenant and Agent
+
+**Input:**
+- Tenant ID: `your-tenant-id`
+- Agent ID: `your-agent-id`
+- Environment: Development / Staging / Production
+
+**Configurator validates:**
+- Tenant exists and is active
+- Agent is configured
+- Widget key is available for environment
+
+### Step 2: Customize Appearance
+
+**Visual Controls:**
+- Drag widget button to desired position
+- Pick primary color (brand hex code)
+- Select button size (see visual size comparison)
+- Choose theme (light/dark/auto)
+
+**Real-time Preview:**
+Shows widget on sample page with your customizations
+
+### Step 3: Configure Behavior
+
+**Options:**
+- Auto-open on page load? (Yes/No)
+- Custom greeting message? (Text input or use default)
+- Session metadata? (Add custom key-value pairs)
+
+**Example Metadata:**
+```json
+{
+  "page": "{{window.location.pathname}}",
+  "referrer": "{{document.referrer}}",
+  "campaign": "summer-sale-2025"
+}
+```
+
+### Step 4: Choose Framework
+
+**Select:**
+- Vanilla JavaScript (no framework)
+- React
+- Vue
+- Angular
+- Svelte
+- Other (generic module)
+
+**Code updates automatically** based on selection
+
+### Step 5: Set Environment Variables
+
+**For Selected Framework:**
+
+**Next.js:**
+```bash
+# .env.local
+NEXT_PUBLIC_VOX_WIDGET_KEY=w_your_widget_key
+```
+
+**Create React App:**
+```bash
+# .env
+REACT_APP_VOX_WIDGET_KEY=w_your_widget_key
+```
+
+**Vite:**
+```bash
+# .env
+VITE_VOX_WIDGET_KEY=w_your_widget_key
+```
+
+**Configurator provides:**
+- Environment variable name
+- Sample `.env` file
+- Security notes (never commit keys to git)
+
+### Step 6: Copy and Deploy
+
+**Options:**
+- **Copy to Clipboard** — Paste directly into your codebase
+- **Download File** — Get component file ready to add to project
+- **Email Code** — Send to developer
+- **Generate Integration Guide** — PDF with step-by-step instructions
+
+## Common Customizations
+
+<CardGrid>
+  <Card
+    title="Match Brand Colors"
+    description="Use your brand's primary color for the widget button and accents to maintain visual consistency"
+  />
+  <Card
+    title="Mobile Optimization"
+    description="Test mobile preview to ensure button doesn't block content. Use bottom-right for most sites."
+  />
+  <Card
+    title="Dark Mode Support"
+    description="Set theme to 'auto' so widget matches user's system preference automatically"
+  />
+  <Card
+    title="Exit Intent"
+    description="Show widget when user moves to leave page — captures abandoning visitors"
+  />
+</CardGrid>
+
+## Testing Checklist
+
+Before deploying to production:
+
+- [ ] Widget appears on page
+- [ ] Button is in correct position
+- [ ] Colors match brand guidelines
+- [ ] Theme matches site (light/dark)
+- [ ] Click opens widget interface
+- [ ] Microphone permission request works
+- [ ] Voice conversation starts successfully
+- [ ] UI components render correctly
+- [ ] Widget works on mobile devices
+- [ ] No console errors in browser
+- [ ] Origin matches widget key configuration
+- [ ] Environment variable is set correctly
+
+## Advanced Configuration
+
+### Custom Triggers
+
+Open widget from your own buttons:
+
+```javascript
+// Your custom button
+<button onClick={() => window.voxWidget.open()}>
+  Talk to Our Team
+</button>
+```
+
+### Event Listening
+
+Track widget usage:
+
+```javascript
+window.addEventListener('vox:session:start', (event) => {
+  // Log session start to analytics
+  analytics.track('Voice Session Started', {
+    sessionId: event.detail.sessionId
+  });
+});
+
+window.addEventListener('vox:session:end', (event) => {
+  // Log session completion
+  analytics.track('Voice Session Ended', {
+    sessionId: event.detail.sessionId,
+    duration: event.detail.duration
+  });
+});
+```
+
+### Conditional Loading
+
+Load widget only for certain pages or users:
+
+```javascript
+// Only load on product pages
+if (window.location.pathname.startsWith('/products/')) {
+  // Load widget code
+}
+
+// Only for logged-out users
+if (!isUserLoggedIn()) {
+  // Load widget code
+}
+```
+
+## What's Next?
+
+After configuring your widget:
+
+<CardGrid>
+  <Card
+    title="Widget Integration Guide"
+    href="/voice/widget"
+    description="Detailed embedding instructions and troubleshooting"
+  />
+  <Card
+    title="Agent Configuration"
+    href="/voice/agent-configuration"
+    description="Complete your agent deployment with security controls"
+  />
+  <Card
+    title="Monitoring"
+    href="/voice/monitoring"
+    description="Track widget usage and optimize performance"
+  />
+</CardGrid>
+
+**Ready to configure your widget?** [Launch the Widget Configurator](#) (Coming Soon)
+
+For now, manually configure widgets using the [Widget Integration Guide](/voice/widget).

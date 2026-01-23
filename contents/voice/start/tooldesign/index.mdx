@@ -1,60 +1,425 @@
 ---
 title: Tool Design
-description: The set of capabilities available to an Agent to fulfill requests and inquiries.
-keywords: ["capabilities", "tools", "functions"]
+description: Build HTTP tool descriptors that connect your voice agent to your APIs and business data.
+keywords: ["tools", "capabilities", "HTTP tools", "API integration"]
 ---
-## Tool Design
 
-Tools let your agent interact with your data and APIs, like checking inventory or making bookings. Start with core tools and add custom ones.
+## Tool Design: Connecting Agents to Reality
 
-### Step 1: Use Core Tools
-These are pre-built and auto-available. No setup needed—just reference in your prompt.
+Tools are how your agent accesses truth — real-time inventory, current availability, actual pricing, and the ability to take actions like creating bookings or processing orders. Without tools, agents can only guess. With tools, they become reliably useful.
 
-| Tool Name         | Description                                      | When to Use                          |
-|-------------------|--------------------------------------------------|--------------------------------------|
-| getCurrentTime    | Returns current time and timezone.               | Time-based questions.                |
-| launchWebsite     | Opens a URL in a new tab.                        | Direct users to external sites.      |
-| scrapeWebsite     | Fetches website content.                         | Summarize dynamic info from your site. |
-| show_component    | Renders UI components (e.g., images, forms).     | Display catalogs or confirmations.   |
+VOX provides two categories of tools:
+1. **Core Platform Tools** — Pre-built utilities available to every agent
+2. **Custom HTTP Tools** — API integrations you define to connect your agent to your systems
 
-**Tip**: For visuals, use `show_component` with props like title and media URLs.
+## Core Platform Tools
 
-### Step 2: Define Custom Tools
-Custom tools connect to your APIs via JSON descriptors. Use the JSON Editor to create them.
+These tools come built-in with every VOX agent. No configuration needed — just reference them in your prompt.
 
-Basic structure:
+| Tool Name | What It Does | When to Use | Parameters |
+|-----------|--------------|-------------|------------|
+| **getCurrentTime** | Returns current local time and timezone | User asks for time, or agent needs to check business hours | None |
+| **launchWebsite** | Opens a URL in a new browser tab | Direct users to external resources, documentation, or your checkout page | `url` (string, http/https) |
+| **copyToClipboard** | Copies text to user's clipboard | Share confirmation codes, IDs, or referral links | `text` (string) |
+| **scrapeWebsite** | Fetches and returns website content as markdown/HTML | Summarize dynamic content from your site or external sources | `url` (string, http/https) |
+| **changeBackgroundColor** | Toggles between light and dark UI themes | User requests dark mode for accessibility | None |
+| **partyMode** | Triggers confetti and celebration animations | Celebrate successful bookings or purchases | None |
+| **show_component** | Renders rich UI components (catalogs, galleries, confirmations, forms) | Display visual results from API calls | `component_name`, `title`, `description`, `size`, `url`, `media`, `props` |
+
+### show_component: The Visual Workhorse
+
+The `show_component` tool is your most powerful UI renderer. It automatically transforms API data into rich visual experiences.
+
+**Supported Components:**
+- `catalog_results` — Product/room listings with images, prices, and details
+- `reservation_confirmation` — Booking confirmations with all details
+- `payment_form` — Stripe payment forms for transaction completion
+- `quote_summary` — Price breakdowns and quotes
+- `room` — Detailed room/unit display with photos and amenities
+- `video` — Video player
+- `image_viewer` — Single image display
+- `media_gallery` — Multiple images/videos in a gallery
+
+**Example Usage in Prompt:**
+```json
+{
+  "show_component": {
+    "when": ["Displaying search results", "Showing booking confirmation"],
+    "args": ["component_name", "props"],
+    "success_say": "Reference the visual and guide next steps"
+  }
+}
+```
+
+## Custom HTTP Tools: The Real Power
+
+Custom tools connect your agent to your APIs — enabling searches, bookings, inventory checks, and any other business logic your APIs support.
+
+### HTTP Tool Anatomy
+
+Every custom tool is a JSON descriptor following this schema:
+
 ```json
 {
   "kind": "http_tool",
-  "name": "search_products",
-  "description": "Search for products.",
+  "name": "search_units",
+  "description": "Search available hotel rooms by dates and preferences",
   "parameters": {
     "type": "object",
     "properties": {
-      "query": { "type": "string" }
+      "check_in": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+      "check_out": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+      "guests": { "type": "number", "minimum": 1 },
+      "room_type": { "type": "string", "enum": ["villa", "suite", "standard"] }
     },
-    "required": ["query"]
+    "required": ["check_in", "check_out", "guests"]
   },
   "http": {
     "method": "GET",
-    "urlTemplate": "https://your-api.com/products?q={{args.query}}"
+    "urlTemplate": "https://your-api.com/api/units/search?check_in={{args.check_in}}&check_out={{args.check_out}}&guests={{args.guests | number}}",
+    "headers": {
+      "authorization": "Bearer {{secrets.api_key}}",
+      "content-type": "application/json"
+    },
+    "okField": "ok",
+    "timeoutMs": 8000,
+    "pruneEmpty": true
   },
   "ui": {
     "onSuccess": {
       "open": {
         "component_name": "catalog_results",
-        "props": { "items": "{{response.products}}" }
+        "title": "Available Rooms",
+        "props": {
+          "items": "{{response.units}}"
+        }
+      }
+    },
+    "onError": {
+      "open": {
+        "component_name": "alert",
+        "title": "No Availability",
+        "description": "We couldn't find rooms matching your criteria"
+      }
+    }
+  },
+  "enabled": true,
+  "priority": 5,
+  "version": 1
+}
+```
+
+### Field-by-Field Breakdown
+
+<CardGrid>
+  <Card
+    title="kind"
+    description="Always 'http_tool' for HTTP-based tools"
+  />
+  <Card
+    title="name"
+    description="Unique identifier used in prompts and logs"
+  />
+  <Card
+    title="description"
+    description="Clear explanation of what the tool does — helps the LLM decide when to use it"
+  />
+  <Card
+    title="parameters"
+    description="JSON Schema defining required and optional arguments"
+  />
+</CardGrid>
+
+#### The HTTP Section
+
+This is where the magic happens — defining how to call your API.
+
+```json
+{
+  "http": {
+    "method": "GET | POST | PUT | PATCH | DELETE",
+    "urlTemplate": "https://your-api.com/endpoint/{{args.param}}",
+    "headers": {
+      "authorization": "Bearer {{secrets.api_key}}",
+      "content-type": "application/json"
+    },
+    "jsonBodyTemplate": {
+      "key": "{{args.value}}",
+      "nested": {
+        "field": "{{args.nested_value | json}}"
+      }
+    },
+    "okField": "ok",
+    "timeoutMs": 8000,
+    "pruneEmpty": true
+  }
+}
+```
+
+**Field Explanations:**
+
+| Field | Purpose | Notes |
+|-------|---------|-------|
+| `method` | HTTP verb | GET, POST, PUT, PATCH, DELETE |
+| `urlTemplate` | API endpoint with parameter interpolation | Use `{{args.param_name}}` for substitution |
+| `headers` | HTTP headers (auth, content-type, etc.) | Use `{{secrets.key}}` for secure values |
+| `jsonBodyTemplate` | Request body for POST/PUT/PATCH | Objects are templated recursively |
+| `okField` | Field in response indicating success | If present and truthy, call succeeded; if omitted, any 2xx is success |
+| `timeoutMs` | Max wait time for API response | Default 8000ms; max 120000ms |
+| `pruneEmpty` | Remove empty strings, nulls, empty arrays/objects before sending | Prevents API errors from unexpected empty values |
+
+#### Templating Rules (CRITICAL)
+
+The platform uses a templating system with strict rules. **Follow these or tool calls will fail:**
+
+1. **Always prefix with `args.`**
+   ✅ `{{args.check_in}}`
+   ❌ `{{check_in}}`
+
+2. **Use type coercion filters**
+   ✅ `{{args.guests | number}}`
+   ❌ `{{args.guests}}` (might send as string "2" instead of number 2)
+
+3. **Common Filters:**
+   - `| number` — Coerce to number
+   - `| bool` — Coerce to boolean
+   - `| json` — Pass complex objects
+   - `| upper` — Uppercase strings
+   - `| default('value')` — Fallback for missing values
+   - `| default('USD') | upper` — Chain filters
+
+4. **For nested objects, use `| json`**
+   ✅ `"customer": "{{args.customer | json}}"`
+   ❌ `"customer": "{{args.customer}}"` (would stringify the object)
+
+5. **Secrets are available via `secrets.*`**
+   ✅ `"authorization": "Bearer {{secrets.api_key}}"`
+   Never hardcode API keys in tool descriptors
+
+#### The UI Section
+
+Define what happens visually when the tool succeeds or fails.
+
+```json
+{
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "catalog_results",
+        "title": "Available Rooms",
+        "description": "{{response.count}} rooms match your search",
+        "size": "lg",
+        "props": {
+          "items": "{{response.units}}",
+          "currency": "{{args.currency | default('USD') | upper}}"
+        }
+      }
+    },
+    "onError": {
+      "open": {
+        "component_name": "alert",
+        "title": "Search Failed",
+        "description": "We couldn't complete your search. Please try again."
       }
     }
   }
 }
 ```
 
-### Step 3: Connect to Your Data
-Ensure your APIs return structured JSON. Test with mock calls.
+**UI Rendering Flow:**
+1. Tool calls your API
+2. If `okField` is truthy (or 2xx response without `okField`), use `onSuccess` UI
+3. If `okField` is falsy or non-2xx, use `onError` UI
+4. Template strings in UI props are filled with `{{response.*}}` and `{{args.*}}`
+5. Component renders automatically in the chat interface
 
-### Step 4: Save and Integrate
-Upload via MongoDB Updater. Reference in your prompt (e.g., "Use 'search_products' for queries.").
+### Real-World Tool Examples
 
-**Tip**: For your first tool, focus on one action like searching. Note rate limits for API calls—details later.
+#### Example 1: Search Products (E-Commerce)
 
+```json
+{
+  "kind": "http_tool",
+  "name": "search_products",
+  "description": "Search product catalog by query string",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": { "type": "string" },
+      "limit": { "type": "number", "default": 10 },
+      "category": { "type": "string" }
+    },
+    "required": ["query"]
+  },
+  "http": {
+    "method": "GET",
+    "urlTemplate": "https://your-store.com/api/products?q={{args.query}}&limit={{args.limit | number}}&category={{args.category}}",
+    "headers": {
+      "authorization": "Bearer {{secrets.store_api_key}}"
+    },
+    "okField": "success",
+    "timeoutMs": 5000,
+    "pruneEmpty": true
+  },
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "catalog_results",
+        "title": "Product Results",
+        "props": {
+          "items": "{{response.products}}"
+        }
+      }
+    }
+  },
+  "enabled": true,
+  "priority": 5
+}
+```
+
+#### Example 2: Create Reservation (Hospitality)
+
+```json
+{
+  "kind": "http_tool",
+  "name": "create_reservation",
+  "description": "Book a hotel room",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "unit_id": { "type": "string" },
+      "check_in": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+      "check_out": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+      "guest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string" }
+        },
+        "required": ["name", "email"]
+      }
+    },
+    "required": ["unit_id", "check_in", "check_out", "guest"]
+  },
+  "http": {
+    "method": "POST",
+    "urlTemplate": "https://your-hotel.com/api/reservations",
+    "headers": {
+      "authorization": "Bearer {{secrets.hotel_api_key}}",
+      "content-type": "application/json"
+    },
+    "jsonBodyTemplate": {
+      "unit_id": "{{args.unit_id}}",
+      "check_in": "{{args.check_in}}",
+      "check_out": "{{args.check_out}}",
+      "guest": "{{args.guest | json}}"
+    },
+    "okField": "success",
+    "timeoutMs": 10000
+  },
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "reservation_confirmation",
+        "title": "Reservation Confirmed!",
+        "props": {
+          "confirmation_number": "{{response.confirmation_id}}",
+          "unit_name": "{{response.unit.name}}",
+          "check_in": "{{response.check_in}}",
+          "check_out": "{{response.check_out}}",
+          "guest_name": "{{response.guest.name}}"
+        }
+      }
+    },
+    "onError": {
+      "open": {
+        "component_name": "alert",
+        "title": "Booking Failed",
+        "description": "{{response.message}}"
+      }
+    }
+  },
+  "enabled": true,
+  "priority": 10
+}
+```
+
+## Tool Design Best Practices
+
+### Do:
+- ✅ **Design APIs with agents in mind** — Return structured JSON with consistent field names
+- ✅ **Include an `ok` or `success` field** — Makes success/failure detection reliable
+- ✅ **Use descriptive tool names** — `search_units` is better than `search1`
+- ✅ **Provide detailed descriptions** — Helps the LLM choose the right tool
+- ✅ **Use parameter patterns** — Validate date formats, emails, phone numbers
+- ✅ **Set reasonable timeouts** — 5-10s for most APIs; longer for complex operations
+- ✅ **Always use `pruneEmpty`** — Prevents accidental empty value bugs
+
+### Don't:
+- ❌ **Don't forget type coercion** — Always use `| number`, `| bool`, `| json` filters
+- ❌ **Don't hardcode secrets** — Use `{{secrets.*}}` instead
+- ❌ **Don't skip error UI** — Users need to know when things fail
+- ❌ **Don't make tools too broad** — `do_everything` is not a good tool; make focused tools
+- ❌ **Don't assume fast APIs** — Set timeouts and handle delays gracefully
+
+## Testing Your Tools
+
+Before integrating into your agent, test tools independently:
+
+<CardGrid>
+  <Card
+    title="Valid Inputs"
+    description="Call the tool with correct parameters and verify successful API call and UI rendering"
+  />
+  <Card
+    title="Missing Parameters"
+    description="Omit required fields — tool should fail gracefully with clear error"
+  />
+  <Card
+    title="API Failures"
+    description="Simulate timeouts or errors — verify onError UI displays correctly"
+  />
+  <Card
+    title="Edge Cases"
+    description="Test boundary conditions: empty results, maximum limits, special characters"
+  />
+</CardGrid>
+
+## Integration Checklist
+
+Before deploying your agent with custom tools:
+
+- [ ] All tool names are unique and descriptive
+- [ ] Tool descriptions clearly explain when to use each one
+- [ ] Parameters use proper JSON Schema types and patterns
+- [ ] URL templates use `{{args.param}}` syntax correctly
+- [ ] Type coercion filters (`| number`, `| json`, etc.) are applied
+- [ ] Secrets are referenced via `{{secrets.*}}`, not hardcoded
+- [ ] `okField` matches your API's success indicator
+- [ ] Timeouts are set appropriately for each API
+- [ ] Both `onSuccess` and `onError` UI are defined
+- [ ] Tools have been tested with real API calls
+- [ ] Prompt references each tool with `when`, `args`, `success_say`, and `handle_errors`
+
+## Next Steps
+
+With your tools designed, complete your agent configuration and deploy:
+
+<CardGrid>
+  <Card
+    title="Agent Configuration"
+    href="/voice/agent-configuration"
+    description="Configure multi-tenant settings, widget keys, security controls, and deploy your agent"
+  />
+  <Card
+    title="See Real Examples"
+    href="/voice/usage"
+    description="Study complete tool implementations from Cypress and Otto agents"
+  />
+  <Card
+    title="Back to Prompt Design"
+    href="/voice/prompt-design"
+    description="Ensure your prompt properly references your tools"
+  />
+</CardGrid>

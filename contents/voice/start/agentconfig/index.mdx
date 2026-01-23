@@ -1,45 +1,412 @@
 ---
 title: Agent Configuration
-description: Linking the components together and activating your Voice Agent
-keywords:
-  ["widgets", "tenantId"]
+description: Configure multi-tenant settings, security controls, widget keys, and deploy your voice agent to production.
+keywords: ["configuration", "tenant", "widget", "deployment", "security"]
 ---
-## Agent Configuration
 
-This section ties everything together: connect your agent to tenants, set limits, and deploy.
+## Agent Configuration: From Design to Deployment
 
-### Step 1: Set Up Tenant Configuration
-Tenants are your business entities. Use MongoDB to store:
-- Tenant ID (e.g., "your-business-id")
-- Widget keys for embedding on your site (must match origin URL for security).
+You've designed your agent, crafted the prompt, and built the tools. Now it's time to configure the multi-tenant architecture, set security controls, and deploy your agent to your website.
 
-Example tenant object snippet:
+VOX's configuration model supports multiple businesses (tenants), each with their own agents, widget keys, rate limits, and security settings — all managed from a centralized system.
+
+## The Multi-Tenant Configuration Model
+
+Every deployment follows this hierarchy:
+
+```
+Platform
+  └── Tenant (Your Business)
+      ├── Agent Settings
+      ├── Widget Keys
+      ├── Rate Limits
+      ├── API Secrets
+      └── Billing & Identity
+```
+
+### Tenant: Your Business Entity
+
+A **tenant** represents a single business or customer using the VOX platform. Each tenant has complete isolation from others — their data, agents, and configurations are private.
+
+**Tenant Object Structure:**
+
 ```json
 {
-  "tenantId": "your-business-id",
-  "widgetKeys": [
+  "tenantId": "cypress-resorts",
+  "name": "Cypress Resorts",
+  "status": "trial",
+
+  "identity": {
+    "legalName": "Cypress Resorts Inc",
+    "displayName": "Cypress Resorts",
+    "domain": "cypressresort.com",
+    "industry": "hospitality",
+    "timeZone": "America/New_York",
+    "locale": "en-US"
+  },
+
+  "contacts": {
+    "primary": {
+      "name": "John Doe",
+      "email": "john@cypressresort.com",
+      "phone": "+1-555-123-4567",
+      "role": "Owner"
+    },
+    "billing": {
+      "email": "billing@cypressresort.com"
+    },
+    "technical": {
+      "email": "tech@cypressresort.com"
+    }
+  },
+
+  "agentSettings": [
     {
-      "key": "your_widget_key",
-      "origin": "https://your-site.com"
+      "agentId": "concierge",
+      "label": "Cypress Concierge",
+      "agentRepo": {
+        "provider": "github",
+        "baseRawUrl": "https://raw.githubusercontent.com/your-org/agents/main/AGENT_CYPRESS.md"
+      }
     }
   ],
+
+  "widgetKeys": [
+    {
+      "id": "main-site",
+      "key": "w_cypress_main_7f1b0e9c64f54d1a",
+      "origin": "https://cypressresort.com",
+      "label": "Main marketing site",
+      "revoked": false
+    }
+  ],
+
   "limits": {
-    "maxConcurrentCalls": 15,
-    "maxMonthlyMinutes": 2000
+    "maxAgents": 5,
+    "maxConcurrentCalls": 20,
+    "maxMonthlyMinutes": 2000,
+    "maxRequestsPerMinute": 60
+  },
+
+  "flags": {
+    "betaFeatures": false,
+    "allowExperimentalModels": false
+  },
+
+  "createdAt": "2025-01-10T00:00:00Z",
+  "updatedAt": "2025-01-15T00:00:00Z"
+}
+```
+
+## Agent Settings
+
+Link your agent configuration (prompt + tools) to the tenant.
+
+### Basic Agent Setting
+
+```json
+{
+  "agentId": "concierge",
+  "label": "Cypress Concierge",
+  "agentRepo": {
+    "provider": "github",
+    "baseRawUrl": "https://raw.githubusercontent.com/your-org/agents/main/AGENT_CYPRESS.md"
   }
 }
 ```
 
-### Step 2: Connect Agents and Tools
-Link your prompt and tools to the tenant. Specify agent repo if using GitHub for advanced setups (optional for starters).
+**Fields Explained:**
 
-### Step 3: Manage Limits and Security
-Set basics like max sessions or daily tokens to prevent abuse. (e.g., 10 concurrent sessions). Full rate limit details later—focus on defaults for now.
+| Field | Purpose | Example |
+|-------|---------|---------|
+| `agentId` | Unique identifier for this agent | `"concierge"`, `"sales-bot"` |
+| `label` | Human-readable name | `"Cypress Concierge"` |
+| `agentRepo.provider` | Where the agent config is stored | `"github"` (or omit for database storage) |
+| `agentRepo.baseRawUrl` | URL to the agent markdown file | GitHub raw content URL |
 
-### Step 4: Deploy and Test
-- Embed the widget on your site with the key.
-- Start the agent and test voice interactions.
-- Monitor sessions for issues.
+### Agent Configuration Storage Options
 
-**Tip**: For security, use secrets in tools for API auth. Try a demo at strategicmachines.ai to see configured agents in action.
+You have two options for storing agent configurations (prompt + tools):
+
+<CardGrid>
+  <Card
+    title="GitHub (Recommended)"
+    description="Store agent configs as markdown files in a Git repo for version control, branching, and collaboration"
+  />
+  <Card
+    title="Database"
+    description="Store configs directly in MongoDB for simpler setups without Git dependency"
+  />
+</CardGrid>
+
+**GitHub Approach:**
+- Store your agent definition as `AGENT_TENANTID.md` in a repo
+- Use raw GitHub URLs to fetch configs at runtime
+- Benefits: version history, rollback, staging vs production branches
+- VOX caches fetched configs for performance
+
+**Database Approach:**
+- Store prompt and tools as JSON documents in MongoDB
+- Simpler for prototypes
+- Less infrastructure but no built-in versioning
+
+## Widget Keys: Secure Embedding
+
+Widget keys control where your agent can be embedded. Each key is tied to a specific origin (domain) for security.
+
+### How Widget Keys Work
+
+1. You generate a widget key for each website/domain
+2. The key is embedded in the widget script on your site
+3. When users start a voice session, VOX verifies:
+   - The key is valid and not revoked
+   - The origin (website URL) matches the configured origin
+   - The tenant is active and within limits
+
+If any check fails, the session is rejected with a CORS error or unauthorized response.
+
+### Widget Key Structure
+
+```json
+{
+  "id": "main-site",
+  "key": "w_cypress_main_7f1b0e9c64f54d1a",
+  "origin": "https://cypressresort.com",
+  "label": "Main marketing site",
+  "revoked": false
+}
 ```
+
+**Important Security Notes:**
+- **Origin must match exactly:** `https://cypressresort.com` ≠ `https://www.cypressresort.com`
+- Add separate keys for `www` and non-`www` versions if needed
+- Use different keys for staging (`https://staging.cypressresort.com`) and production
+- Never share widget keys across tenants
+- Revoke compromised keys immediately by setting `revoked: true`
+
+### Multiple Widget Keys
+
+A single tenant can have multiple widget keys for different sites or environments:
+
+```json
+{
+  "widgetKeys": [
+    {
+      "id": "production",
+      "key": "w_cypress_prod_abc123",
+      "origin": "https://cypressresort.com",
+      "label": "Production site"
+    },
+    {
+      "id": "staging",
+      "key": "w_cypress_staging_def456",
+      "origin": "https://staging.cypressresort.com",
+      "label": "Staging environment"
+    },
+    {
+      "id": "mobile",
+      "key": "w_cypress_mobile_ghi789",
+      "origin": "https://mobile.cypressresort.com",
+      "label": "Mobile app web view"
+    }
+  ]
+}
+```
+
+## Rate Limits and Quotas
+
+Protect your costs and prevent abuse with configurable limits at multiple layers.
+
+### Tenant-Level Limits
+
+```json
+{
+  "limits": {
+    "maxAgents": 5,
+    "maxConcurrentCalls": 20,
+    "maxMonthlyMinutes": 2000,
+    "maxRequestsPerMinute": 60
+  }
+}
+```
+
+| Limit | What It Controls | Typical Value | Notes |
+|-------|------------------|---------------|-------|
+| `maxAgents` | Number of agents this tenant can create | 3-10 | Usually matches billing plan |
+| `maxConcurrentCalls` | Max simultaneous voice sessions | 10-50 | Prevents runaway costs; adjust based on traffic |
+| `maxMonthlyMinutes` | Total voice minutes per month | 500-5000 | Tied to billing tier |
+| `maxRequestsPerMinute` | API calls per minute | 60-180 | Prevents scripted abuse |
+
+### Platform-Wide Rate Limits
+
+VOX enforces additional limits at the platform level to protect infrastructure:
+
+**Edge Middleware (Fast Rejection):**
+- IP-based rate limiting (60 requests/min by default)
+- User-based rate limiting (120 requests/min for authenticated users)
+- Bot detection and blocking
+
+**Server-Side (Authoritative):**
+- Per-session quotas (tokens and dollars)
+- Daily spending caps per tenant
+- Session duration limits (15 minutes typical)
+- Idle timeout (5 minutes no activity)
+
+**Session Lifecycle:**
+```
+1. User clicks voice widget
+2. Edge checks IP rate limit → Pass
+3. Server checks widget key + origin → Valid
+4. Server checks concurrent sessions → Under limit
+5. Session created → Monitor usage
+6. Heartbeat every 45s → Update lastSeenAt
+7. Session ends when:
+   - User hangs up
+   - Duration exceeds maxSessionMinutes
+   - Idle exceeds maxSessionIdleSec
+   - Daily quota exceeded
+```
+
+### Recommended Limit Configuration
+
+<CardGrid>
+  <Card
+    title="Small Business / Trial"
+    description="maxConcurrentCalls: 10, maxMonthlyMinutes: 500, maxRequestsPerMinute: 30"
+  />
+  <Card
+    title="Mid-Market"
+    description="maxConcurrentCalls: 25, maxMonthlyMinutes: 2000, maxRequestsPerMinute: 60"
+  />
+  <Card
+    title="Enterprise"
+    description="maxConcurrentCalls: 100+, maxMonthlyMinutes: 10000+, maxRequestsPerMinute: 180"
+  />
+</CardGrid>
+
+## API Secrets Management
+
+Store sensitive credentials securely and reference them in tool descriptors.
+
+### Adding Secrets to Tenant
+
+```json
+{
+  "tenantId": "cypress-resorts",
+  "secrets": {
+    "hotel_api_key": "sk_live_abc123...",
+    "stripe_secret_key": "sk_test_xyz789...",
+    "sendgrid_api_key": "SG.def456..."
+  }
+}
+```
+
+### Using Secrets in Tools
+
+Reference secrets in tool HTTP headers or body templates:
+
+```json
+{
+  "http": {
+    "method": "POST",
+    "urlTemplate": "https://your-api.com/booking",
+    "headers": {
+      "authorization": "Bearer {{secrets.hotel_api_key}}"
+    }
+  }
+}
+```
+
+**Security Best Practices:**
+- Never hardcode API keys in tool descriptors
+- Use separate keys for staging and production
+- Rotate keys regularly
+- Store secrets encrypted in database
+- Limit secret access to server-side code only
+
+## Deployment Checklist
+
+Before going live, verify every configuration element:
+
+- [ ] **Tenant configured** with correct tenantId, name, and contacts
+- [ ] **Agent settings** point to correct prompt and tools (GitHub or database)
+- [ ] **Widget key(s) created** with exact origin URL(s)
+- [ ] **Rate limits set** appropriate for expected traffic
+- [ ] **API secrets stored** and referenced correctly in tools
+- [ ] **Test widget** embedded on staging site
+- [ ] **Voice sessions tested** end-to-end (search, book, confirm)
+- [ ] **Error handling verified** (API failures, no results, invalid inputs)
+- [ ] **Monitoring enabled** for session transcripts and usage
+- [ ] **Escalation path defined** for human-in-the-loop scenarios
+
+## Embedding the Widget
+
+Once configured, embed the VOX widget on your site:
+
+```html
+<!-- Add to your website's <head> or before closing </body> -->
+<script>
+  (function() {
+    window.voxConfig = {
+      tenantId: 'cypress-resorts',
+      agentId: 'concierge',
+      widgetKey: 'w_cypress_main_7f1b0e9c64f54d1a'
+    };
+    var script = document.createElement('script');
+    script.src = 'https://vox.strategicmachines.ai/widget.js';
+    script.async = true;
+    document.head.appendChild(script);
+  })();
+</script>
+```
+
+The widget will:
+- Validate the key and origin
+- Display a voice interface button
+- Handle microphone permissions
+- Stream audio to/from VOX platform
+- Render UI components from tool responses
+- Record transcripts for monitoring
+
+## Monitoring and Maintenance
+
+After deployment, actively monitor agent performance:
+
+**Key Metrics to Track:**
+- Session volume (daily/weekly/monthly)
+- Concurrent session peaks
+- Conversation completion rate
+- Average session duration
+- Tool call success/failure rates
+- Escalation frequency
+- Customer satisfaction (if collecting feedback)
+
+**Operational Tasks:**
+- Review conversation transcripts weekly
+- Refine prompts based on real user language
+- Add new tools as use cases emerge
+- Adjust rate limits based on growth
+- Rotate API secrets quarterly
+- Update agent configs for seasonal campaigns
+
+## Next Steps
+
+Your agent is configured and ready for production. Explore real-world examples to see complete implementations:
+
+<CardGrid>
+  <Card
+    title="See Otto in Action"
+    href="/voice/usage"
+    description="Study the complete configuration for Otto, the DIY Warehouse product sales agent"
+  />
+  <Card
+    title="Cypress Resorts Example"
+    href="/voice/usage/example"
+    description="Review the hotel reservation agent's full setup: prompt, tools, and config"
+  />
+  <Card
+    title="Back to Tool Design"
+    href="/voice/tool-design"
+    description="Refine your HTTP tools before finalizing deployment"
+  />
+</CardGrid>
