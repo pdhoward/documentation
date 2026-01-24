@@ -1,0 +1,312 @@
+---
+title: Core Tools Reference
+description: Complete reference for all built-in VOX platform tools available to agents.
+keywords: ["core tools", "platform tools", "built-in", "capabilities"]
+---
+
+## Core Tools Reference
+
+VOX agents have access to a suite of built-in platform tools that provide essential capabilities without requiring custom HTTP integrations. These core tools handle common operations like time queries, web scraping, and UI component rendering.
+
+All core tools are automatically available to agents — no configuration required.
+
+## Platform Tools
+
+### getCurrentTime
+
+Returns the current date and time for the agent's timezone.
+
+**Purpose:** Enables time-aware responses and date calculations
+
+**Parameters:**
+```json
+{
+  "type": "object",
+  "properties": {},
+  "required": []
+}
+```
+
+**Returns:**
+```json
+{
+  "currentTime": "2025-01-23T14:30:00Z",
+  "timezone": "America/Chicago",
+  "formatted": "Thursday, January 23, 2025 at 2:30 PM CST"
+}
+```
+
+**Example Usage:**
+```
+User: "Is the restaurant still open?"
+Agent: Calls getCurrentTime() → 8:45 PM
+Agent: "The restaurant closes at 9 PM, so yes, you have 15 minutes to order."
+```
+
+**When to Use:**
+- Scheduling and availability queries
+- Greeting based on time of day
+- Date calculations (days until, time since)
+- Business hours validation
+
+---
+
+### show_component
+
+Renders a UI component in the conversation interface.
+
+**Purpose:** Display rich visual content like product catalogs, alerts, booking confirmations
+
+**Parameters:**
+```json
+{
+  "type": "object",
+  "properties": {
+    "component_name": {
+      "type": "string",
+      "description": "Name of the component to render",
+      "enum": [
+        "catalog_results",
+        "alert",
+        "booking_confirmation",
+        "property_card",
+        "comparison_table",
+        "image_gallery"
+      ]
+    },
+    "props": {
+      "type": "object",
+      "description": "Component-specific properties"
+    }
+  },
+  "required": ["component_name", "props"]
+}
+```
+
+**Returns:**
+```json
+{
+  "success": true,
+  "rendered": true,
+  "componentId": "cmp_abc123"
+}
+```
+
+**Example Usage:**
+```
+Agent calls:
+  show_component({
+    component_name: "catalog_results",
+    props: {
+      title: "Available Drills",
+      items: [
+        { id: "1", name: "DeWalt 20V", price: 189.99, image: "..." },
+        { id: "2", name: "Makita 18V", price: 149.99, image: "..." }
+      ],
+      currency: "USD"
+    }
+  })
+
+User sees:
+  Visual product cards with images, names, prices
+```
+
+**When to Use:**
+- Display search results
+- Show booking confirmations
+- Render alerts or notifications
+- Present comparison tables
+
+**Component Reference:** See [UI Components Reference](/voice/reference/components) for all available components and their props.
+
+---
+
+### scrapeWebsite
+
+Fetches and extracts text content from a public URL.
+
+**Purpose:** Retrieve real-time information from websites when APIs aren't available
+
+**Parameters:**
+```json
+{
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Public URL to scrape"
+    }
+  },
+  "required": ["url"]
+}
+```
+
+**Returns:**
+```json
+{
+  "success": true,
+  "url": "https://example.com/page",
+  "title": "Page Title",
+  "content": "Extracted text content...",
+  "length": 1500
+}
+```
+
+**Example Usage:**
+```
+User: "What are your pool hours?"
+Agent: Calls scrapeWebsite({ url: "https://resort.com/amenities" })
+Agent: "The pool is open daily from 6 AM to 10 PM."
+```
+
+**Limitations:**
+- Only works on public URLs (no authentication)
+- Returns text content only (no structured data)
+- Subject to rate limits (max 10 requests per session)
+- Not recommended for frequently changing data (use HTTP tools instead)
+
+**When to Use:**
+- One-time lookups of public information
+- Fallback when API isn't available
+- FAQ or policy retrieval
+
+**When NOT to Use:**
+- Real-time inventory or availability (use HTTP tools)
+- Authenticated content
+- Frequent repeated lookups
+
+---
+
+## Tool Invocation Rules
+
+### Automatic vs Explicit
+
+**Automatic Tools:**
+- `getCurrentTime` — Called automatically when time context is needed
+- No need to explicitly prompt "use getCurrentTime"
+
+**Explicit Tools:**
+- `show_component` — Must be explicitly called in response to user queries
+- `scrapeWebsite` — Called when agent needs external data
+
+### Tool Call Sequencing
+
+Agents can call multiple tools in sequence:
+
+```
+Turn 1:
+  User: "Show me drills under $200"
+
+  Agent calls:
+    1. search_products({ query: "drills", max_price: 200 })
+    2. show_component({
+         component_name: "catalog_results",
+         props: { items: search_results }
+       })
+```
+
+### Error Handling
+
+If a tool call fails, the agent should gracefully handle it:
+
+```
+Tool call: scrapeWebsite({ url: "https://invalid-url.com" })
+
+Response:
+  { "success": false, "error": "Failed to fetch URL" }
+
+Agent should:
+  - Acknowledge the failure
+  - Offer alternative (ask user, try different source)
+  - Never pretend the tool succeeded
+```
+
+## Tool Call Validation
+
+The platform validates all tool calls before execution:
+
+**Validates:**
+- Parameter types match schema
+- Required parameters present
+- Enum values are valid
+- URLs are well-formed
+
+**Rejects with error:**
+```json
+{
+  "error": "Invalid tool call",
+  "code": "INVALID_PARAMETERS",
+  "details": "Missing required parameter: component_name"
+}
+```
+
+## Usage Limits
+
+Core tools have usage limits to prevent abuse:
+
+| Tool | Limit | Window | Reason |
+|------|-------|--------|--------|
+| `getCurrentTime` | Unlimited | - | Lightweight |
+| `show_component` | 20 calls | Per session | Prevent UI spam |
+| `scrapeWebsite` | 10 calls | Per session | External rate limits |
+
+## Best Practices
+
+<CardGrid>
+  <Card
+    title="Use Tools for Data"
+    description="Never guess or hallucinate information — always call tools to retrieve real-time data"
+  />
+  <Card
+    title="Handle Errors Gracefully"
+    description="If a tool fails, acknowledge it and offer alternatives rather than breaking the conversation"
+  />
+  <Card
+    title="Minimize Tool Calls"
+    description="Batch related operations — call search once and show_component once, not multiple times"
+  />
+  <Card
+    title="Validate Before Calling"
+    description="Ensure you have all required parameters before invoking a tool"
+  />
+</CardGrid>
+
+## Custom vs Core Tools
+
+**Use Core Tools When:**
+- Functionality is generic (time, UI, public web scraping)
+- No authentication or business logic required
+- Built-in capability meets your needs
+
+**Use HTTP Tools When:**
+- Integrating with your own APIs
+- Need authentication or API keys
+- Business-specific operations (inventory, bookings, CRM)
+- Structured data with complex schemas
+
+**Example:**
+- ✅ Use `getCurrentTime` for time checks
+- ❌ Don't build a custom HTTP tool for time
+- ✅ Use HTTP tool for your booking API
+- ❌ Don't try to use `scrapeWebsite` for authenticated inventory
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="HTTP Tools Schema"
+    href="/voice/reference/httptools"
+    description="Build custom API integrations with HTTP tool descriptors"
+  />
+  <Card
+    title="UI Components"
+    href="/voice/reference/components"
+    description="Learn about all available UI components for show_component"
+  />
+  <Card
+    title="Tool Design Guide"
+    href="/voice/tool-design"
+    description="Best practices for designing effective agent tools"
+  />
+</CardGrid>

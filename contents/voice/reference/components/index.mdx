@@ -1,0 +1,584 @@
+---
+title: UI Components Reference
+description: Complete catalog of UI components available for rendering agent tool responses with props, examples, and best practices.
+keywords: ["UI components", "visual", "rendering", "interface"]
+---
+
+## UI Components Reference
+
+VOX agents can render rich visual components in the conversation interface using the `show_component` core tool or the `ui.onSuccess`/`ui.onError` configuration in HTTP tool descriptors.
+
+This reference documents all available components, their props, and when to use them.
+
+## Component Catalog
+
+### catalog_results
+
+Displays a grid of items with images, titles, prices, and actions — perfect for product search results or property listings.
+
+**Use Cases:**
+- Product search results
+- Room availability listings
+- Property searches
+- Service packages
+
+**Props:**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | string | No | Section heading |
+| `description` | string | No | Subtitle or context |
+| `items` | array | Yes | Array of item objects |
+| `currency` | string | No | Currency code (USD, EUR, etc.) |
+
+**Item Object Schema:**
+```json
+{
+  "id": "string",
+  "name": "string",
+  "description": "string",
+  "price": "number",
+  "image": "url",
+  "url": "url",
+  "metadata": {
+    "category": "string",
+    "rating": "number",
+    "in_stock": "boolean"
+  }
+}
+```
+
+**Example:**
+```json
+{
+  "component_name": "catalog_results",
+  "title": "Available Drills",
+  "description": "8 products match your search",
+  "props": {
+    "items": [
+      {
+        "id": "drill-123",
+        "name": "DeWalt 20V MAX Drill",
+        "description": "Brushless motor, 2 batteries included",
+        "price": 189.99,
+        "image": "https://cdn.shop.com/drill-123.jpg",
+        "url": "https://shop.com/products/drill-123",
+        "metadata": {
+          "category": "Power Tools",
+          "rating": 4.8,
+          "in_stock": true
+        }
+      },
+      {
+        "id": "drill-456",
+        "name": "Makita 18V LXT Drill",
+        "description": "Compact, lightweight design",
+        "price": 149.99,
+        "image": "https://cdn.shop.com/drill-456.jpg",
+        "url": "https://shop.com/products/drill-456",
+        "metadata": {
+          "category": "Power Tools",
+          "rating": 4.6,
+          "in_stock": true
+        }
+      }
+    ],
+    "currency": "USD"
+  }
+}
+```
+
+**Rendered UI:**
+```
+┌────────────────────────────────────────┐
+│  Available Drills                      │
+│  8 products match your search          │
+│                                        │
+│  ┌──────┐  ┌──────┐                  │
+│  │ IMG  │  │ IMG  │                  │
+│  └──────┘  └──────┘                  │
+│  DeWalt    Makita                     │
+│  $189.99   $149.99                    │
+│  ★4.8      ★4.6                       │
+│  [View]    [View]                     │
+└────────────────────────────────────────┘
+```
+
+---
+
+### alert
+
+Displays a message with optional severity styling — use for errors, warnings, or informational messages.
+
+**Use Cases:**
+- Error messages
+- Warning notifications
+- Success confirmations
+- Informational tips
+
+**Props:**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | string | Yes | Alert heading |
+| `description` | string | No | Detailed message |
+| `severity` | string | No | `"error"`, `"warning"`, `"info"`, `"success"` |
+
+**Example:**
+```json
+{
+  "component_name": "alert",
+  "title": "Out of Stock",
+  "description": "This item is currently unavailable, but we have similar options in stock.",
+  "props": {
+    "severity": "warning"
+  }
+}
+```
+
+**Rendered UI:**
+```
+┌────────────────────────────────────────┐
+│  ⚠️ Out of Stock                       │
+│                                        │
+│  This item is currently unavailable,   │
+│  but we have similar options in stock. │
+└────────────────────────────────────────┘
+```
+
+---
+
+### booking_confirmation
+
+Displays a booking or reservation confirmation with details and confirmation number.
+
+**Use Cases:**
+- Hotel reservations
+- Appointment confirmations
+- Order confirmations
+- Service bookings
+
+**Props:**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `confirmation_number` | string | Yes | Unique confirmation code |
+| `title` | string | No | Heading (defaults to "Reservation Confirmed") |
+| `guest_name` | string | No | Customer/guest name |
+| `check_in` | string | No | Start date or time |
+| `check_out` | string | No | End date or time |
+| `unit_name` | string | No | Room, table, service name |
+| `total_price` | number | No | Total cost |
+| `currency` | string | No | Currency code |
+| `details` | object | No | Additional key-value details |
+
+**Example:**
+```json
+{
+  "component_name": "booking_confirmation",
+  "title": "Reservation Confirmed",
+  "description": "Your booking is all set!",
+  "props": {
+    "confirmation_number": "CYP-45782",
+    "guest_name": "Sarah Johnson",
+    "check_in": "2025-02-15",
+    "check_out": "2025-02-17",
+    "unit_name": "Sunset Suite",
+    "total_price": 450.00,
+    "currency": "USD",
+    "details": {
+      "Guests": "2 adults",
+      "View": "Ocean View",
+      "Bed": "King"
+    }
+  }
+}
+```
+
+**Rendered UI:**
+```
+┌────────────────────────────────────────┐
+│  ✓ Reservation Confirmed               │
+│                                        │
+│  Confirmation: CYP-45782               │
+│  Guest: Sarah Johnson                  │
+│                                        │
+│  Check-in:  Feb 15, 2025              │
+│  Check-out: Feb 17, 2025              │
+│  Room:      Sunset Suite               │
+│                                        │
+│  Guests: 2 adults                      │
+│  View:   Ocean View                    │
+│  Bed:    King                          │
+│                                        │
+│  Total: $450.00                        │
+└────────────────────────────────────────┘
+```
+
+---
+
+### property_card
+
+Displays detailed information about a single property, room, or listing with image, amenities, and pricing.
+
+**Use Cases:**
+- Hotel room details
+- Rental property listings
+- Venue information
+- Single product spotlight
+
+**Props:**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | string | Yes | Property/room name |
+| `description` | string | No | Detailed description |
+| `image` | string | No | Primary image URL |
+| `images` | array | No | Array of image URLs |
+| `price` | number | No | Price per unit |
+| `currency` | string | No | Currency code |
+| `amenities` | array | No | List of features/amenities |
+| `url` | string | No | Link to full details |
+| `metadata` | object | No | Additional details |
+
+**Example:**
+```json
+{
+  "component_name": "property_card",
+  "props": {
+    "name": "Sunset Suite",
+    "description": "Luxurious oceanfront suite with private balcony and stunning sunset views",
+    "image": "https://cdn.resort.com/sunset-suite-1.jpg",
+    "images": [
+      "https://cdn.resort.com/sunset-suite-1.jpg",
+      "https://cdn.resort.com/sunset-suite-2.jpg",
+      "https://cdn.resort.com/sunset-suite-3.jpg"
+    ],
+    "price": 225.00,
+    "currency": "USD",
+    "amenities": [
+      "Ocean View",
+      "King Bed",
+      "Private Balcony",
+      "Jacuzzi Tub",
+      "Mini Bar",
+      "WiFi"
+    ],
+    "url": "https://resort.com/rooms/sunset-suite",
+    "metadata": {
+      "Size": "450 sq ft",
+      "Max Guests": "2 adults",
+      "Floor": "3rd - 5th"
+    }
+  }
+}
+```
+
+**Rendered UI:**
+```
+┌────────────────────────────────────────┐
+│  ┌────────────────────────────────┐   │
+│  │                                 │   │
+│  │    [Sunset Suite Image]        │   │
+│  │                                 │   │
+│  └────────────────────────────────┘   │
+│                                        │
+│  Sunset Suite              $225/night │
+│                                        │
+│  Luxurious oceanfront suite with      │
+│  private balcony and stunning sunset  │
+│  views                                 │
+│                                        │
+│  ✓ Ocean View    ✓ King Bed           │
+│  ✓ Private Balcony   ✓ Jacuzzi Tub    │
+│  ✓ Mini Bar      ✓ WiFi               │
+│                                        │
+│  Size: 450 sq ft                       │
+│  Max Guests: 2 adults                  │
+│                                        │
+│  [View Full Details]                   │
+└────────────────────────────────────────┘
+```
+
+---
+
+### comparison_table
+
+Displays a side-by-side comparison of options — useful for helping users choose between products or services.
+
+**Use Cases:**
+- Product comparisons
+- Pricing tier comparisons
+- Feature comparisons
+- Service level comparisons
+
+**Props:**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | string | No | Table heading |
+| `columns` | array | Yes | Array of option objects to compare |
+| `rows` | array | Yes | Array of feature/attribute names |
+
+**Column Object:**
+```json
+{
+  "name": "string",
+  "price": "number",
+  "highlighted": "boolean",
+  "values": {
+    "feature_name": "value"
+  }
+}
+```
+
+**Example:**
+```json
+{
+  "component_name": "comparison_table",
+  "title": "Compare Drills",
+  "props": {
+    "columns": [
+      {
+        "name": "Makita 18V",
+        "price": 149.99,
+        "highlighted": false,
+        "values": {
+          "Power": "250 UWO",
+          "Weight": "7.3 lbs",
+          "Battery Life": "2 hours",
+          "Warranty": "3 years"
+        }
+      },
+      {
+        "name": "DeWalt 20V",
+        "price": 189.99,
+        "highlighted": true,
+        "values": {
+          "Power": "300 UWO",
+          "Weight": "8.2 lbs",
+          "Battery Life": "2.5 hours",
+          "Warranty": "5 years"
+        }
+      },
+      {
+        "name": "Milwaukee 18V",
+        "price": 219.99,
+        "highlighted": false,
+        "values": {
+          "Power": "350 UWO",
+          "Weight": "8.9 lbs",
+          "Battery Life": "3 hours",
+          "Warranty": "5 years"
+        }
+      }
+    ],
+    "rows": ["Power", "Weight", "Battery Life", "Warranty"]
+  }
+}
+```
+
+**Rendered UI:**
+```
+┌────────────────────────────────────────┐
+│  Compare Drills                        │
+│                                        │
+│              Makita  │ DeWalt │ Milw.  │
+│                      │  (⭐)  │        │
+│  ──────────────────────────────────── │
+│  Power       250 UWO │ 300    │ 350    │
+│  Weight      7.3 lbs │ 8.2    │ 8.9    │
+│  Battery     2 hours │ 2.5    │ 3      │
+│  Warranty    3 years │ 5      │ 5      │
+│  ──────────────────────────────────── │
+│  Price       $149.99 │ $189.99│ $219.99│
+└────────────────────────────────────────┘
+```
+
+---
+
+### image_gallery
+
+Displays a collection of images with captions — great for showcasing properties, products, or facilities.
+
+**Use Cases:**
+- Property photo tours
+- Product image galleries
+- Facility showcases
+- Before/after comparisons
+
+**Props:**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | string | No | Gallery heading |
+| `images` | array | Yes | Array of image objects |
+
+**Image Object:**
+```json
+{
+  "url": "string",
+  "caption": "string",
+  "alt": "string"
+}
+```
+
+**Example:**
+```json
+{
+  "component_name": "image_gallery",
+  "title": "Sunset Suite Photos",
+  "props": {
+    "images": [
+      {
+        "url": "https://cdn.resort.com/sunset-1.jpg",
+        "caption": "Bedroom with ocean view",
+        "alt": "King bed with floor-to-ceiling windows"
+      },
+      {
+        "url": "https://cdn.resort.com/sunset-2.jpg",
+        "caption": "Private balcony",
+        "alt": "Balcony with lounge chairs"
+      },
+      {
+        "url": "https://cdn.resort.com/sunset-3.jpg",
+        "caption": "Luxurious bathroom",
+        "alt": "Bathroom with jacuzzi tub"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Component Selection Guide
+
+<CardGrid>
+  <Card
+    title="catalog_results"
+    description="Use for listing multiple items (search results, product catalogs, room listings)"
+  />
+  <Card
+    title="property_card"
+    description="Use for detailed view of a single item (selected room, product spotlight)"
+  />
+  <Card
+    title="comparison_table"
+    description="Use when user asks to compare options side-by-side"
+  />
+  <Card
+    title="booking_confirmation"
+    description="Use after successful booking, reservation, or order completion"
+  />
+  <Card
+    title="alert"
+    description="Use for errors, warnings, or important notifications"
+  />
+  <Card
+    title="image_gallery"
+    description="Use when showcasing multiple photos or visual tour"
+  />
+</CardGrid>
+
+## Best Practices
+
+### Component Selection
+
+**Match Component to Context:**
+- User searches → `catalog_results`
+- User selects item → `property_card`
+- User asks to compare → `comparison_table`
+- Booking succeeds → `booking_confirmation`
+- Error occurs → `alert`
+
+**Don't Over-Render:**
+- Limit to 1-2 components per agent turn
+- Don't show component and then immediately replace it
+- Use components for rich data, plain text for simple responses
+
+### Data Quality
+
+**Always Provide:**
+- Clear titles and descriptions
+- High-quality images (if applicable)
+- Complete data (price, availability, etc.)
+
+**Avoid:**
+- Broken image URLs
+- Missing required props
+- Inconsistent data structures
+
+### Accessibility
+
+**Include:**
+- Alt text for images
+- Clear, descriptive titles
+- Structured data for screen readers
+
+## Template Interpolation
+
+Components support template interpolation in props:
+
+**From HTTP Tool Response:**
+```json
+{
+  "onSuccess": {
+    "open": {
+      "component_name": "catalog_results",
+      "title": "Product Results",
+      "description": "{{response.count}} products match your search",
+      "props": {
+        "items": "{{response.products}}",
+        "currency": "USD"
+      }
+    }
+  }
+}
+```
+
+**From Agent Parameters:**
+```json
+{
+  "component_name": "alert",
+  "title": "Searching for {{args.query}}",
+  "description": "One moment while we find the best matches..."
+}
+```
+
+## Error Handling
+
+If a component fails to render (missing required props, invalid data), the platform:
+1. Logs the error for debugging
+2. Shows a fallback alert component
+3. Agent conversation continues normally
+
+**Common Rendering Errors:**
+- Missing required prop
+- Invalid image URL
+- Malformed data structure
+
+**Prevention:**
+- Validate response data before rendering
+- Provide fallback values for optional props
+- Test components with realistic data
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Tool Design Guide"
+    href="/voice/tool-design"
+    description="Learn how to integrate components into your HTTP tools"
+  />
+  <Card
+    title="HTTP Tools Schema"
+    href="/voice/reference/httptools"
+    description="Complete reference for tool descriptors with UI configuration"
+  />
+  <Card
+    title="Real-World Examples"
+    href="/voice/usage"
+    description="See components in action in Otto and Cypress examples"
+  />
+</CardGrid>

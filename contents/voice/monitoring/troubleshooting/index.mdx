@@ -1,0 +1,378 @@
+---
+title: Troubleshooting Guide
+description: Diagnose and resolve common voice agent, session, and integration issues.
+keywords: ["troubleshooting", "debugging", "errors", "issues", "fixes"]
+---
+
+## Troubleshooting Guide
+
+Quick reference for diagnosing and resolving common issues with voice agents, sessions, tools, and integrations.
+
+## Session Issues
+
+### Widget Key Rejected
+
+**Symptoms:**
+- `401 Unauthorized` error when creating session
+- "Widget key validation failed" message
+
+**Causes:**
+1. Origin mismatch between website and widget key config
+2. Widget key revoked or invalid
+3. Tenant inactive
+
+**Solutions:**
+1. Verify origin matches exactly (https://example.com ≠ https://www.example.com)
+2. Check widget key status in tenant config
+3. Confirm tenant status is `active`
+4. Create separate keys for www and non-www versions if needed
+
+---
+
+### Session Creation Rate Limited
+
+**Symptoms:**
+- `429 Too Many Requests` error
+- "Please wait before starting a new session" message
+
+**Causes:**
+1. Edge rate limit exceeded (60 req/min per IP)
+2. Server rate limit exceeded (12 sessions/min for widget)
+3. Max concurrent sessions reached
+
+**Solutions:**
+1. Wait 60 seconds and retry
+2. Review traffic patterns for unusual spikes
+3. Increase rate limits if legitimate traffic
+4. Investigate potential bot attack if suspicious
+
+---
+
+### Session Fails to Start
+
+**Symptoms:**
+- Widget opens but conversation doesn't begin
+- Microphone permission granted but no audio stream
+
+**Causes:**
+1. Agent configuration error
+2. Missing or invalid system prompt
+3. Tool validation failure
+4. OpenAI API error
+
+**Solutions:**
+1. Check browser console for errors
+2. Verify agent configuration is complete
+3. Test tools in isolation
+4. Review OpenAI API status
+
+---
+
+### Session Timeout
+
+**Symptoms:**
+- Session ends unexpectedly
+- "Session limit exceeded" message
+
+**Causes:**
+1. Exceeded max session duration (default: 15 minutes)
+2. Idle timeout (default: 5 minutes)
+3. Daily quota exhausted
+4. Heartbeat not being sent
+
+**Solutions:**
+1. Check session duration in monitoring
+2. Investigate what's causing long sessions
+3. Review quota usage
+4. Verify widget is sending heartbeats every 45 seconds
+
+## Tool Issues
+
+### Tool Returns No Results
+
+**Symptoms:**
+- Agent says "I couldn't find anything"
+- Empty result set displayed
+
+**Causes:**
+1. API returned no matching data
+2. okField evaluation issue
+3. Query parameters too restrictive
+
+**Solutions:**
+1. Test API directly with same parameters
+2. Verify okField exists in response
+3. Review search criteria (too specific?)
+4. Check API rate limits
+
+---
+
+### Tool Timeout
+
+**Symptoms:**
+- "Request timed out" error
+- Tool call takes too long
+
+**Causes:**
+1. API response too slow
+2. timeoutMs set too low
+3. Network connectivity issue
+
+**Solutions:**
+1. Test API latency directly
+2. Increase timeoutMs (default: 5000ms)
+3. Optimize API query performance
+4. Add caching to API if possible
+
+---
+
+### Tool Authentication Failed
+
+**Symptoms:**
+- `401 Unauthorized` from API
+- "Authentication failed" error
+
+**Causes:**
+1. Missing or incorrect API secret
+2. Secret template not interpolating correctly
+3. Token expired
+
+**Solutions:**
+1. Verify secret exists in tenant config
+2. Check template syntax: `{{secrets.api_token}}`
+3. Rotate API token if expired
+4. Test API with Postman/curl using same token
+
+---
+
+### Template Interpolation Error
+
+**Symptoms:**
+- URL has literal `{{args.param}}` instead of value
+- API receives malformed request
+
+**Causes:**
+1. Parameter not prefixed with `args.`
+2. Type coercion filter missing
+3. Parameter name mismatch
+
+**Solutions:**
+1. Use `{{args.param}}` not `{{param}}`
+2. Add type filters: `{{args.limit | number}}`
+3. Verify parameter names match exactly
+
+## Agent Behavior Issues
+
+### Agent Hallucinates Data
+
+**Symptoms:**
+- Agent makes up product names, prices, or availability
+- Agent guesses instead of using tools
+
+**Causes:**
+1. Prompt doesn't enforce "never hallucinate" rule strongly enough
+2. Tools not called when they should be
+3. Tool response not used correctly
+
+**Solutions:**
+1. Strengthen data_rules in prompt:
+   ```json
+   "data_rules": [
+     "NEVER guess product names, prices, or availability",
+     "ALWAYS use tools to retrieve real-time data",
+     "If a tool returns no results, say so explicitly"
+   ]
+   ```
+2. Add examples showing correct tool usage
+3. Increase tool priority
+
+---
+
+### Agent Too Verbose
+
+**Symptoms:**
+- Agent responses are too long
+- Users complain about talking too much
+
+**Causes:**
+1. Prompt style rules too lenient
+2. Examples show long responses
+3. Agent personality too chatty
+
+**Solutions:**
+1. Add style rule: "Keep responses to 2-3 sentences unless explaining complex topic"
+2. Update examples with concise responses
+3. Adjust tone to be more direct
+
+---
+
+### Agent Goes Off-Topic
+
+**Symptoms:**
+- Agent handles questions outside its scope
+- Agent doesn't escalate when it should
+
+**Causes:**
+1. Scope boundaries not defined clearly
+2. Escalation rules too vague
+3. Out-of-scope examples missing
+
+**Solutions:**
+1. Define clear boundaries in prompt:
+   ```json
+   "capabilities": {
+     "in_scope": ["room booking", "availability", "amenities"],
+     "out_of_scope": ["cancellations", "complaints", "loyalty program"]
+   }
+   ```
+2. Add escalation examples
+3. Test with off-topic questions
+
+---
+
+### Wrong Tool Selected
+
+**Symptoms:**
+- Agent calls wrong tool for user's intent
+- Multiple tool calls when one would suffice
+
+**Causes:**
+1. Tool descriptions too similar
+2. Tool priority not set correctly
+3. Capability definitions unclear
+
+**Solutions:**
+1. Make tool descriptions more specific
+2. Adjust priority (1-10, higher = more likely)
+3. Add `when` field to capability:
+   ```json
+   "when": "User asks for product recommendations OR compares items"
+   ```
+
+## UI Component Issues
+
+### Component Doesn't Render
+
+**Symptoms:**
+- Expected UI component doesn't appear
+- Fallback text shown instead
+
+**Causes:**
+1. Missing required component props
+2. Invalid component_name
+3. Malformed props data
+
+**Solutions:**
+1. Check component reference for required props
+2. Verify component_name spelling
+3. Validate props structure matches component schema
+4. Review browser console for rendering errors
+
+---
+
+### Images Not Loading
+
+**Symptoms:**
+- Broken image icons in catalog_results
+- Empty image placeholders
+
+**Causes:**
+1. Invalid image URLs
+2. CORS issues with image CDN
+3. Missing image field in response
+
+**Solutions:**
+1. Test image URLs directly in browser
+2. Ensure image CDN allows cross-origin requests
+3. Check API response has image field populated
+4. Provide fallback image URL
+
+## Cost Issues
+
+### Exceeding Daily Quota
+
+**Symptoms:**
+- Sessions blocked with "Daily quota exceeded"
+- Higher costs than expected
+
+**Causes:**
+1. More sessions than anticipated
+2. Longer sessions than expected
+3. Inefficient prompt (too many tokens)
+
+**Solutions:**
+1. Review session volume trends
+2. Analyze average tokens per session
+3. Optimize prompt length
+4. Increase quota if justified by ROI
+
+---
+
+### High Token Usage Per Session
+
+**Symptoms:**
+- Sessions consuming 10,000+ tokens
+- Higher than expected costs
+
+**Causes:**
+1. Prompt too long
+2. Too many tools defined
+3. Sessions not completing efficiently
+
+**Solutions:**
+1. Trim system prompt (remove redundant examples)
+2. Remove unused tools
+3. Improve agent efficiency (faster completions)
+4. Set session duration limits
+
+## Diagnostic Commands
+
+### Check Session Status
+```bash
+# Query MongoDB for active sessions
+db.realtime_sessions.find({ active: true })
+```
+
+### Review Daily Usage
+```bash
+# Check today's token usage
+db.usage_daily.find({ _id: /^d:.*:2025-01-23$/ })
+```
+
+### Audit Rate Limits
+```bash
+# Check recent rate limit violations
+# Review application logs for 429 errors
+```
+
+## Getting Help
+
+**Still stuck?**
+
+1. **Check logs:** Review browser console and server logs
+2. **Test in isolation:** Reproduce issue in development environment
+3. **Contact support:** support@strategicmachines.ai with:
+   - Session ID
+   - Timestamp of issue
+   - Error messages
+   - Steps to reproduce
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Monitoring Dashboard"
+    href="/voice/monitoring"
+    description="Track metrics to prevent issues before they occur"
+  />
+  <Card
+    title="API Reference"
+    href="/voice/reference/api"
+    description="Understand error codes and API responses"
+  />
+  <Card
+    title="Agent Design"
+    href="/voice/agent-design"
+    description="Design agents that avoid common pitfalls"
+  />
+</CardGrid>

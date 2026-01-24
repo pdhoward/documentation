@@ -1,0 +1,248 @@
+---
+title: Security & Compliance
+description: Security architecture, authentication, bot protection, and compliance best practices for the VOX platform.
+keywords: ["security", "compliance", "authentication", "protection"]
+---
+
+## Security & Compliance
+
+The VOX platform implements defense-in-depth security with layered protection: edge rate limiting, bot detection, origin validation, session controls, and usage quotas.
+
+This guide covers the security architecture and best practices for protecting your voice agents and customer data.
+
+## Security Layers
+
+<CardGrid>
+  <Card
+    title="Edge Protection"
+    description="Rate limiting and bot detection at the CDN edge before requests reach your application"
+  />
+  <Card
+    title="Origin Validation"
+    description="Widget keys enforce strict origin matching to prevent unauthorized embedding"
+  />
+  <Card
+    title="Authentication"
+    description="OTP-based console authentication and JWT session management"
+  />
+  <Card
+    title="Usage Controls"
+    description="Layered quotas prevent abuse and control costs"
+  />
+</CardGrid>
+
+## Security Topics
+
+<CardGrid>
+  <Card
+    title="Authentication"
+    href="/voice/security/authentication"
+    description="OTP flow, session management, and JWT token security"
+  />
+  <Card
+    title="Rate Limiting"
+    href="/voice/security/ratelimiting"
+    description="Edge and server-side rate limiting architecture and configuration"
+  />
+  <Card
+    title="Bot Protection"
+    href="/voice/security/botprotection"
+    description="BotID integration and automated client detection"
+  />
+  <Card
+    title="Compliance"
+    href="/voice/security/compliance"
+    description="GDPR, data retention, and industry-specific compliance guidance"
+  />
+</CardGrid>
+
+## Security Best Practices
+
+### Widget Key Management
+
+**Do:**
+- Create separate widget keys for each domain
+- Use environment-specific keys (dev, staging, production)
+- Rotate keys quarterly
+- Revoke compromised keys immediately
+- Monitor usage per key
+
+**Don't:**
+- Use wildcards in origin configuration
+- Share widget keys across environments
+- Commit widget keys to git repositories
+- Reuse revoked keys
+
+### Secret Management
+
+**Do:**
+- Store API secrets in environment variables
+- Use different secrets per environment
+- Rotate secrets regularly
+- Encrypt secrets at rest
+- Use {{secrets.*}} template interpolation
+
+**Don't:**
+- Hardcode secrets in tool descriptors
+- Share secrets in plaintext
+- Log secret values
+- Expose secrets in client-side code
+
+### Session Security
+
+**Do:**
+- Set appropriate session timeouts
+- Enforce idle timeout limits
+- Track concurrent sessions per user
+- Implement session quotas
+- Clear sessions on quota violations
+
+**Don't:**
+- Allow unlimited session duration
+- Skip heartbeat enforcement
+- Ignore idle sessions
+- Reuse session tokens
+
+### API Security
+
+**Do:**
+- Use HTTPS for all API communications
+- Validate all input parameters
+- Implement request signing for sensitive operations
+- Use API keys per tenant
+- Monitor API usage patterns
+
+**Don't:**
+- Accept HTTP connections in production
+- Trust client-provided data without validation
+- Share API keys across tenants
+- Skip authentication on "internal" APIs
+
+## Threat Model
+
+### Common Threats
+
+| Threat | Mitigation | Layer |
+|--------|-----------|-------|
+| **DDoS / High Traffic** | Edge rate limiting (60 req/min per IP) | Edge |
+| **Bot Attacks** | BotID verification, block non-verified bots | Edge |
+| **Unauthorized Access** | Widget key origin validation | Server |
+| **Session Hijacking** | HTTPOnly cookies, secure JWT tokens | Server |
+| **API Abuse** | Server-side rate limits, usage quotas | Server |
+| **Cost Attacks** | Daily token/dollar caps, concurrent session limits | Server |
+| **Data Exfiltration** | Secrets not in responses, auth required for PII | Application |
+
+### Defense in Depth
+
+```
+┌─────────────────────────────────────┐
+│  Edge Layer (Upstash)               │
+│  - IP rate limiting                 │
+│  - Bot detection (BotID)            │
+└────────────┬────────────────────────┘
+             │
+┌────────────▼────────────────────────┐
+│  Server Layer (MongoDB)             │
+│  - Session rate limiting            │
+│  - Origin validation                │
+│  - Concurrent session limits        │
+└────────────┬────────────────────────┘
+             │
+┌────────────▼────────────────────────┐
+│  Application Layer                  │
+│  - Usage quotas (tokens, dollars)   │
+│  - Parameter validation             │
+│  - Secret management                │
+└─────────────────────────────────────┘
+```
+
+## Compliance Considerations
+
+### GDPR (General Data Protection Regulation)
+
+**Data Collection:**
+- Voice agents may collect personal data (name, email, phone)
+- Implement privacy policy disclosing data collection
+- Obtain consent before processing personal data
+- Provide data access and deletion mechanisms
+
+**Data Retention:**
+- Session transcripts stored for monitoring/improvement
+- Configure retention periods (default: 90 days)
+- Implement automated deletion of expired data
+- Allow users to request transcript deletion
+
+**Data Processing:**
+- Audio streams processed by OpenAI Realtime API
+- Review OpenAI's data processing agreement
+- Ensure GDPR-compliant subprocessor agreements
+- Document data flow for compliance audits
+
+### PCI DSS (Payment Card Industry)
+
+**Never collect payment card data via voice agent:**
+- Don't ask for credit card numbers
+- Don't process payments through voice
+- Use secure payment links instead
+- Redirect to PCI-compliant payment processor
+
+### HIPAA (Health Insurance Portability and Accountability Act)
+
+**Protected Health Information (PHI):**
+- Don't collect PHI without Business Associate Agreement (BAA)
+- Limit healthcare agents to scheduling only
+- Don't provide medical advice or diagnosis
+- Implement encryption for PHI at rest and in transit
+- Maintain audit logs of PHI access
+
+**Note:** Standard VOX platform is not HIPAA-compliant by default. Contact Strategic Machines for HIPAA-ready deployment options.
+
+## Security Checklist
+
+### Pre-Deployment
+
+- [ ] Widget keys configured with exact origins (no wildcards)
+- [ ] API secrets stored in environment variables
+- [ ] Rate limits configured appropriately for expected traffic
+- [ ] Session timeouts and idle limits set
+- [ ] Bot protection enabled and tested
+- [ ] HTTPS enforced on all endpoints
+- [ ] Privacy policy published and linked
+
+### Production
+
+- [ ] Monitor session creation rate for anomalies
+- [ ] Review rate limit violations weekly
+- [ ] Audit API usage patterns
+- [ ] Rotate secrets quarterly
+- [ ] Review and revoke unused widget keys
+- [ ] Test disaster recovery procedures
+- [ ] Maintain compliance audit trail
+
+### Incident Response
+
+- [ ] Define security incident response plan
+- [ ] Establish breach notification procedures
+- [ ] Document escalation contacts
+- [ ] Test incident response annually
+- [ ] Maintain security contact: security@strategicmachines.ai
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Authentication Deep-Dive"
+    href="/voice/security/authentication"
+    description="Learn about OTP flow and session management"
+  />
+  <Card
+    title="Rate Limiting Architecture"
+    href="/voice/security/ratelimiting"
+    description="Configure layered rate limits for your use case"
+  />
+  <Card
+    title="API Reference"
+    href="/voice/reference/api"
+    description="Review API security controls and error codes"
+  />
+</CardGrid>

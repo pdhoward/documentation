@@ -1,0 +1,360 @@
+---
+title: Bot Protection
+description: BotID integration for detecting and blocking automated clients and malicious bots.
+keywords: ["bot protection", "BotID", "automation", "security", "fraud"]
+---
+
+## Bot Protection
+
+The VOX platform uses BotID to detect and block automated clients, preventing abuse, fraud, and cost attacks from non-human traffic.
+
+## What is BotID?
+
+BotID is a bot detection service that analyzes client behavior to determine if traffic is coming from a human or an automated script.
+
+**Detection Methods:**
+- Browser fingerprinting
+- Behavioral analysis
+- Device characteristics
+- Network patterns
+- Challenge-response tests
+
+**Verdict Types:**
+- **Human** — Real user with normal browser
+- **Bot (Verified)** — Known good bot (search engine crawler)
+- **Bot (Unverified)** — Automated client, potentially malicious
+
+## How It Works
+
+### Client-Side Integration
+
+The VOX widget includes BotID client library:
+
+```html
+<!-- BotID included automatically in widget -->
+<script src="https://botid.example.com/client.js"></script>
+```
+
+**Client Flow:**
+1. Widget loads BotID client
+2. Client collects browser/device signals
+3. Signals sent to BotID service
+4. Verification token generated
+5. Token included in session creation request
+
+### Server-Side Validation
+
+```
+Session Create Request
+    ↓
+Extract BotID Headers
+    ↓
+Validate with BotID Service
+    ↓
+Check Verdict:
+  - isBot: false → Allow
+  - isBot: true, isVerifiedBot: true → Allow (search engine)
+  - isBot: true, isVerifiedBot: false → Block (403)
+```
+
+## Verdict Structure
+
+BotID returns a verdict object:
+
+```json
+{
+  "verdict": {
+    "isBot": false,
+    "isVerifiedBot": false,
+    "confidence": 0.95,
+    "deviceId": "d_abc123...",
+    "sessionId": "s_xyz789..."
+  }
+}
+```
+
+### Fields
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `isBot` | boolean | True if client appears automated |
+| `isVerifiedBot` | boolean | True if recognized good bot (crawler) |
+| `confidence` | number | Confidence score (0.0-1.0) |
+| `deviceId` | string | Unique device identifier |
+| `sessionId` | string | BotID session identifier |
+
+## Blocking Policy
+
+### Default Policy
+
+**Allow:**
+- `isBot: false` (human traffic)
+- `isBot: true, isVerifiedBot: true` (search engine crawlers)
+
+**Block:**
+- `isBot: true, isVerifiedBot: false` (unverified bots)
+- Missing or invalid BotID headers
+
+**Response When Blocked:**
+```json
+{
+  "error": "Bot verification failed",
+  "code": "BOT_BLOCKED",
+  "userMessage": "We couldn't verify this device. Please refresh and try again."
+}
+```
+
+**HTTP Status:** `403 Forbidden`
+
+### Verified Bots
+
+Whitelisted bots (allowed even when `isBot: true`):
+- Googlebot (search indexing)
+- Bingbot (search indexing)
+- Other search engine crawlers
+
+**Why Allow:** Need SEO indexing without blocking crawlers
+
+## Configuration
+
+### Environment Variables
+
+```bash
+# BotID Service
+BOTID_API_URL=https://api.botid.example.com
+BOTID_API_KEY=your-botid-api-key
+
+# Optional: Bypass bot protection (dev/testing only)
+DISABLE_BOT_PROTECTION=false
+```
+
+### Disabling Bot Protection
+
+For development or testing:
+
+```bash
+DISABLE_BOT_PROTECTION=true
+```
+
+**WARNING:** Never disable in production. Only use for local testing.
+
+## Logging and Monitoring
+
+### Logged Information
+
+Every request logs:
+- BotID verdict (isBot, confidence)
+- Device ID
+- IP address
+- User agent
+- Timestamp
+
+**Example Log:**
+```json
+{
+  "timestamp": "2025-01-23T10:00:00Z",
+  "ip": "203.0.113.45",
+  "userAgent": "Mozilla/5.0...",
+  "botVerdict": {
+    "isBot": false,
+    "confidence": 0.97
+  },
+  "allowed": true
+}
+```
+
+### Metrics to Track
+
+| Metric | Good Target | Alert If |
+|--------|-------------|----------|
+| Bot block rate | Less than 5% | More than 20% |
+| Confidence distribution | Peak at 0.9+ | Many scores Less than 0.5 |
+| Unique device IDs | Grows with users | Sudden spike |
+| Blocked IPs | Stable low count | Same IPs repeatedly blocked |
+
+## Common Scenarios
+
+### Scenario 1: Legitimate User Blocked
+
+**Symptoms:**
+- User reports "couldn't verify device" error
+- High confidence score but still blocked
+
+**Causes:**
+- BotID false positive
+- Browser extensions interfering
+- Corporate firewall modifying headers
+
+**Solutions:**
+1. Check BotID logs for specific deviceId
+2. Review user's browser/network environment
+3. Whitelist specific deviceId if confirmed human
+4. Contact BotID support if pattern emerges
+
+### Scenario 2: Bot Attack
+
+**Symptoms:**
+- Sudden spike in bot blocks
+- Same IP making many requests
+- Low confidence scores (Less than 0.3)
+
+**Causes:**
+- Automated script attacking platform
+- Scraper attempting data extraction
+- Cost attack generating sessions
+
+**Actions:**
+1. Verify blocks are working (bots getting 403)
+2. Review blocked IP addresses
+3. Add IPs to permanent blocklist if persistent
+4. Monitor for distributed attacks (many IPs)
+
+### Scenario 3: Search Engine Crawler
+
+**Symptoms:**
+- `isBot: true, isVerifiedBot: true` verdicts
+- User agent matches known crawler
+
+**Expected Behavior:**
+- Crawler is allowed through
+- Widget pages indexed for SEO
+- No session creation (crawlers don't run JavaScript)
+
+**No Action Needed:** This is correct behavior
+
+## False Positives and Tuning
+
+### Reducing False Positives
+
+If legitimate users are blocked:
+
+1. **Review Confidence Threshold**
+   - Default: Block only high-confidence bots
+   - Consider: Only block confidence More than 0.8
+
+2. **Whitelist Patterns**
+   - Whitelist specific user agents (mobile apps)
+   - Whitelist IP ranges (corporate networks)
+   - Whitelist device IDs (confirmed humans)
+
+3. **Adjust Blocking Policy**
+   - Challenge mode: Show CAPTCHA instead of blocking
+   - Monitoring mode: Log but don't block (testing)
+
+### Configuration Example
+
+```javascript
+// Customized blocking policy
+function shouldBlockBot(verdict) {
+  // Allow all verified bots
+  if (verdict.isVerifiedBot) return false;
+
+  // Block high-confidence bots
+  if (verdict.isBot && verdict.confidence > 0.8) return true;
+
+  // Allow everything else
+  return false;
+}
+```
+
+## Cost Attack Mitigation
+
+Bots can generate expensive OpenAI API usage:
+
+### Attack Pattern
+
+1. Bot floods session creation endpoints
+2. Each session consumes OpenAI tokens
+3. Costs escalate rapidly
+
+### Defense Layers
+
+**Layer 1: Bot Protection**
+- Blocks automated clients before session creation
+- Prevents token consumption
+
+**Layer 2: Rate Limiting**
+- Limits sessions per IP/user
+- Even if bot bypasses detection
+
+**Layer 3: Usage Quotas**
+- Daily token/dollar caps
+- Stops runaway costs
+
+**Combined:** Multi-layer defense prevents cost attacks
+
+## Best Practices
+
+<CardGrid>
+  <Card
+    title="Monitor Continuously"
+    description="Track bot block rate and false positives weekly"
+  />
+  <Card
+    title="Log Verdicts"
+    description="Store bot verdicts for analysis and pattern detection"
+  />
+  <Card
+    title="Tune Thresholds"
+    description="Adjust confidence thresholds based on false positive rate"
+  />
+  <Card
+    title="Combine with Rate Limits"
+    description="Use bot protection AND rate limiting for defense in depth"
+  />
+</CardGrid>
+
+## Troubleshooting
+
+### Bot Protection Not Working
+
+**Symptoms:**
+- Bots getting through
+- No bot blocks in logs
+
+**Diagnosis:**
+1. Check `DISABLE_BOT_PROTECTION` is `false`
+2. Verify BotID headers in requests
+3. Check BotID API credentials
+4. Review BotID service status
+
+**Solutions:**
+- Enable bot protection if disabled
+- Update BotID API key if expired
+- Contact BotID support if service down
+
+### Too Many False Positives
+
+**Symptoms:**
+- Legitimate users blocked frequently
+- User complaints about verification errors
+
+**Diagnosis:**
+1. Review confidence scores of blocked requests
+2. Identify patterns (browser, network, geography)
+3. Check if specific user segments affected
+
+**Solutions:**
+- Lower confidence threshold for blocking
+- Whitelist affected user patterns
+- Consider challenge mode instead of blocking
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Rate Limiting"
+    href="/voice/security/ratelimiting"
+    description="Combine bot protection with rate limits for comprehensive defense"
+  />
+  <Card
+    title="Monitoring"
+    href="/voice/monitoring"
+    description="Track bot metrics and optimize protection over time"
+  />
+  <Card
+    title="Security Overview"
+    href="/voice/security"
+    description="Review the complete security architecture"
+  />
+</CardGrid>

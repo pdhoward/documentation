@@ -1,0 +1,326 @@
+---
+title: Rate Limiting
+description: Layered rate limiting architecture with edge and server-side controls for security and cost management.
+keywords: ["rate limiting", "throttling", "quotas", "security", "cost control"]
+---
+
+## Rate Limiting Architecture
+
+The VOX platform implements defense-in-depth rate limiting with two layers: edge (Upstash Redis) and server (MongoDB). This protects against abuse, controls costs, and ensures fair resource distribution.
+
+## Rate Limiting Layers
+
+```
+┌─────────────────────────────────────┐
+│  Layer 1: Edge (Upstash Redis)      │
+│  - IP-based: 60 req/min             │
+│  - User-based: 120 req/min          │
+│  - Ultra-fast (sub-10ms)            │
+└────────────┬────────────────────────┘
+             │
+             ▼ (if within limits)
+┌─────────────────────────────────────┐
+│  Layer 2: Server (MongoDB)          │
+│  - Session creation: 12/min         │
+│  - Daily token quota: 300k          │
+│  - Concurrent sessions: 10          │
+└─────────────────────────────────────┘
+```
+
+## Edge Rate Limiting (Upstash)
+
+Applied at the CDN edge before requests reach the application server.
+
+### Limits
+
+| Scope | Limit | Window | Environment Variable |
+|-------|-------|--------|---------------------|
+| Per IP | 60 requests | 1 minute | `RATE_IP_PER_MIN` |
+| Per User (Console) | 120 requests | 1 minute | `RATE_USER_PER_MIN` |
+| Burst | 20 requests | Instant | `RATE_BURST` |
+
+### How It Works
+
+1. Request arrives at edge
+2. Upstash Redis checks counter for IP/user
+3. If under limit: increment counter, allow request
+4. If over limit: return 429 with Retry-After header
+
+**Response Headers:**
+```http
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 45
+X-RateLimit-Reset: 1737654321
+Retry-After: 60
+```
+
+### Configuration
+
+```bash
+# .env
+UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-token
+
+# Optional (defaults shown)
+RATE_IP_PER_MIN=60
+RATE_USER_PER_MIN=120
+RATE_BURST=20
+```
+
+### Benefits
+
+- **Ultra-low latency** — Sub-10ms overhead
+- **Global distribution** — Upstash edge locations worldwide
+- **Cost effective** — Block abuse before hitting your server
+- **DDoS protection** — Stops attacks at the edge
+
+## Server Rate Limiting (MongoDB)
+
+Applied at the application layer with persistent counters.
+
+### Session Creation Limits
+
+| Scope | Widget | Console | Variable |
+|-------|--------|---------|----------|
+| Sessions/minute | 12 | 3 | `WIDGET_SESSION_PER_MIN`, `CONSOLE_SESSION_PER_MIN` |
+
+**Purpose:** Prevent session flooding and control OpenAI API costs
+
+### Usage Quotas
+
+| Scope | Widget | Console | Variable |
+|-------|--------|---------|----------|
+| Daily tokens | 300,000 | 50,000 | `WIDGET_MAX_TOKENS_DAILY`, `CONSOLE_MAX_TOKENS_DAILY` |
+| Daily dollars | $20 | $1 | `WIDGET_MAX_DOLLARS_DAILY`, `CONSOLE_MAX_DOLLARS_DAILY` |
+
+**Purpose:** Prevent runaway costs, enforce budget limits
+
+### Concurrent Session Limits
+
+| Scope | Widget | Console | Variable |
+|-------|--------|---------|----------|
+| Max concurrent | 10 | 1 | `WIDGET_MAX_CONCURRENT_SESSIONS`, `CONSOLE_MAX_CONCURRENT_SESSIONS` |
+
+**Purpose:** Prevent resource exhaustion, control OpenAI parallel requests
+
+### Session Duration Limits
+
+| Limit | Default | Variable |
+|-------|---------|----------|
+| Max duration | 15 minutes | `MAX_SESSION_MINUTES` |
+| Idle timeout | 300 seconds (5 min) | `MAX_SESSION_IDLE_SEC` |
+
+**Purpose:** Prevent abandoned sessions from consuming resources
+
+## Fixed-Window Algorithm
+
+Both layers use a fixed-window counter algorithm:
+
+```
+Window: 10:00:00 - 10:00:59
+
+Request at 10:00:05 → Count: 1/60
+Request at 10:00:15 → Count: 2/60
+...
+Request at 10:00:55 → Count: 60/60 (limit reached)
+Request at 10:00:58 → Rejected (429)
+
+New window: 10:01:00 → Count resets to 0
+```
+
+**Trade-off:** Simple and performant, but allows up to 2x limit at window boundaries (requests at 10:00:59 and 10:01:00).
+
+## Rate Limit Responses
+
+### HTTP 429 (Too Many Requests)
+
+```json
+{
+  "error": "Too many requests",
+  "code": "RATE_LIMIT_EXCEEDED",
+  "userMessage": "Please wait a moment before trying again.",
+  "retryAfter": 60
+}
+```
+
+**Client Handling:**
+- Display user-friendly message
+- Show countdown timer using `retryAfter`
+- Disable retry button until timer expires
+- Implement exponential backoff for automatic retries
+
+### Error Codes
+
+| Code | Meaning | Layer |
+|------|---------|-------|
+| `RATE_LIMIT_EXCEEDED` | Generic rate limit | Edge |
+| `MAX_CONCURRENT_SESSIONS` | Too many active sessions | Server |
+| `DAILY_QUOTA_EXCEEDED` | Usage quota exhausted | Server |
+| `SESSION_DURATION_EXCEEDED` | Session too long | Server |
+
+## Monitoring
+
+### Key Metrics
+
+**Edge Layer:**
+- Rate limit hit rate (% of requests blocked)
+- Top IPs hitting limits
+- Geographic distribution of blocks
+
+**Server Layer:**
+- Sessions created per minute (track patterns)
+- Daily quota usage per tenant
+- Concurrent session count
+
+### Alert Thresholds
+
+| Metric | Alert At | Action |
+|--------|----------|--------|
+| Edge limit hit rate | More than 5% | Investigate for attack or legitimate spike |
+| Quota usage | More than 80% | Warn user, consider increasing quota |
+| Concurrent sessions | At limit for more than 1 hour | Check for stuck sessions |
+
+## Adjusting Limits
+
+### When to Increase
+
+**Edge Limits:**
+- Legitimate traffic patterns exceed defaults
+- Specific IP ranges need higher limits (corporate VPNs)
+- Special events with traffic spikes
+
+**Server Limits:**
+- Business growth justifies higher capacity
+- ROI analysis supports increased spending
+- User feedback indicates limits too restrictive
+
+### How to Adjust
+
+**Environment Variables:**
+```bash
+# Increase widget session limit
+WIDGET_SESSION_PER_MIN=20
+
+# Increase daily token quota
+WIDGET_MAX_TOKENS_DAILY=500000
+
+# Increase concurrent sessions
+WIDGET_MAX_CONCURRENT_SESSIONS=25
+```
+
+**Deploy changes:**
+1. Update environment variables
+2. Restart application
+3. Monitor metrics for 24-48 hours
+4. Adjust further if needed
+
+## Best Practices
+
+<CardGrid>
+  <Card
+    title="Start Conservative"
+    description="Begin with default limits and increase based on real usage patterns"
+  />
+  <Card
+    title="Monitor Continuously"
+    description="Track rate limit violations to distinguish abuse from legitimate use"
+  />
+  <Card
+    title="Set Quotas Aligned with Budget"
+    description="Daily token/dollar limits should match your cost tolerance"
+  />
+  <Card
+    title="Different Limits for Different Contexts"
+    description="Widget users can have higher limits than console testers"
+  />
+</CardGrid>
+
+## Troubleshooting
+
+### High Rate Limit Violations
+
+**Symptoms:**
+- Many 429 errors in logs
+- User complaints about access denied
+
+**Diagnosis:**
+1. Check which limit is being hit (edge vs server)
+2. Review IP addresses/users hitting limits
+3. Analyze time patterns (gradual vs sudden spike)
+
+**Solutions:**
+- Legitimate traffic → Increase limits
+- Attack pattern → Keep limits, add IP blocks
+- Coding error (retry loop) → Fix client code
+
+### Quota Exhausted Mid-Day
+
+**Symptoms:**
+- `DAILY_QUOTA_EXCEEDED` errors before day ends
+- Sessions blocked unexpectedly
+
+**Diagnosis:**
+1. Review daily usage trends
+2. Check for unusual session patterns
+3. Analyze token usage per session
+
+**Solutions:**
+- Higher than expected traffic → Increase quota
+- Inefficient prompts → Optimize to reduce tokens
+- Attack or abuse → Investigate sessions
+
+### Concurrent Session Limit Reached
+
+**Symptoms:**
+- `MAX_CONCURRENT_SESSIONS` errors
+- Users can't start new sessions
+
+**Diagnosis:**
+1. Check active sessions count
+2. Look for sessions not ending properly
+3. Review idle session timeout settings
+
+**Solutions:**
+- Legitimate peak usage → Increase limit
+- Sessions not closing → Fix heartbeat logic
+- Abandoned sessions → Reduce idle timeout
+
+## Security Implications
+
+### Rate Limiting as Security Control
+
+**Protects Against:**
+- **DDoS attacks** — Edge limits block flooding
+- **Credential stuffing** — OTP rate limits prevent brute force
+- **Cost attacks** — Quota limits cap damage
+- **Resource exhaustion** — Concurrent limits prevent overload
+
+**Does NOT Protect Against:**
+- Sophisticated distributed attacks (many unique IPs)
+- Low-and-slow attacks (under rate limits)
+- Application-layer exploits
+
+**Combine with:**
+- Bot detection (BotID)
+- Origin validation (widget keys)
+- IP allowlisting (for known bad actors)
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Bot Protection"
+    href="/voice/security/botprotection"
+    description="Learn about BotID integration for detecting automated clients"
+  />
+  <Card
+    title="Monitoring"
+    href="/voice/monitoring"
+    description="Track rate limit metrics and optimize limits over time"
+  />
+  <Card
+    title="API Reference"
+    href="/voice/reference/api"
+    description="See all rate limit headers and error responses"
+  />
+</CardGrid>

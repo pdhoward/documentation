@@ -1,0 +1,327 @@
+---
+title: Hospitality Template
+description: Deploy a hotel booking voice agent with pre-built room search, availability checks, and reservation capabilities.
+keywords: ["hospitality", "hotel", "booking", "reservations", "template"]
+---
+
+## Hospitality Voice Agent Template
+
+This template provides a complete voice agent for hospitality businesses — hotels, resorts, vacation rentals, and bed & breakfasts. Based on the successful Cypress Resort implementation.
+
+**Deployment Time:** 30-60 minutes
+
+## Template Overview
+
+**Agent Capabilities:**
+- Search available rooms by dates and guest count
+- Display room details with photos and amenities
+- Answer questions about facilities and policies
+- Create and confirm reservations
+- Provide booking confirmation numbers
+
+**Business Impact:**
+- Increase direct bookings (reduce OTA dependence)
+- 24/7 availability for booking inquiries
+- Reduce front desk phone volume
+- Capture bookings outside business hours
+
+## What's Included
+
+<CardGrid>
+  <Card
+    title="System Prompt"
+    description="Warm, attentive concierge personality with hotel-specific conversation flows"
+  />
+  <Card
+    title="3 Core Tools"
+    description="Room search, unit details, and reservation creation with UI components"
+  />
+  <Card
+    title="UI Components"
+    description="Property cards, catalog results, and booking confirmations"
+  />
+  <Card
+    title="Integration Guide"
+    description="Connect to your PMS (Property Management System) or booking API"
+  />
+</CardGrid>
+
+## Agent Personality
+
+**Tone:** Warm, attentive, professional — like a luxury hotel concierge
+
+**Style Rules:**
+- Greet warmly and detect booking intent early
+- Always confirm details before creating reservation
+- Speak in complete but concise sentences
+- Use "we" and "our" to create sense of partnership
+- Express genuine enthusiasm about property features
+
+**Sample Phrases:**
+- "I'd be delighted to help you find the perfect room"
+- "Let me check availability for you"
+- "Our oceanfront suites are particularly stunning at sunset"
+- "Your reservation is all set!"
+
+## Core Tools
+
+### 1. search_units
+
+Search available rooms by check-in/check-out dates and guest count.
+
+**API Integration:**
+```json
+{
+  "kind": "http_tool",
+  "name": "search_units",
+  "description": "Search available rooms by dates and guest count",
+  "priority": 10,
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "check_in": {
+        "type": "string",
+        "format": "date",
+        "description": "Check-in date (YYYY-MM-DD)"
+      },
+      "check_out": {
+        "type": "string",
+        "format": "date",
+        "description": "Check-out date (YYYY-MM-DD)"
+      },
+      "guests": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 12,
+        "description": "Number of guests"
+      }
+    },
+    "required": ["check_in", "check_out", "guests"]
+  },
+  "http": {
+    "method": "GET",
+    "urlTemplate": "https://your-pms.com/api/units/search?check_in={{args.check_in}}&check_out={{args.check_out}}&guests={{args.guests | number}}",
+    "headers": {
+      "authorization": "Bearer {{secrets.pms_api_token}}"
+    },
+    "okField": "success",
+    "timeoutMs": 5000
+  },
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "catalog_results",
+        "title": "Available Rooms",
+        "description": "{{response.count}} rooms available for your dates",
+        "props": {
+          "items": "{{response.units}}",
+          "currency": "USD"
+        }
+      }
+    },
+    "onError": {
+      "open": {
+        "component_name": "alert",
+        "title": "No Availability",
+        "description": "{{response.error_message}}"
+      }
+    }
+  }
+}
+```
+
+**Expected API Response:**
+```json
+{
+  "success": true,
+  "count": 3,
+  "units": [
+    {
+      "id": "sunset-suite",
+      "name": "Sunset Suite",
+      "description": "Oceanfront suite with private balcony",
+      "price": 225.00,
+      "image": "https://cdn.resort.com/sunset-1.jpg",
+      "metadata": {
+        "view": "Ocean",
+        "bed": "King",
+        "size": "450 sq ft"
+      }
+    }
+  ]
+}
+```
+
+### 2. get_unit_details
+
+Retrieve detailed information about a specific room.
+
+**Use Case:** User asks for more details about a room from search results
+
+**Parameters:** `unit_id`
+
+### 3. create_reservation
+
+Book a room for the guest.
+
+**API Integration:**
+```json
+{
+  "kind": "http_tool",
+  "name": "create_reservation",
+  "description": "Create a hotel reservation for confirmed dates and guest info",
+  "priority": 9,
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "unit_id": { "type": "string" },
+      "check_in": { "type": "string", "format": "date" },
+      "check_out": { "type": "string", "format": "date" },
+      "guests": { "type": "number" },
+      "guest_info": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string" }
+        },
+        "required": ["name", "email"]
+      }
+    },
+    "required": ["unit_id", "check_in", "check_out", "guests", "guest_info"]
+  },
+  "http": {
+    "method": "POST",
+    "urlTemplate": "https://your-pms.com/api/reservations",
+    "headers": {
+      "authorization": "Bearer {{secrets.pms_api_token}}",
+      "content-type": "application/json"
+    },
+    "bodyTemplate": "{\"unit_id\": \"{{args.unit_id}}\", \"check_in\": \"{{args.check_in}}\", \"check_out\": \"{{args.check_out}}\", \"guests\": {{args.guests | number}}, \"guest_info\": {{args.guest_info | json}}}",
+    "okField": "success",
+    "timeoutMs": 10000
+  },
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "booking_confirmation",
+        "title": "Reservation Confirmed",
+        "description": "Your booking is all set!",
+        "props": {
+          "confirmation_number": "{{response.confirmation_code}}",
+          "guest_name": "{{response.guest_name}}",
+          "check_in": "{{response.check_in}}",
+          "check_out": "{{response.check_out}}",
+          "unit_name": "{{response.unit_name}}",
+          "total_price": "{{response.total_price}}",
+          "currency": "USD"
+        }
+      }
+    },
+    "onError": {
+      "open": {
+        "component_name": "alert",
+        "title": "Booking Failed",
+        "description": "{{response.error_message}}"
+      }
+    }
+  }
+}
+```
+
+## Customization Guide
+
+### 1. Update API Endpoints
+
+Replace placeholder URLs with your PMS or booking system API:
+- Cloudbeds
+- Opera PMS
+- Mews
+- RoomRaccoon
+- Custom booking system
+
+### 2. Adjust Property Details
+
+Update the prompt with your property's:
+- Name and location
+- Room types and naming
+- Amenities and features
+- Policies (cancellation, check-in times)
+- Special offers or packages
+
+### 3. Customize Tone
+
+Adjust personality to match your brand:
+- Luxury resort → Elevated, refined language
+- Beach resort → Relaxed, casual tone
+- Business hotel → Professional, efficient
+- Boutique hotel → Personalized, intimate
+
+### 4. Add Optional Tools
+
+Extend capabilities with additional tools:
+- `check_reservation_status` — Look up existing bookings
+- `modify_reservation` — Change dates or room type
+- `cancel_reservation` — Handle cancellations
+- `send_confirmation_email` — Email booking details
+
+## Recommended Settings
+
+**Session Limits:**
+- Max concurrent sessions: 20
+- Max session duration: 10 minutes
+- Idle timeout: 5 minutes
+
+**Rate Limits:**
+- Widget: 12 sessions/min
+- Daily quota: 300,000 tokens ($20/day)
+
+**Escalation:**
+- Cancellations → Human agent
+- Special requests (accessibility, pets) → Human agent
+- Complex group bookings (10+ rooms) → Human agent
+
+## Deployment Checklist
+
+- [ ] Configure PMS API credentials in secrets
+- [ ] Update API endpoints in tool descriptors
+- [ ] Customize prompt with property name and details
+- [ ] Test room search with real availability data
+- [ ] Test reservation creation in development
+- [ ] Configure widget key for your domain
+- [ ] Embed widget on booking page
+- [ ] Test end-to-end booking flow
+- [ ] Set up monitoring and alerts
+- [ ] Train staff on handling escalations
+
+## Expected Results
+
+Based on Cypress Resort case study:
+
+**Metrics After 3 Months:**
+- **32% of website visitors** engage with voice agent
+- **58% completion rate** for booking conversations
+- **$127,000 in direct bookings** attributed to voice agent
+- **Less than 5 min** average session duration
+- **Less than 10%** escalation rate to human agents
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Download Template"
+    description="Get the complete configuration files (prompt, tools, settings)"
+  />
+  <Card
+    title="Agent Configuration"
+    href="/voice/agent-configuration"
+    description="Deploy your customized template to production"
+  />
+  <Card
+    title="Widget Integration"
+    href="/voice/widget"
+    description="Embed the booking agent on your website"
+  />
+</CardGrid>
+
+**Ready to deploy?** Download the template files and follow the integration guide.

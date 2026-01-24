@@ -1,0 +1,217 @@
+---
+title: Quick Start Templates
+description: Deploy production-ready voice agents with industry-specific templates for hospitality, e-commerce, customer support, and healthcare.
+keywords: ["quick start", "templates", "industries", "pre-built"]
+---
+
+## Quick Start Templates
+
+Skip the design phase and deploy a production-ready voice agent in minutes with industry-specific templates. Each template includes a complete agent configuration: system prompt, HTTP tools, UI components, and recommended settings.
+
+These templates are based on real-world implementations and proven patterns from successful VOX deployments.
+
+## Available Templates
+
+<CardGrid>
+  <Card
+    title="Hospitality"
+    href="/voice/quickstart/hospitality"
+    description="Hotel booking agent for room search, availability checks, and reservations"
+  />
+  <Card
+    title="E-Commerce"
+    href="/voice/quickstart/ecommerce"
+    description="Product sales agent for catalog search, recommendations, and cart assistance"
+  />
+  <Card
+    title="Customer Support"
+    href="/voice/quickstart/support"
+    description="Support agent for ticket resolution, troubleshooting, and FAQ automation"
+  />
+  <Card
+    title="Healthcare"
+    href="/voice/quickstart/healthcare"
+    description="Appointment scheduling agent for patient intake and calendar management"
+  />
+</CardGrid>
+
+## How Templates Work
+
+Each template provides:
+
+### 1. Complete System Prompt
+Pre-written agent personality, tone, style rules, and conversation examples tailored to the industry
+
+### 2. HTTP Tool Descriptors
+Production-ready tool definitions for common operations:
+- Search/query tools
+- Booking/order creation tools
+- Status lookup tools
+- Notification tools
+
+### 3. UI Components Configuration
+Pre-configured components for displaying results, confirmations, and alerts
+
+### 4. Recommended Settings
+Suggested rate limits, session durations, and security controls for the use case
+
+### 5. Integration Guide
+Step-by-step instructions for connecting your APIs and customizing the template
+
+## Using a Template
+
+### Step 1: Choose Your Industry
+
+Select the template that best matches your business:
+- **Hospitality** — Hotels, resorts, vacation rentals, restaurants
+- **E-Commerce** — Online retail, product marketplaces, subscription services
+- **Customer Support** — Help desk, technical support, customer service
+- **Healthcare** — Clinics, hospitals, dental offices, therapy practices
+
+### Step 2: Download the Configuration
+
+Each template includes downloadable JSON files:
+- `agent-prompt.json` — System prompt
+- `http-tools.json` — Tool descriptors
+- `tenant-config.json` — Recommended settings
+
+### Step 3: Connect Your APIs
+
+Update tool descriptors with your API endpoints:
+1. Replace placeholder URLs with your actual API endpoints
+2. Add your API authentication credentials to `secrets`
+3. Adjust parameter schemas to match your API requirements
+
+### Step 4: Customize the Prompt
+
+Tailor the system prompt to your brand:
+- Update tone to match your brand voice
+- Add your business-specific policies
+- Include your product/service names
+- Adjust conversation examples
+
+### Step 5: Deploy and Test
+
+1. Create a tenant configuration in the VOX platform
+2. Upload your customized prompt and tools
+3. Generate widget keys for your domain
+4. Test in development environment
+5. Deploy to production
+
+## Customization Tips
+
+<CardGrid>
+  <Card
+    title="Start with Template"
+    description="Use the template as-is for initial deployment, then iterate based on real usage data"
+  />
+  <Card
+    title="Adjust Tone Gradually"
+    description="Make small tone adjustments and test with users before major personality changes"
+  />
+  <Card
+    title="Add Tools Incrementally"
+    description="Start with core tools, add advanced capabilities after validating basic flows"
+  />
+  <Card
+    title="Monitor and Refine"
+    description="Review session transcripts weekly to identify improvement opportunities"
+  />
+</CardGrid>
+
+## Template Comparison
+
+| Feature | Hospitality | E-Commerce | Support | Healthcare |
+|---------|-------------|------------|---------|------------|
+| **Primary Goal** | Book reservations | Drive sales | Resolve issues | Schedule appointments |
+| **Tone** | Warm, attentive | Helpful, energetic | Patient, solution-focused | Professional, empathetic |
+| **Core Tools** | 3-4 (search, book, confirm) | 3-5 (search, recommend, cart) | 4-6 (lookup, troubleshoot, escalate) | 2-3 (availability, book) |
+| **Session Length** | 3-7 minutes | 4-8 minutes | 5-15 minutes | 2-4 minutes |
+| **Complexity** | Medium | Medium-High | High | Low-Medium |
+
+## What's Included in Each Template
+
+### Agent Prompt Structure
+```json
+{
+  "agent": {
+    "name": "Agent Name",
+    "tenantId": "your-tenant-id",
+    "tone": "Industry-appropriate tone",
+    "style_rules": ["Industry-specific rules"],
+    "capabilities": {
+      "tools": ["Tool definitions"]
+    },
+    "policy": {
+      "data_rules": ["Never hallucinate"],
+      "escalation": ["When to escalate"]
+    },
+    "dialog_flow": ["Greeting", "Intent", "Execute", "Confirm"],
+    "response_templates": {
+      "greeting": "Template",
+      "out_of_scope": "Template",
+      "error": "Template"
+    },
+    "examples": [
+      {
+        "user": "Example question",
+        "assistant": "Example response"
+      }
+    ]
+  }
+}
+```
+
+### Tool Descriptor Pattern
+```json
+{
+  "kind": "http_tool",
+  "name": "action_name",
+  "description": "Clear description",
+  "priority": 10,
+  "parameters": { /* JSON Schema */ },
+  "http": {
+    "method": "GET|POST",
+    "urlTemplate": "https://your-api.com/endpoint",
+    "headers": { "authorization": "Bearer {{secrets.api_token}}" },
+    "okField": "success"
+  },
+  "ui": {
+    "onSuccess": { /* Component config */ },
+    "onError": { /* Component config */ }
+  }
+}
+```
+
+## Support and Customization
+
+**Need help customizing a template?**
+- Review the [Agent Design Guide](/voice/agent-design) for customization best practices
+- Use the [Tool Descriptor Playground](/voice/tutorials/tools) to test API integrations
+- Contact support@strategicmachines.ai for implementation assistance
+
+**Want a custom template for your industry?**
+- Request custom templates for industries not listed
+- Work with Strategic Machines to build specialized templates
+- Share your successful template with the community
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Choose a Template"
+    description="Browse industry-specific templates and download the one that fits your business"
+  />
+  <Card
+    title="Agent Configuration"
+    href="/voice/agent-configuration"
+    description="Learn how to deploy your template to production"
+  />
+  <Card
+    title="Widget Integration"
+    href="/voice/widget"
+    description="Embed your agent on your website"
+  />
+</CardGrid>
+
+**Ready to deploy?** Choose your industry template above to get started.

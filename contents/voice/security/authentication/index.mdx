@@ -1,0 +1,276 @@
+---
+title: Authentication
+description: OTP-based authentication, session management, and JWT token security for the VOX platform.
+keywords: ["authentication", "OTP", "JWT", "sessions", "security"]
+---
+
+## Authentication
+
+The VOX platform supports two authentication modes: public widget-based access for end-user voice sessions and console authentication for administrative access.
+
+## Widget Authentication (Public)
+
+End users interact with voice agents through widgets without requiring authentication. Security is enforced through widget keys and origin validation.
+
+### Widget Key Structure
+
+```json
+{
+  "id": "main-site",
+  "key": "w_cypress_main_7f1b0e9c64f54d1a",
+  "origin": "https://yoursite.com",
+  "label": "Main marketing site",
+  "revoked": false
+}
+```
+
+**Security Controls:**
+- **Origin Validation** — Widget key only works from configured origin
+- **Key Revocation** — Instantly disable compromised keys
+- **Environment Isolation** — Separate keys for dev, staging, production
+
+**Best Practices:**
+- Create unique keys per domain
+- Never use wildcards in origin configuration
+- Rotate keys quarterly
+- Monitor usage per key for anomalies
+
+## Console Authentication (Protected)
+
+Administrative console access uses one-time password (OTP) authentication for enhanced security.
+
+### OTP Authentication Flow
+
+1. **User Requests OTP**
+   - User enters email address
+   - System sends 6-digit code via email
+   - Code expires in 10 minutes
+
+2. **User Verifies OTP**
+   - User enters code
+   - System validates code
+   - JWT session token issued
+
+3. **Session Maintained**
+   - HTTPOnly cookie stores JWT
+   - Token expires in 24 hours
+   - Automatic renewal on activity
+
+### API Endpoints
+
+**Send OTP:**
+```
+POST /api/auth/otp/send
+{
+  "email": "user@example.com"
+}
+```
+
+**Verify OTP:**
+```
+POST /api/auth/otp/verify
+{
+  "email": "user@example.com",
+  "code": "123456"
+}
+```
+
+**Check Session:**
+```
+GET /api/auth/session
+Cookie: tenant_session=<jwt_token>
+```
+
+See the [API Reference](/voice/reference/api) for complete authentication endpoint documentation.
+
+## JWT Token Security
+
+### Token Structure
+
+Tokens include:
+- Email address
+- Session ID
+- Expiration timestamp
+- Signature (HMAC SHA-256)
+
+### Token Storage
+
+**Console Sessions:**
+- Stored in HTTPOnly cookies
+- Not accessible via JavaScript
+- Secure flag enabled (HTTPS only)
+- SameSite=Lax (CSRF protection)
+
+**Security Properties:**
+```javascript
+Set-Cookie: tenant_session=<jwt>;
+  HttpOnly;
+  Secure;
+  SameSite=Lax;
+  Max-Age=86400;
+  Path=/
+```
+
+## Session Management
+
+### Session Lifecycle
+
+```
+Login (OTP Verify)
+    ↓
+Session Created
+    ↓
+[Active] ← Activity Extends Session
+    ↓
+Expires (24 hours) or Logout
+    ↓
+Session Destroyed
+```
+
+### Session Security Controls
+
+| Control | Value | Purpose |
+|---------|-------|---------|
+| Max Duration | 24 hours | Limit exposure window |
+| Idle Timeout | N/A (console) | Console stays active |
+| Cookie Expiry | 24 hours | Auto-logout |
+| Secure Flag | True (prod) | HTTPS only |
+| HTTPOnly Flag | True | XSS protection |
+
+### Logout
+
+Explicit logout clears the session cookie:
+
+```
+POST /api/auth/logout
+```
+
+Destroys the JWT and clears the cookie.
+
+## Security Best Practices
+
+<CardGrid>
+  <Card
+    title="Use Strong Secrets"
+    description="JWT_SECRET should be 32+ random characters. Never commit to git."
+  />
+  <Card
+    title="Enable HTTPS"
+    description="Always use HTTPS in production. Secure cookies won't work over HTTP."
+  />
+  <Card
+    title="Rotate Secrets"
+    description="Rotate JWT_SECRET annually. Plan for zero-downtime rotation."
+  />
+  <Card
+    title="Monitor Sessions"
+    description="Track active sessions and unusual login patterns."
+  />
+</CardGrid>
+
+## Threat Mitigation
+
+### Protection Against
+
+**Brute Force Attacks:**
+- OTP code expires in 10 minutes
+- Rate limiting on OTP send (3 per hour per email)
+- Rate limiting on OTP verify (5 attempts per code)
+
+**Session Hijacking:**
+- HTTPOnly cookies prevent XSS theft
+- Secure flag prevents transmission over HTTP
+- Short session lifetime limits exposure
+
+**CSRF (Cross-Site Request Forgery):**
+- SameSite=Lax cookie attribute
+- Origin validation on sensitive operations
+- Token binding to session
+
+**Replay Attacks:**
+- OTP codes single-use only
+- JWT tokens include expiration
+- Session tracking prevents token reuse
+
+## Configuration
+
+### Environment Variables
+
+```bash
+# Required
+JWT_SECRET=<32+ character random string>
+
+# Optional (with defaults shown)
+OTP_EXPIRY_MINUTES=10
+SESSION_EXPIRY_HOURS=24
+MAX_OTP_PER_HOUR=3
+MAX_OTP_VERIFY_ATTEMPTS=5
+```
+
+### Generating Secure Secrets
+
+```bash
+# Generate strong JWT secret
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+# Or using OpenSSL
+openssl rand -hex 32
+```
+
+## Troubleshooting
+
+### OTP Not Received
+
+**Causes:**
+- Email in spam folder
+- Email service rate limit
+- Invalid email address
+
+**Solutions:**
+- Check spam/junk folder
+- Verify email service configuration
+- Check server logs for email send errors
+
+### Session Expires Too Quickly
+
+**Causes:**
+- SESSION_EXPIRY_HOURS set too low
+- Browser blocking cookies
+- Cookie domain mismatch
+
+**Solutions:**
+- Increase session expiry if appropriate
+- Check browser cookie settings
+- Verify cookie domain matches site domain
+
+### Invalid Token Errors
+
+**Causes:**
+- JWT_SECRET mismatch (server restart with new secret)
+- Token expired
+- Malformed token
+
+**Solutions:**
+- Log out and log back in
+- Verify JWT_SECRET hasn't changed
+- Check server logs for token validation errors
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Rate Limiting"
+    href="/voice/security/ratelimiting"
+    description="Learn about layered rate limiting for cost and security control"
+  />
+  <Card
+    title="API Reference"
+    href="/voice/reference/api"
+    description="Complete API documentation for authentication endpoints"
+  />
+  <Card
+    title="Security Overview"
+    href="/voice/security"
+    description="Review the complete security architecture"
+  />
+</CardGrid>

@@ -26,7 +26,7 @@ As you type, the playground validates syntax, tests template interpolation, and 
 This tutorial is currently in development. The playground will include:
 - Live JSON editor with syntax highlighting
 - Real-time validation and error messages
-- Template context simulator (test {{args.*}} and {{secrets.*}})
+- Template context simulator (test `args.*` and `secrets.*` templates)
 - Mock API response generator
 - UI component preview (see how catalog_results, alerts, etc. render)
 - Export to clipboard or download as JSON
@@ -44,8 +44,8 @@ Get instant feedback as you build:
 - JSON syntax errors
 - Required field presence (`kind`, `name`, `description`, `parameters`, `http`)
 - Parameter schema correctness (JSON Schema compliance)
-- URL template validity (`{{args.*}}` references)
-- Type coercion filter syntax (`| number`, `| json`, `| bool`)
+- URL template validity (args template references)
+- Type coercion filter syntax (number, json, bool filters)
 - Header format
 - `okField` presence and type
 
@@ -54,8 +54,8 @@ Get instant feedback as you build:
 ✓ Tool name is unique and descriptive
 ✗ Error: Missing required field 'okField' in http section
 ✗ Error: Parameter 'max_price' referenced in URL template but not defined in parameters
-✓ Template syntax correct: {{args.query}}
-✗ Warning: No type coercion on numeric parameter — use {{args.limit | number}}
+✓ Template syntax correct: args.query
+✗ Warning: No type coercion on numeric parameter — use args.limit with number filter
 ```
 
 ### Feature 2: Template Context Simulator
@@ -100,7 +100,7 @@ Headers:
 
 **Playground shows:**
 - URL encoding applied correctly
-- Type coercion (`"10"` → `10`)
+- Type coercion (string "10" converted to number 10)
 - Secret interpolation (masked in display)
 - Empty parameter handling (if `pruneEmpty: true`)
 
@@ -131,7 +131,7 @@ Simulate success and error responses:
 **Playground shows:**
 - Which UI path is triggered (onSuccess vs onError)
 - Component preview with interpolated props
-- Missing field warnings (`{{response.missing_field}}` highlighted)
+- Missing field warnings for undefined response fields
 
 ### Feature 4: UI Component Preview
 
@@ -158,8 +158,8 @@ See how your tool's UI will render:
 
 **Playground renders:**
 - Visual preview of the `catalog_results` component
-- Shows how `{{response.count}}` interpolates ("3 products match your search")
-- Displays product cards based on `{{response.products}}`
+- Shows how response fields interpolate into text (e.g., "3 products match your search")
+- Displays product cards based on response data
 - Highlights missing or incorrect prop mappings
 
 ### Feature 5: Template Library
@@ -357,7 +357,7 @@ Download your validated tool descriptor:
 ## Tips for Success
 
 **Do:**
-- Always use type coercion filters (`| number`, `| json`, `| bool`)
+- Always use type coercion filters (number, json, bool)
 - Test with realistic mock data, not minimal examples
 - Define both `onSuccess` and `onError` UI
 - Use descriptive parameter names and descriptions

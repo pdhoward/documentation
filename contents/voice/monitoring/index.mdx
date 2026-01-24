@@ -1,0 +1,265 @@
+---
+title: Monitoring & Analytics
+description: Track agent performance, analyze session transcripts, monitor costs, and optimize voice agent effectiveness.
+keywords: ["monitoring", "analytics", "metrics", "performance", "optimization"]
+---
+
+## Monitoring & Analytics
+
+Effective monitoring ensures your voice agent delivers business value while staying within budget. Track key metrics, review session transcripts, and optimize based on real usage data.
+
+## Key Metrics Dashboard
+
+### Engagement Metrics
+
+| Metric | Good Target | What It Means |
+|--------|-------------|---------------|
+| **Session Start Rate** | 20-40% of visitors | Percentage of website visitors who click the voice button |
+| **Completion Rate** | 50-70% | Percentage of sessions that reach a successful outcome |
+| **Average Session Duration** | 3-7 minutes | Typical time from start to completion |
+| **Messages Per Session** | 8-15 exchanges | Average conversation length |
+
+### Business Metrics
+
+| Metric | Good Target | What It Means |
+|--------|-------------|---------------|
+| **Conversion Rate** | 40-60% | Sessions that result in booking/purchase/resolution |
+| **Escalation Rate** | Less than 15% | Sessions transferred to human agents |
+| **Customer Satisfaction** | 4.2+ / 5.0 | Post-session rating (if implemented) |
+| **Revenue Per Session** | Industry-dependent | Direct revenue attributed to voice sessions |
+
+### Operational Metrics
+
+| Metric | Monitor For | Action Threshold |
+|--------|-------------|------------------|
+| **Daily Active Sessions** | Growth trends | Unexpected spikes (>200% increase) |
+| **Token Usage** | Cost control | >80% of daily quota |
+| **Tool Success Rate** | API reliability | <90% success rate |
+| **Average Response Time** | Performance | >2 seconds |
+
+## Session Lifecycle Tracking
+
+### Session States
+
+**Active (Engaged):**
+- User actively conversing
+- `idleSec <= maxIdleSec`
+- Sending regular heartbeats
+
+**Active (Idle):**
+- Session open but quiet
+- `idleSec > maxIdleSec`
+- Still sending heartbeats
+
+**Stale:**
+- Abandoned without proper close
+- `idleSec > staleGraceSec` (default: 1 hour)
+- No recent heartbeats
+
+**Ended:**
+- Explicitly closed by user
+- `active: false`
+- Usage reported
+
+### Tracking Flow
+
+```
+Session Start
+    ↓
+[Active - Engaged] ←→ [Active - Idle]
+    ↓                      ↓
+    ↓                  [Stale]
+    ↓                      ↓
+[Session End] ← ← ← ← ← ← ↓
+    ↓
+Usage Reported
+```
+
+## Transcript Analysis
+
+### What to Review
+
+**Weekly Review:**
+- Sample 10-20 transcripts from each session outcome category:
+  - Successful completions
+  - User abandonments
+  - Escalations
+  - Errors/failures
+
+**Look For:**
+- Misunderstood user intents
+- Repeated tool failures
+- Off-topic questions
+- Tone mismatches
+- Missing capabilities
+
+### Common Patterns
+
+**High Abandonment:**
+- Agent asks for too much information upfront
+- Tool response times too slow
+- Agent talks too much
+- User intent not understood quickly
+
+**High Escalation:**
+- Agent scope too narrow
+- Missing tools for common requests
+- Poor error handling
+- Unclear escalation messaging
+
+**Low Conversion:**
+- Weak value proposition in greeting
+- Hesitant or uncertain tone
+- Not proactive with recommendations
+- Missing visual components (doesn't show products)
+
+## Cost Monitoring
+
+### Token Usage Breakdown
+
+**Average Tokens Per Session:**
+- Simple inquiry: 1,000-2,000 tokens
+- Product search: 2,500-4,000 tokens
+- Booking/purchase: 3,500-6,000 tokens
+- Complex support: 5,000-10,000 tokens
+
+**Cost Calculation:**
+```
+Daily Cost = (Daily Sessions × Avg Tokens Per Session) × OpenAI Rate
+
+Example:
+  100 sessions/day × 3,500 tokens = 350,000 tokens/day
+  350,000 tokens × $0.00006/token = $21/day = $630/month
+```
+
+### Cost Optimization
+
+**Reduce Token Usage:**
+- Shorten system prompt (remove redundant examples)
+- Use concise tool descriptions
+- Limit tools to essentials (higher priority)
+- Set realistic session duration limits
+
+**Increase Efficiency:**
+- Improve completion rate (fewer abandoned sessions)
+- Reduce average session length (clearer prompts)
+- Optimize tool response times (faster = fewer tokens)
+
+## Performance Monitoring
+
+### Tool Performance
+
+Track each tool's performance:
+- **Success Rate:** `successful calls / total calls`
+- **Average Latency:** Time from call to response
+- **Error Types:** Categorize failures (timeout, 4xx, 5xx)
+
+**Alert Thresholds:**
+- Success rate drops below 90%
+- Average latency exceeds 5 seconds
+- Error rate spikes above 10%
+
+### Session Performance
+
+Monitor session health:
+- **Session Creation Rate:** Sessions created per minute
+- **Heartbeat Compliance:** % of sessions sending heartbeats
+- **Idle Timeout Rate:** % of sessions timing out from idle
+- **Duration Exceeded:** % of sessions hitting max duration
+
+## Optimization Workflow
+
+### 1. Identify Issues (Weekly)
+
+Review metrics dashboard:
+- Which metrics are below target?
+- Are there unusual patterns or spikes?
+- What do transcripts reveal?
+
+### 2. Hypothesize Fixes
+
+Based on issues found:
+- Low completion → Simplify information gathering
+- High escalation → Add missing tools
+- Long sessions → Make prompts more concise
+- High cost → Reduce token usage
+
+### 3. Test Changes (Staging)
+
+Before deploying fixes:
+- Test prompt changes with scenarios
+- Validate tool updates in development
+- Compare token usage
+
+### 4. Deploy and Measure
+
+After deploying changes:
+- Monitor metrics for 7-14 days
+- Compare to baseline
+- Iterate if needed
+
+### 5. Document Learnings
+
+Maintain optimization log:
+- What was changed
+- Why it was changed
+- Result (improvement or regression)
+- Lessons learned
+
+## Troubleshooting Guide
+
+<CardGrid>
+  <Card
+    title="Common Issues"
+    href="/voice/monitoring/troubleshooting"
+    description="Diagnose and resolve frequent agent and session problems"
+  />
+  <Card
+    title="API Reference"
+    href="/voice/reference/api"
+    description="Understand error codes and response formats"
+  />
+  <Card
+    title="Security Alerts"
+    href="/voice/security"
+    description="Respond to rate limit violations and suspicious activity"
+  />
+</CardGrid>
+
+## Monitoring Checklist
+
+### Daily
+- [ ] Check session count and completion rate
+- [ ] Review token usage vs quota
+- [ ] Scan for tool failure spikes
+
+### Weekly
+- [ ] Review 10-20 session transcripts
+- [ ] Analyze conversion and escalation rates
+- [ ] Check for unusual patterns or errors
+
+### Monthly
+- [ ] Calculate ROI (revenue vs cost)
+- [ ] Review long-term trends
+- [ ] Plan optimization experiments
+- [ ] Update agent based on learnings
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Troubleshooting Guide"
+    href="/voice/monitoring/troubleshooting"
+    description="Diagnose and fix common agent issues"
+  />
+  <Card
+    title="ROI Analysis"
+    href="/voice/roi"
+    description="Calculate business value and return on investment"
+  />
+  <Card
+    title="Agent Design"
+    href="/voice/agent-design"
+    description="Optimize your agent based on monitoring insights"
+  />
+</CardGrid>

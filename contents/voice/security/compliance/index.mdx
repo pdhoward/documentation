@@ -1,0 +1,379 @@
+---
+title: Compliance
+description: GDPR, data retention, PCI DSS, HIPAA, and industry-specific compliance guidance for voice agent deployments.
+keywords: ["compliance", "GDPR", "PCI", "HIPAA", "privacy", "regulations"]
+---
+
+## Compliance Overview
+
+VOX deployments must comply with applicable regulations based on geography, industry, and data handling practices. This guide covers common compliance requirements and how to configure the platform accordingly.
+
+**Disclaimer:** This documentation provides guidance, not legal advice. Consult with legal counsel to ensure compliance with regulations applicable to your business.
+
+## GDPR (General Data Protection Regulation)
+
+Applies to processing personal data of EU residents.
+
+### Personal Data Collected
+
+Voice agents may collect:
+- **Direct identifiers**: Name, email, phone number
+- **Conversation data**: Session transcripts, voice recordings
+- **Technical data**: IP address, device information, session metadata
+
+### GDPR Requirements
+
+#### 1. Lawful Basis for Processing
+
+Establish lawful basis before collecting data:
+- **Consent** — User explicitly agrees to data processing
+- **Contractual necessity** — Data needed to fulfill service
+- **Legitimate interest** — Balanced against user privacy
+
+**Implementation:**
+- Display privacy policy before widget interaction
+- Obtain consent for transcript retention
+- Document lawful basis in privacy policy
+
+#### 2. Data Minimization
+
+Collect only necessary data:
+- Don't collect data you don't need
+- Limit transcript retention period
+- Avoid collecting sensitive personal data
+
+**Implementation:**
+```javascript
+// Agent prompt - avoid collecting unnecessary data
+{
+  "data_rules": [
+    "Only collect information needed for booking",
+    "Do not ask for: SSN, passport, credit cards",
+    "Minimize personal details to name, email, phone"
+  ]
+}
+```
+
+#### 3. Right to Access
+
+Users can request their data:
+- Provide session transcripts on request
+- Include all data associated with email/phone
+- Deliver in machine-readable format (JSON, CSV)
+
+**Implementation:**
+- Create admin endpoint to export user data
+- Include session metadata and transcripts
+- Respond within 30 days of request
+
+#### 4. Right to Erasure ("Right to be Forgotten")
+
+Users can request data deletion:
+- Delete session transcripts
+- Remove user from databases
+- Anonymize analytics data
+
+**Implementation:**
+```javascript
+// MongoDB deletion
+db.realtime_sessions.deleteMany({ email: "user@example.com" })
+db.usage_daily.deleteMany({ _id: /^d:<emailHash>:/ })
+db.transcripts.deleteMany({ email: "user@example.com" })
+```
+
+#### 5. Data Retention Limits
+
+Don't keep data longer than necessary:
+- Define retention period in privacy policy
+- Automatically delete old transcripts
+- Archive data with restricted access
+
+**Recommended Retention:**
+- Session transcripts: 90 days (configurable)
+- Usage metrics: 1 year
+- Anonymized analytics: Indefinite
+
+**Implementation:**
+```javascript
+// Automated deletion script (run daily)
+const retentionDays = 90;
+const cutoffDate = new Date();
+cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
+
+db.transcripts.deleteMany({
+  createdAt: { $lt: cutoffDate }
+});
+```
+
+#### 6. Data Processing Agreement (DPA)
+
+Third-party processors require DPA:
+- **OpenAI** — Voice processing (review OpenAI DPA)
+- **Upstash** — Rate limiting
+- **MongoDB Atlas** — Data storage (if using Atlas)
+
+**Implementation:**
+- Execute DPA with each processor
+- Document data flow for GDPR audit
+- Ensure processors are GDPR-compliant
+
+### Privacy Policy Requirements
+
+Include in your privacy policy:
+- What data is collected (name, email, transcripts)
+- Why it's collected (provide voice service)
+- How long it's retained (90 days for transcripts)
+- User rights (access, erasure, portability)
+- Third-party processors (OpenAI, Upstash)
+- Contact for privacy requests
+
+**Sample Language:**
+> "When you interact with our voice assistant, we collect your name, email, and conversation transcript to provide the service. Transcripts are retained for 90 days and then automatically deleted. You can request access to or deletion of your data at any time by contacting privacy@yourcompany.com. Voice processing is performed by OpenAI (see their privacy policy at openai.com/privacy)."
+
+## PCI DSS (Payment Card Industry Data Security Standard)
+
+Applies if you process, store, or transmit credit card data.
+
+### Critical Rule: Never Collect Card Data via Voice
+
+**DO NOT:**
+- Ask users to speak credit card numbers
+- Collect CVV codes
+- Store card details in transcripts
+
+**INSTEAD:**
+- Use secure payment links (Stripe checkout)
+- Redirect to web form for payment
+- Use tokenized payment methods
+
+**Example Agent Behavior:**
+```
+User: "I'd like to pay for my booking"
+Agent: "I'll send you a secure payment link via email. Please complete payment there. Never share credit card information over voice."
+```
+
+### Compliance Checklist
+
+- [ ] Agent prompt explicitly forbids collecting card data
+- [ ] Payment flows redirect to PCI-compliant processor
+- [ ] Transcripts do not contain card numbers (even if user speaks them)
+- [ ] Privacy policy discloses payment processor
+- [ ] Payment links use HTTPS and tokenization
+
+### Transcript Sanitization
+
+If users accidentally speak card numbers, sanitize transcripts:
+
+```javascript
+// Redact potential card numbers from transcripts
+function sanitizeTranscript(text) {
+  // Redact 16-digit sequences (card numbers)
+  return text.replace(/\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/g, '[REDACTED]');
+}
+```
+
+## HIPAA (Health Insurance Portability and Accountability Act)
+
+Applies if you collect Protected Health Information (PHI) of US patients.
+
+### What is PHI?
+
+Protected Health Information includes:
+- Medical history or diagnosis
+- Treatment information
+- Health insurance details
+- Prescription information
+
+### HIPAA Requirements
+
+**For Voice Agents:**
+1. **Business Associate Agreement (BAA)** with all processors
+2. **Encryption** at rest and in transit
+3. **Access controls** limiting who can view PHI
+4. **Audit logging** of all PHI access
+5. **Data breach notification** within 60 days
+
+### Standard VOX Platform is NOT HIPAA-Compliant
+
+**Default configuration does NOT meet HIPAA requirements:**
+- No BAA with OpenAI (standard API)
+- Transcripts not encrypted at rest
+- Audit logging not comprehensive
+
+### HIPAA-Compliant Deployment
+
+For HIPAA compliance, contact Strategic Machines for:
+- **OpenAI Enterprise** with BAA
+- **Encrypted MongoDB** deployment
+- **Enhanced audit logging**
+- **Compliance certification** support
+
+### Safe Use Cases (Non-PHI)
+
+Voice agents CAN handle non-PHI healthcare tasks:
+- **Appointment scheduling** (dates, provider, contact info only)
+- **General FAQs** (office hours, location, insurance accepted)
+- **Wayfinding** (directions to clinic)
+
+**Do NOT collect:**
+- Reason for visit (diagnosis)
+- Symptoms or medical history
+- Prescription details
+- Insurance claim information
+
+**Example Compliant Prompt:**
+```json
+{
+  "policy": {
+    "data_rules": [
+      "ONLY collect: name, phone, preferred appointment date/time",
+      "NEVER ask about: symptoms, diagnoses, medications, insurance details",
+      "If user mentions medical information, politely redirect to phone/in-person intake"
+    ]
+  }
+}
+```
+
+## CCPA (California Consumer Privacy Act)
+
+Applies to businesses serving California residents.
+
+### CCPA Rights
+
+Similar to GDPR:
+- **Right to know** — What data is collected
+- **Right to delete** — Request data deletion
+- **Right to opt-out** — Opt out of data "sale" (sharing)
+
+### Compliance Steps
+
+1. **Privacy Policy**
+   - Disclose data collection practices
+   - Provide opt-out mechanism
+   - List third parties receiving data
+
+2. **Do Not Sell My Personal Information**
+   - Add link to website footer
+   - Provide opt-out form
+   - Honor requests within 15 days
+
+3. **Data Access and Deletion**
+   - Same as GDPR implementation
+   - Respond within 45 days
+
+## Data Localization Requirements
+
+Some jurisdictions require data to stay within borders:
+- **Russia** — Personal data of Russian citizens must be stored in Russia
+- **China** — Data generated in China must be stored in China
+
+### Implementation
+
+For data localization:
+- Deploy VOX in local region (MongoDB Atlas regions)
+- Use OpenAI regional endpoints (if available)
+- Consult legal counsel for specific requirements
+
+## Compliance Checklist
+
+### General Privacy Compliance
+
+- [ ] Privacy policy published and accessible
+- [ ] Consent mechanism for data collection
+- [ ] Data retention policy defined and enforced
+- [ ] User data access request process
+- [ ] User data deletion request process
+- [ ] DPAs with all third-party processors
+- [ ] Regular compliance audits scheduled
+
+### Industry-Specific
+
+**Healthcare (HIPAA):**
+- [ ] BAA with all processors
+- [ ] Encryption at rest and in transit
+- [ ] Audit logging enabled
+- [ ] Access controls configured
+- [ ] Breach notification plan
+
+**Payments (PCI DSS):**
+- [ ] Agent never collects card data
+- [ ] Payment links use PCI-compliant processor
+- [ ] Transcripts sanitized for accidental card numbers
+
+**Finance (SOC 2, FINRA):**
+- [ ] Consult with compliance team
+- [ ] Implement enhanced audit logging
+- [ ] Configure data retention per regulations
+
+## Incident Response
+
+### Data Breach Procedure
+
+If personal data is compromised:
+
+1. **Contain** — Stop the breach, secure systems
+2. **Assess** — Determine what data was accessed
+3. **Notify**
+   - GDPR: 72 hours to supervisory authority
+   - CCPA: Without unreasonable delay
+   - HIPAA: 60 days to affected individuals
+4. **Remediate** — Fix vulnerability, prevent recurrence
+5. **Document** — Maintain breach records
+
+### Breach Notification Template
+
+```
+Subject: Data Security Incident Notification
+
+We are writing to inform you of a data security incident that may have affected your personal information.
+
+What Happened: [Brief description]
+Data Affected: [Types of data: name, email, transcripts]
+What We're Doing: [Steps taken to secure systems]
+What You Can Do: [Recommended actions for users]
+
+For questions, contact: security@yourcompany.com
+```
+
+## Best Practices
+
+<CardGrid>
+  <Card
+    title="Privacy by Design"
+    description="Build privacy into agent design from the start, not as an afterthought"
+  />
+  <Card
+    title="Minimize Data Collection"
+    description="Only collect data you actually need and have a clear purpose for"
+  />
+  <Card
+    title="Transparent Policies"
+    description="Write privacy policies in plain language that users can understand"
+  />
+  <Card
+    title="Regular Audits"
+    description="Review compliance quarterly, especially when regulations change"
+  />
+</CardGrid>
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Security Overview"
+    href="/voice/security"
+    description="Review the complete security architecture"
+  />
+  <Card
+    title="Agent Design"
+    href="/voice/agent-design"
+    description="Design agents with privacy and compliance in mind"
+  />
+  <Card
+    title="Monitoring"
+    href="/voice/monitoring"
+    description="Track compliance metrics and audit data access"
+  />
+</CardGrid>
+
+**Need HIPAA-compliant deployment?** Contact Strategic Machines: compliance@strategicmachines.ai

@@ -1,0 +1,81 @@
+---
+title: Healthcare Template
+description: Deploy an appointment scheduling voice agent for patient intake and calendar management.
+keywords: ["healthcare", "appointments", "scheduling", "medical", "template"]
+---
+
+## Healthcare Voice Agent Template
+
+Complete voice agent for healthcare providers — appointment scheduling, patient intake, and calendar management.
+
+**Deployment Time:** 30-60 minutes
+
+## Agent Capabilities
+
+- Check provider availability by date/time
+- Schedule new patient appointments
+- Collect patient intake information
+- Send appointment confirmations
+- Handle appointment modifications
+
+## Business Impact
+
+- Reduce no-show rates with confirmations
+- 24/7 scheduling availability
+- Reduce administrative phone time
+- Improve patient experience
+
+## Core Tools
+
+### check_availability
+Query provider calendars for open appointment slots by date, provider, and appointment type.
+
+### create_appointment
+Book an appointment and collect required patient information.
+
+### send_confirmation
+Send appointment confirmation via email or SMS with calendar invite.
+
+## Agent Personality
+
+**Tone:** Professional, empathetic, reassuring
+
+**Style:** Clear communication, respects privacy, confirms all details
+
+## Compliance Considerations
+
+**HIPAA Compliance:**
+- Do not collect or store Protected Health Information (PHI) without proper safeguards
+- Use this template for scheduling only, not medical advice
+- Ensure API connections use encryption (TLS 1.2+)
+- Implement proper access controls and audit logging
+
+**Disclaimer:** This template provides appointment scheduling capabilities only. It does not provide medical advice, diagnosis, or treatment. Consult with legal and compliance teams before deployment.
+
+## Customization
+
+1. Connect to your EMR/EHR system or scheduling platform
+2. Configure provider calendars and availability rules
+3. Define appointment types and durations
+4. Set up patient intake form fields
+5. Configure confirmation delivery method
+
+## Expected Results
+
+- 30-40% reduction in scheduling phone calls
+- 2-4 minute average scheduling time
+- 15-20% reduction in no-shows (with confirmations)
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Deploy Template"
+    description="Download configuration and integrate with your scheduling system"
+  />
+  <Card
+    title="Security Guide"
+    href="/voice/security"
+    description="Review security and compliance best practices"
+  />
+</CardGrid>

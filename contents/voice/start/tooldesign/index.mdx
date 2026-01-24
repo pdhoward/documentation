@@ -173,12 +173,12 @@ This is where the magic happens — defining how to call your API.
 The platform uses a templating system with strict rules. **Follow these or tool calls will fail:**
 
 1. **Always prefix with `args.`**
-   ✅ `{{args.check_in}}`
-   ❌ `{{check_in}}`
+   ✅ Correct: Use `args.check_in` in template
+   ❌ Wrong: Use `check_in` without prefix
 
 2. **Use type coercion filters**
-   ✅ `{{args.guests | number}}`
-   ❌ `{{args.guests}}` (might send as string "2" instead of number 2)
+   ✅ Correct: `args.guests | number`
+   ❌ Wrong: `args.guests` without filter (might send string "2" instead of number 2)
 
 3. **Common Filters:**
    - `| number` — Coerce to number

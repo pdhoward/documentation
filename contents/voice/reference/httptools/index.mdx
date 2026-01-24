@@ -1,0 +1,687 @@
+---
+title: HTTP Tools Schema
+description: Complete schema reference for building custom HTTP tool descriptors with parameter validation, templating, and UI rendering.
+keywords: ["HTTP tools", "schema", "API", "integration", "tool descriptor"]
+---
+
+## HTTP Tool Descriptor Schema
+
+HTTP tool descriptors define how your agent integrates with external APIs. This reference documents the complete schema for building tool descriptors with parameter validation, template interpolation, and UI rendering.
+
+## Complete Schema
+
+```json
+{
+  "kind": "http_tool",
+  "name": "string",
+  "description": "string",
+  "priority": "number (1-10)",
+  "enabled": "boolean",
+  "version": "number",
+  "parameters": {
+    "type": "object",
+    "properties": { /* JSON Schema */ },
+    "required": ["array of required params"]
+  },
+  "http": {
+    "method": "GET | POST | PUT | DELETE",
+    "urlTemplate": "string with {{args.*}} placeholders",
+    "headers": { /* key-value with {{secrets.*}} */ },
+    "bodyTemplate": "string (for POST/PUT)",
+    "okField": "string",
+    "timeoutMs": "number",
+    "pruneEmpty": "boolean"
+  },
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "string",
+        "title": "string",
+        "description": "string",
+        "props": { /* component-specific */ }
+      }
+    },
+    "onError": {
+      "open": {
+        "component_name": "string",
+        "title": "string",
+        "description": "string"
+      }
+    }
+  }
+}
+```
+
+## Field Reference
+
+### Top-Level Fields
+
+#### `kind` (required)
+**Type:** `"http_tool"`
+**Description:** Identifies this as an HTTP tool descriptor
+
+```json
+{
+  "kind": "http_tool"
+}
+```
+
+---
+
+#### `name` (required)
+**Type:** `string`
+**Description:** Unique tool identifier used by the agent to invoke the tool
+
+**Rules:**
+- Lowercase, snake_case
+- Descriptive and action-oriented
+- Unique within the agent's tool set
+
+**Examples:**
+- ✅ `search_products`
+- ✅ `create_reservation`
+- ✅ `get_customer_profile`
+- ❌ `tool1` (not descriptive)
+- ❌ `SearchProducts` (not snake_case)
+
+```json
+{
+  "name": "search_products"
+}
+```
+
+---
+
+#### `description` (required)
+**Type:** `string`
+**Description:** Clear explanation of what the tool does — guides the agent on when to use it
+
+**Best Practices:**
+- Start with an action verb
+- Explain when to use it
+- Include parameter expectations
+
+**Examples:**
+```json
+{
+  "description": "Search product catalog by keyword, category, and price range to help users find items"
+}
+```
+
+---
+
+#### `priority` (optional)
+**Type:** `number` (1-10)
+**Default:** `5`
+**Description:** Tool selection priority when multiple tools could apply
+
+**Guidelines:**
+- `10` — Critical tools used frequently (search, availability)
+- `5` — Standard tools (details, recommendations)
+- `1` — Rare or fallback tools
+
+```json
+{
+  "priority": 10
+}
+```
+
+---
+
+#### `enabled` (optional)
+**Type:** `boolean`
+**Default:** `true`
+**Description:** Temporarily disable a tool without removing it
+
+```json
+{
+  "enabled": false
+}
+```
+
+---
+
+#### `version` (optional)
+**Type:** `number`
+**Default:** `1`
+**Description:** Track tool schema versions for migration management
+
+```json
+{
+  "version": 2
+}
+```
+
+---
+
+### `parameters` Object
+
+Defines the tool's input schema using JSON Schema syntax.
+
+#### Structure
+
+```json
+{
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "param_name": {
+        "type": "string | number | boolean | array | object",
+        "description": "Parameter description",
+        "enum": ["option1", "option2"],
+        "minimum": 0,
+        "maximum": 1000,
+        "pattern": "regex",
+        "items": { /* for arrays */ },
+        "properties": { /* for objects */ }
+      }
+    },
+    "required": ["param1", "param2"]
+  }
+}
+```
+
+#### Supported Types
+
+**String:**
+```json
+{
+  "query": {
+    "type": "string",
+    "description": "Search keywords",
+    "minLength": 1,
+    "maxLength": 100
+  }
+}
+```
+
+**Number:**
+```json
+{
+  "max_price": {
+    "type": "number",
+    "description": "Maximum price in dollars",
+    "minimum": 0,
+    "maximum": 10000
+  }
+}
+```
+
+**Boolean:**
+```json
+{
+  "in_stock_only": {
+    "type": "boolean",
+    "description": "Filter to in-stock items only"
+  }
+}
+```
+
+**Enum (constrained values):**
+```json
+{
+  "category": {
+    "type": "string",
+    "enum": ["drills", "saws", "fasteners", "safety"],
+    "description": "Product category"
+  }
+}
+```
+
+**Array:**
+```json
+{
+  "tags": {
+    "type": "array",
+    "items": {
+      "type": "string"
+    },
+    "description": "Product tags for filtering"
+  }
+}
+```
+
+**Object (nested parameters):**
+```json
+{
+  "guest_info": {
+    "type": "object",
+    "properties": {
+      "name": { "type": "string" },
+      "email": { "type": "string", "format": "email" },
+      "phone": { "type": "string" }
+    },
+    "required": ["name", "email"]
+  }
+}
+```
+
+---
+
+### `http` Object
+
+Defines how to execute the HTTP request.
+
+#### `method` (required)
+**Type:** `"GET" | "POST" | "PUT" | "DELETE"`
+**Description:** HTTP method for the request
+
+```json
+{
+  "method": "GET"
+}
+```
+
+---
+
+#### `urlTemplate` (required)
+**Type:** `string`
+**Description:** URL with template placeholders for parameter interpolation
+
+**Template Syntax:**
+- `{{args.param_name}}` — Insert parameter value
+- `{{args.param_name | filter}}` — Apply type coercion filter
+- `{{secrets.secret_name}}` — Insert secret value (for auth tokens)
+
+**Type Coercion Filters:**
+- `| number` — Coerce to number
+- `| json` — JSON stringify
+- `| bool` — Coerce to boolean
+- `| encode` — URL encode (automatic for query params)
+
+**Examples:**
+
+**GET with query parameters:**
+```json
+{
+  "urlTemplate": "https://api.shop.com/products?q={{args.query}}&cat={{args.category}}&max={{args.max_price | number}}&limit={{args.limit | number}}"
+}
+```
+
+**POST to specific resource:**
+```json
+{
+  "urlTemplate": "https://api.booking.com/reservations"
+}
+```
+
+**Dynamic resource IDs:**
+```json
+{
+  "urlTemplate": "https://api.crm.com/customers/{{args.customer_id}}"
+}
+```
+
+**CRITICAL: Always use type coercion for non-string parameters**
+```
+❌ {{args.limit}} → might send "10" (string)
+✅ {{args.limit | number}} → sends 10 (number)
+```
+
+---
+
+#### `headers` (optional)
+**Type:** `object`
+**Description:** HTTP headers with template support for auth tokens
+
+**Common Headers:**
+
+```json
+{
+  "headers": {
+    "authorization": "Bearer {{secrets.api_token}}",
+    "content-type": "application/json",
+    "x-api-key": "{{secrets.api_key}}"
+  }
+}
+```
+
+**Never hardcode secrets:**
+```
+❌ "authorization": "Bearer sk_live_abc123"
+✅ "authorization": "Bearer {{secrets.api_token}}"
+```
+
+---
+
+#### `bodyTemplate` (required for POST/PUT)
+**Type:** `string`
+**Description:** Request body with template interpolation
+
+**JSON Body:**
+```json
+{
+  "bodyTemplate": "{\"query\": \"{{args.query}}\", \"filters\": {{args.filters | json}}, \"limit\": {{args.limit | number}}}"
+}
+```
+
+**Nested Objects:**
+```json
+{
+  "bodyTemplate": "{\"reservation\": {\"check_in\": \"{{args.check_in}}\", \"check_out\": \"{{args.check_out}}\", \"guests\": {{args.guests | number}}, \"guest_info\": {{args.guest_info | json}}}}"
+}
+```
+
+**Best Practice:** Use `| json` filter for object/array parameters
+
+---
+
+#### `okField` (required)
+**Type:** `string`
+**Description:** Response field path to check for success (used to determine onSuccess vs onError UI)
+
+**Examples:**
+
+**Top-level boolean:**
+```json
+{
+  "okField": "success"
+}
+
+// Response: { "success": true, "data": [...] }
+// If success === true → onSuccess UI
+// If success === false → onError UI
+```
+
+**Nested field:**
+```json
+{
+  "okField": "result.ok"
+}
+
+// Response: { "result": { "ok": true } }
+```
+
+**HTTP status as fallback:**
+```json
+{
+  "okField": "_status"
+}
+
+// Uses HTTP status: 2xx → onSuccess, 4xx/5xx → onError
+```
+
+---
+
+#### `timeoutMs` (optional)
+**Type:** `number`
+**Default:** `5000`
+**Description:** Request timeout in milliseconds
+
+**Guidelines:**
+- Fast queries (search, lookup): 3000-5000ms
+- Mutations (booking, payment): 10000-15000ms
+- Heavy operations: 20000-30000ms (max)
+
+```json
+{
+  "timeoutMs": 5000
+}
+```
+
+---
+
+#### `pruneEmpty` (optional)
+**Type:** `boolean`
+**Default:** `false`
+**Description:** Remove empty/null parameters from URL query string
+
+```json
+{
+  "pruneEmpty": true
+}
+
+// If args.category is undefined:
+// ❌ Without pruneEmpty: ?query=drill&category=&max_price=200
+// ✅ With pruneEmpty: ?query=drill&max_price=200
+```
+
+---
+
+### `ui` Object
+
+Defines how to render responses in the conversation interface.
+
+#### `onSuccess` (required)
+**Type:** `object`
+**Description:** UI to display when `okField` is truthy
+
+**Structure:**
+```json
+{
+  "onSuccess": {
+    "open": {
+      "component_name": "catalog_results",
+      "title": "Search Results",
+      "description": "{{response.count}} products match your search",
+      "props": {
+        "items": "{{response.products}}",
+        "currency": "USD"
+      }
+    }
+  }
+}
+```
+
+**Template Support:**
+- `{{response.field}}` — Insert response field value
+- `{{args.param}}` — Echo parameter value
+
+---
+
+#### `onError` (required)
+**Type:** `object`
+**Description:** UI to display when `okField` is falsy or request fails
+
+**Structure:**
+```json
+{
+  "onError": {
+    "open": {
+      "component_name": "alert",
+      "title": "Search Failed",
+      "description": "{{response.error_message}}",
+      "props": {
+        "severity": "error"
+      }
+    }
+  }
+}
+```
+
+---
+
+## Complete Examples
+
+### Example 1: Product Search (GET)
+
+```json
+{
+  "kind": "http_tool",
+  "name": "search_products",
+  "description": "Search DIY Warehouse product catalog by keyword, category, and price range",
+  "priority": 10,
+  "enabled": true,
+  "version": 1,
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "Search keywords"
+      },
+      "category": {
+        "type": "string",
+        "enum": ["drills", "saws", "fasteners", "safety"],
+        "description": "Product category"
+      },
+      "max_price": {
+        "type": "number",
+        "minimum": 0,
+        "description": "Maximum price in dollars"
+      },
+      "limit": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 50,
+        "description": "Max results to return"
+      }
+    },
+    "required": ["query"]
+  },
+  "http": {
+    "method": "GET",
+    "urlTemplate": "https://api.diywarehouse.com/products/search?q={{args.query}}&cat={{args.category}}&max_price={{args.max_price | number}}&limit={{args.limit | number}}",
+    "headers": {
+      "authorization": "Bearer {{secrets.diy_api_token}}",
+      "content-type": "application/json"
+    },
+    "okField": "success",
+    "timeoutMs": 5000,
+    "pruneEmpty": true
+  },
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "catalog_results",
+        "title": "Product Results",
+        "description": "{{response.count}} products match your search",
+        "props": {
+          "items": "{{response.products}}",
+          "currency": "USD"
+        }
+      }
+    },
+    "onError": {
+      "open": {
+        "component_name": "alert",
+        "title": "Search Failed",
+        "description": "{{response.error_message}}"
+      }
+    }
+  }
+}
+```
+
+### Example 2: Create Booking (POST)
+
+```json
+{
+  "kind": "http_tool",
+  "name": "create_reservation",
+  "description": "Book a hotel room for specified dates and guest count",
+  "priority": 9,
+  "enabled": true,
+  "version": 1,
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "unit_id": {
+        "type": "string",
+        "description": "Room/unit identifier"
+      },
+      "check_in": {
+        "type": "string",
+        "format": "date",
+        "description": "Check-in date (YYYY-MM-DD)"
+      },
+      "check_out": {
+        "type": "string",
+        "format": "date",
+        "description": "Check-out date (YYYY-MM-DD)"
+      },
+      "guests": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 12,
+        "description": "Number of guests"
+      },
+      "guest_info": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string" }
+        },
+        "required": ["name", "email"]
+      }
+    },
+    "required": ["unit_id", "check_in", "check_out", "guests", "guest_info"]
+  },
+  "http": {
+    "method": "POST",
+    "urlTemplate": "https://api.resort.com/reservations",
+    "headers": {
+      "authorization": "Bearer {{secrets.resort_api_token}}",
+      "content-type": "application/json"
+    },
+    "bodyTemplate": "{\"unit_id\": \"{{args.unit_id}}\", \"check_in\": \"{{args.check_in}}\", \"check_out\": \"{{args.check_out}}\", \"guests\": {{args.guests | number}}, \"guest_info\": {{args.guest_info | json}}}",
+    "okField": "success",
+    "timeoutMs": 10000
+  },
+  "ui": {
+    "onSuccess": {
+      "open": {
+        "component_name": "booking_confirmation",
+        "title": "Reservation Confirmed",
+        "description": "Your booking is confirmed for {{response.check_in}} to {{response.check_out}}",
+        "props": {
+          "confirmation_number": "{{response.confirmation_code}}",
+          "unit_name": "{{response.unit_name}}",
+          "guest_name": "{{response.guest_name}}",
+          "total_price": "{{response.total_price}}"
+        }
+      }
+    },
+    "onError": {
+      "open": {
+        "component_name": "alert",
+        "title": "Booking Failed",
+        "description": "{{response.error_message}}"
+      }
+    }
+  }
+}
+```
+
+## Validation Rules
+
+The platform validates tool descriptors on deployment:
+
+**Checks:**
+- All required fields present
+- `name` is unique
+- `parameters` follows JSON Schema spec
+- `urlTemplate` has no orphaned placeholders
+- `okField` is defined
+- `ui.onSuccess` and `ui.onError` defined
+- Template interpolations use correct syntax
+
+**Common Errors:**
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| Missing required field | `okField` not defined | Add `"okField": "success"` |
+| Invalid template | `{{param}}` without `args.` | Change to `{{args.param}}` |
+| Type mismatch | String param used as number | Add `| number` filter |
+| Orphaned placeholder | URL references undefined param | Add param to schema or remove |
+
+## Next Steps
+
+<CardGrid>
+  <Card
+    title="Tool Design Guide"
+    href="/voice/tool-design"
+    description="Best practices and patterns for building effective tools"
+  />
+  <Card
+    title="UI Components"
+    href="/voice/reference/components"
+    description="Learn about available components for rendering tool responses"
+  />
+  <Card
+    title="Tool Descriptor Playground"
+    href="/voice/tutorials/tools"
+    description="Build and test tools interactively"
+  />
+</CardGrid>

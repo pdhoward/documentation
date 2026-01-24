@@ -95,7 +95,7 @@ Customize the widget's appearance, behavior, and positioning:
 
 Create a dedicated widget component:
 
-```jsx
+```javascript
 // components/VoxWidget.jsx
 import { useEffect } from 'react';
 
@@ -134,7 +134,7 @@ export default function VoxWidget({ tenantId, agentId, widgetKey }) {
 ```
 
 Usage:
-```jsx
+```javascript
 // app/layout.jsx or pages/_app.jsx
 import VoxWidget from '@/components/VoxWidget';
 
@@ -156,7 +156,7 @@ export default function RootLayout({ children }) {
 
 ### Vue
 
-```vue
+```javascript
 <!-- components/VoxWidget.vue -->
 <template>
   <div></div> <!-- Widget renders itself via script -->
@@ -194,7 +194,7 @@ export default {
 
 ### Angular
 
-```typescript
+```ts
 // app/components/vox-widget.component.ts
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 

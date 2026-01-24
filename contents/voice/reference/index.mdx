@@ -112,20 +112,20 @@ All examples are production-ready. Copy and adapt them directly:
 
 The platform uses a templating system with this context:
 
-- `{{args.fieldName}}` — Access tool parameters
-- `{{response.fieldName}}` — Access API response data
-- `{{secrets.keyName}}` — Access secure credentials
-- `{{status}}` — Access HTTP status code
+- `args.fieldName` — Access tool parameters
+- `response.fieldName` — Access API response data
+- `secrets.keyName` — Access secure credentials
+- `status` — Access HTTP status code
 
 ### Filters
 
 Apply type coercion and transformations:
 
-- `{{args.value | number}}` — Coerce to number
-- `{{args.value | bool}}` — Coerce to boolean
-- `{{args.value | json}}` — Pass complex objects
-- `{{args.value | upper}}` — Uppercase string
-- `{{args.value | default('fallback')}}` — Provide default
+- `args.value | number` — Coerce to number
+- `args.value | bool` — Coerce to boolean
+- `args.value | json` — Pass complex objects
+- `args.value | upper` — Uppercase string
+- `args.value | default('fallback')` — Provide default
 
 ## Common Patterns
 
