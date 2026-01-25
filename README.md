@@ -11,30 +11,41 @@ https://www.val.town/x/jubertioai/hello-realtime
 425-800-0073
 
 * example of agent orchestration
+
 https://github.com/midday-ai/ai-sdk-tools/tree/main/apps/example
 
 * using resend for email
+
 https://github.com/resend/resend-nextjs-useactionstate-example
+
 https://useworkflow.dev/
 
 * essential utilities for using vercel ai sdk
+
 https://github.com/midday-ai/ai-sdk-tools
 
 * open source LLM registry for Vercel AI Gateway
+
 https://github.com/FranciscoMoretti/ai-registry/
+
 https://airegistry.app/
 
 * CARTESIA
+
 https://docs.cartesia.ai/get-started/overview
 
 * ShadCN
+
 https://ui.shadcn.com/docs/directory
+
 https://billingsdk.com/
 
 * resizable node
+
 https://tiptap.dev/docs/editor/api/resizable-nodeviews
 
 * URL PATTERN API
+
 https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
 
 --------------------
@@ -72,8 +83,11 @@ Why this is best practice:
 product structure
 
 3. Your tenant widgets should communicate with:
+
 👉 https://voice.strategicmachines.ai/api/public/widget/bootstrap
+
 👉 https://voice.strategicmachines.ai/api/voice/session
+
 👉 https://voice.strategicmachines.ai/api/tools/execute
 
 And the embed script should load from:
@@ -86,11 +100,34 @@ or
 
 5. Correct domain structure for your whole ecosystem
 Purpose	Domain/Subdomain	Notes
-Marketing site	https://strategicmachines.ai	Public, SEO, your homepage
-Blog	https://blog.strategicmachines.ai	Already exists, perfect
-Voice Agent SaaS Platform	https://voice.strategicmachines.ai	Console, APIs, widget loader
-Static assets / CDN (future)	https://cdn.strategicmachines.ai	JS bundles, images, voice player components
-Status page (future)	https://status.strategicmachines.ai	Uptime, incidents
+
+Marketing site	
+
+https://strategicmachines.ai	
+
+Public, SEO, your homepage
+
+Blog	
+
+https://blog.strategicmachines.ai	
+
+Voice Agent SaaS Platform	
+
+https://voice.strategicmachines.ai	
+
+Console, APIs, widget loader
+
+Static assets / CDN (future)	
+
+https://cdn.strategicmachines.ai	
+
+JS bundles, images, voice player components
+
+Status page (future)	
+
+https://status.strategicmachines.ai	
+
+Uptime, incidents
 
 This structure is clean, scalable, and used by top SaaS companies.
 
@@ -137,11 +174,14 @@ https://ai-sdk.dev/docs/reference/ai-sdk-core/validate-ui-messages
 
  ### realtime blocks
 https://openai-realtime-blocks.vercel.app/components/classic
+
 https://openai-realtime-blocks.vercel.app/components/floaty
+
 https://openai-realtime-blocks.vercel.app/components/siri
 
 ### voice app research
 https://github.com/cameronking4/openai-realtime-api-nextjs
+
 https://github.com/cameronking4/openai-realtime-blocks
 
 ### Analytics
@@ -149,6 +189,7 @@ https://openpanel.dev/
 
 ### TOOLS REGISTRY
 https://ai-tools-registry.vercel.app/
+
 https://github.com/xn1cklas/ai-tools-registry
 
 ### Tool Construction and Evaluation
@@ -196,6 +237,7 @@ https://github.com/karthikscale3/ctx-zip
 
 ### Knowledge Graphs - open source
 https://github.com/topoteretes/cognee
+
 https://www.cognee.ai/  ... memory engine 
 
 ### Agent Payments
@@ -251,6 +293,7 @@ https://skiper-ui.com/
 
 ### Microsoft Call Center
 Send a phone call from AI agent, in an API call. Or, directly call the bot from the configured phone number!
+
 https://github.com/microsoft/call-center-ai
 
 ### FILE SQL (another tool descriptor?)
@@ -286,11 +329,14 @@ Widget sessions: IP limit at the edge, plus concurrency (per tenant) in /api/ses
 
 ### AI GATEWAY
 https://github.com/Portkey-AI/gateway
+
 https://portkey.ai/features/ai-gateway
 
 ### SHADCN Calendar
 https://github.com/ln-dev7/square-ui
+
 https://square.lndev.me/
+
 https://square-ui-calendar.vercel.app/
 
 ### vercel for platforms
@@ -306,13 +352,16 @@ https://vercel.com/platforms/docs/platform-elements/blocks/report-abuse
 https://www.osmosian.tech/
 
 create voices
+
 https://app.resemble.ai/
 
 api
+
 https://models.hathora.dev/model/resemble-ai-chatterbox-turbo
 
 #### deploy servers and admin pane
 https://github.com/citizenfx/txAdmin
+
 https://txadmin.gg/
 
 ### NOTEBOOKLLM
@@ -327,10 +376,12 @@ https://github.com/dineug/erd-editor/
 
 ### Visualize documents - knowledge graphs
 https://github.com/ChristopherLyon/graphrag-workbench/
+
 https://graphrag-workbench-web.vercel.app/
 
 ### Shadcn dashboard and templates
 https://github.com/ln-dev7/square-ui/tree/master/templates
+
 https://square-ui-dashboard-2.vercel.app/
 
 ### GEMINI
@@ -344,7 +395,9 @@ https://lucide-animated.com/
 
 ### share .env files with devs
 https://dotenvx.com/
+
 https://1password.com/blog/1password-environments-env-files-public-beta
+
 https://www.doppler.com/
 
 
@@ -373,6 +426,7 @@ https://github.com/CaviraOSS/PageLM/
 
 ### configuring your agent
 https://agents.md/
+
 https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering
 
 ### investigate
@@ -400,8 +454,9 @@ https://academy.openai.com/public/clubs/work-users-ynjqu/resources/use-cases-cus
 ### cloudflare
 https://workers.cloudflare.com/
 
-### dashboard - shadcn
+### dashboard - shadcn - TEMPLATES $69
 https://github.com/ln-dev7/square-ui
+
 https://square.lndev.me/https://supermemory.ai/docs/introduction
 
 ### explore
@@ -421,8 +476,11 @@ https://web-check.xyz/
 
 ### Claude
 https://www.producttalk.org/how-to-use-claude-code-features/
+
 https://x.com/rileybrown
+
 https://x.com/dabit3/status/2009131298250428923?s=58
+
 https://x.com/ttorres/status/2008965366198743143
 
 Claude Code (Anthropic's agentic coding tool) and related integrations. I've prioritized beginner-friendly ones with practical examples, based on recent resources:
@@ -474,6 +532,7 @@ https://www.omkar.cloud/botasaurus/
 
 ### time tracking and billing for freelancers
 https://github.com/solidtime-io/solidtime
+
 https://www.solidtime.io/
 
 ### agentic shopping
@@ -487,10 +546,15 @@ https://www.recent.dev/
 
 ## claude code react best practices
 https://code.claude.com/docs/en/vs-code
+
 https://vercel.com/blog/introducing-react-best-practices
+
 https://github.com/vercel-labs/agent-skills
+
 https://agentskills.io/home
+
 https://www.aitmpl.com/skills
+
 https://skills.sh/
 
 - download
@@ -510,10 +574,14 @@ https://agent.blackbox.ai/api
 
 ### animejs
 https://github.com/juliangarnier/anime
+
 https://animejs.com/documentation/layout/
+
 https://codepen.io/collection/yykPaw
+
 https://codepen.io/juliangarnier/pen/dPXWQyv
 
 ### agent elements
 https://ai-sdk.dev/docs/introduction
+
 https://ai-sdk.dev/elements/components/agent
