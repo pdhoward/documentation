@@ -494,6 +494,26 @@ Claude Code (Anthropic's agentic coding tool) and related integrations. I've pri
 * Claude Code in Action (anthropic.skilljar.com): Covers using Claude Code for file reading, development tasks, and agentic workflows.
 * Claude Code for Beginners - Build Your First App in 20 Minutes (YouTube, recent): Installation, setup, and a simple app build to verify connectivity.
 
+### Claude creating demo video
+
+i used claude (opus 4.5) with the 
+@Remotion
+ skill + the 
+@elevenlabsio
+ API (via MCP) to generate the following product demo video all within claude code.
+
+i started inside the codebase for presscut and used this prompt:
+
+𝙲𝚛𝚎𝚊𝚝𝚎 𝚊 𝚍𝚎𝚖𝚘 𝚟𝚒𝚍𝚎𝚘 𝚘𝚏 𝚝𝚑𝚎 𝙿𝚛𝚎𝚜𝚜𝚌𝚞𝚝 𝚊𝚙𝚙/p𝚛𝚘𝚍𝚞𝚌𝚝 𝚞𝚜𝚒𝚗𝚐 𝚛𝚎𝚖𝚘𝚝𝚒𝚘𝚗. 𝚄𝚜𝚎 𝚛𝚎𝚊𝚌𝚝 𝚌𝚘𝚖𝚙𝚘𝚗𝚎𝚗𝚎𝚗𝚝𝚜 𝚝𝚘 𝚛𝚎𝚙𝚕𝚒𝚌𝚊𝚝𝚎 𝚄𝙸 𝚎𝚕𝚎𝚖𝚎𝚗𝚝𝚜 𝚊𝚗𝚍 𝚛𝚎𝚙𝚕𝚒𝚌𝚊𝚝𝚎 𝚝𝚑𝚎 𝚄𝙸 𝚘𝚏 𝚝𝚑𝚎 𝚊𝚙𝚙 𝚊𝚜 𝚌𝚕𝚘𝚜𝚎𝚕𝚢 𝚊𝚜 𝚙𝚘𝚜𝚜𝚒𝚋𝚕𝚎.  𝚃𝚑𝚎 𝚊𝚙𝚙 𝚑𝚊𝚜 𝚊 𝙻𝙾𝚃 𝚘𝚏 𝚏𝚎𝚊𝚝𝚞𝚛𝚎𝚜/𝚏𝚞𝚗𝚌𝚝𝚒𝚘𝚗𝚊𝚕𝚒𝚝𝚢, 𝚜𝚘 𝚝𝚊𝚔𝚎 𝚐𝚞𝚒𝚍𝚊𝚗𝚌𝚎 𝚏𝚛𝚘𝚖 𝚝𝚑𝚎 𝚖𝚊𝚛𝚔𝚎𝚝𝚒𝚗𝚐 𝚑𝚘𝚖𝚎 𝚙𝚊𝚐𝚎/𝚒𝚗𝚍𝚎𝚡 𝚏𝚘𝚛 𝚠𝚑𝚊𝚝 𝚝𝚘 𝚑𝚒𝚐𝚑𝚕𝚒𝚐𝚑𝚝, 𝚠𝚑𝚒𝚕𝚎 𝚔𝚎𝚎𝚙𝚒𝚗𝚐 𝚕𝚊𝚗𝚐𝚞𝚊𝚐𝚎 𝚜𝚒𝚖𝚙𝚕𝚎 𝚊𝚗𝚍 𝚝𝚘-𝚝𝚑𝚎-𝚙𝚘𝚒𝚗𝚝.  𝚁𝚎𝚊𝚕𝚕𝚢 𝚐𝚛𝚒𝚕𝚕 𝚖𝚎 𝚠𝚒𝚝𝚑 𝚚𝚞𝚎𝚜𝚝𝚒𝚘𝚗𝚜 𝚝𝚘 𝚗𝚊𝚒𝚕 𝚍𝚘𝚠𝚗 𝚎𝚡𝚊𝚌𝚝𝚕𝚢 𝚑𝚘𝚠 𝚝𝚑𝚎 𝚏𝚒𝚗𝚊𝚕 𝚟𝚒𝚍𝚎𝚘 𝚜𝚑𝚘𝚞𝚕𝚍 𝚕𝚘𝚘𝚔/𝚏𝚎𝚎𝚕 𝚊𝚗𝚍 𝚠𝚑𝚊𝚝 𝚌𝚘𝚗𝚝𝚎𝚗𝚝 𝚜𝚑𝚘𝚞𝚕𝚍 𝚋𝚎 𝚝𝚑𝚎𝚛𝚎.  𝚃𝚑𝚎 𝚞𝚕𝚝𝚒𝚖𝚊𝚝𝚎 𝚐𝚘𝚊𝚕 𝚘𝚏 𝚝𝚑𝚒𝚜 𝚒𝚜 𝚝𝚘 𝚛𝚎𝚙𝚕𝚒𝚌𝚊𝚝𝚎 𝚠𝚑𝚊𝚝 𝚖𝚎, 𝚝𝚑𝚎 𝚏𝚘𝚞𝚗𝚍𝚎𝚛, 𝚠𝚘𝚞𝚕𝚍 𝚋𝚎 𝚜𝚑𝚘𝚠𝚒𝚗𝚐/𝚍𝚘𝚒𝚗𝚐 𝚠𝚒𝚝𝚑 𝚊 𝚙𝚛𝚘𝚍𝚞𝚌𝚝 𝚍𝚎𝚖𝚘 𝚠𝚒𝚝𝚑 𝚊 𝚌𝚞𝚜𝚝𝚘𝚖𝚎𝚛.
+
+it generated a plan for the timing, scenes, text and graphics. i didn't have to add any new art assets. it simply used what i already was using throughout the app including react components.used elevenlabs to generate the background music ("indie tech aesthetic"). again, it knew exactly how long the video was and generated the appropriate length for it.
+
+and finally, i also used elevenlabs to generate little sound effects (clicks, typing, success).
+
+ didn't have the max plan, it'd have been about $700 worth of opus 4.5 tokens. then I used around 12,000 credits on elevenlabs generating (and regenerating) all the voiceovers, music and sound effects.
+
+
+
 ### Claude Setup
 * get the Anthropic API Key console.anthropic.com
 * install CLI
