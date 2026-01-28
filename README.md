@@ -605,3 +605,10 @@ https://codepen.io/juliangarnier/pen/dPXWQyv
 https://ai-sdk.dev/docs/introduction
 
 https://ai-sdk.dev/elements/components/agent
+
+### SEO
+https://github.com/coreyhaines31/marketingskills
+
+https://github.com/AppsYogi-com/gsc-mcp-server
+
+https://github.com/googleanalytics/google-analytics-mcp
