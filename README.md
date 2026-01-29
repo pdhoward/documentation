@@ -612,3 +612,7 @@ https://github.com/coreyhaines31/marketingskills
 https://github.com/AppsYogi-com/gsc-mcp-server
 
 https://github.com/googleanalytics/google-analytics-mcp
+
+### charts new mermaid
+https://agents.craft.do/mermaid
+https://github.com/lukilabs/beautiful-mermaid
