@@ -620,6 +620,47 @@ https://firstpagesage.com/
 * paper on GEO
 https://arxiv.org/abs/2509.08919
 
+------------prompts with claud cowork-------------
+1. Use Claude Cowork to dominate the Google Business Profile (GBP) feed.
+ 
+"Analyze these [XYZ. com] competitor GBP posts by opening their GBP in Chrome. 
+
+Identify their keyword gaps, then write 10 high-impact posts for my business in [City] that include local landmarks and a hard 'Call Now' CTA."
+
+Cowork does the heavy lifting while you take the #1 spot.
+
+2. Get Claude Cowork to analyze the competition’s weaknesses.
+
+"Scan these sites. What are these competitors sites missing? Find the content gaps and tell me 5 topics I should cover to be more helpful than them."
+
+If you provide more value, you win the #1 spot. Period.
+
+3. Get Claude Cowork to optimize every page for 'near me' searches automatically.
+
+"Scan all of my service pages from XYZ. com, add Google Maps embeds, insert 3-5 relevant local landmarks, and naturally mention zip codes for [City]. Create a checklist of what was updated."
+
+Cowork ensures nothing gets missed.
+
+4. Get Claude Cowork to do the “Does this page deserve to rank?” reality check
+
+“Open {{PAGE_URL}} in chrome. Search {{TARGET_KEYWORD}} ({{CITY}} if local). Compare it ONLY to the top 3 Google results for intent match, usefulness (not length), local relevance, and trust signals. Give a verdict (deserves to rank higher / neutral / lower), ONE clear reason (max 2 lines), ONE fix that would move rankings fastest, and a table with 5 actions to outrank them. Be opinionated.”
+
+5. Get Claude Cowork to identify "Low-Hanging Fruit" keywords.
+
+"List 20 high-intent local keywords for a [Service] in [City] that indicate a customer is ready to buy NOW."
+
+Instantly, you have a list of "near me" and "emergency" keywords that actually convert.
+
+6. Get Claude Cowork to do a full Schema audit
+
+“In chrome, open {{PASTE_URL}}. Check page source and list all schema. Say if LocalBusiness exists and if it’s useful. Output: (1) existing schema + verdict, (2) missing/weak schema + priority. For HIGH priority only, generate clean JSON-LD with placeholders. No guessing. No explanations. Be blunt.”
+
+7. Get Claude Cowork to do all the keyword research for you.
+
+"Open Chrome, go to ahrefs and analyze my competitor XYZ. com’s top 20 pages, extract their target keywords, search volumes, and give me a prioritized list with difficulty scores in a spreadsheet."
+
+Done in 10 minutes. Not 10 hours.
+
 ### charts new mermaid
 https://agents.craft.do/mermaid
 https://github.com/lukilabs/beautiful-mermaid
