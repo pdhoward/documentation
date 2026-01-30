@@ -606,12 +606,19 @@ https://ai-sdk.dev/docs/introduction
 
 https://ai-sdk.dev/elements/components/agent
 
-### SEO
+### SEO GEO
+In the world of search, the currency is “referral traffic.” That is, which websites or apps are sending people to a particular business. A year ago, 90% of that traffic came from Google, says Bailyn. Starting last summer, something changed. AI chatbot referrals started to rise dramatically. Now, Bailyn says, on average 44% of his clients’ referrals come from AI.
+
 https://github.com/coreyhaines31/marketingskills
 
 https://github.com/AppsYogi-com/gsc-mcp-server
 
 https://github.com/googleanalytics/google-analytics-mcp
+
+https://firstpagesage.com/
+
+* paper on GEO
+https://arxiv.org/abs/2509.08919
 
 ### charts new mermaid
 https://agents.craft.do/mermaid
