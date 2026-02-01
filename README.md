@@ -664,3 +664,6 @@ Done in 10 minutes. Not 10 hours.
 ### charts new mermaid
 https://agents.craft.do/mermaid
 https://github.com/lukilabs/beautiful-mermaid
+
+### convex db
+https://www.convex.dev/
