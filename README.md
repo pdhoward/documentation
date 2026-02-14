@@ -667,3 +667,6 @@ https://github.com/lukilabs/beautiful-mermaid
 
 ### convex db
 https://www.convex.dev/
+
+### markdown for agents
+https://blog.cloudflare.com/markdown-for-agents/
