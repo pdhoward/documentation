@@ -670,3 +670,11 @@ https://www.convex.dev/
 
 ### markdown for agents
 https://blog.cloudflare.com/markdown-for-agents/
+
+### edgepi for agents
+https://edge-pi-beta.vercel.app/
+
+https://github.com/marcusschiesser/edge-pi/tree/main/examples
+
+proprietary claude coding agent
+https://platform.claude.com/docs/en/agent-sdk/overview
