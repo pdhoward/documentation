@@ -7,3 +7,6 @@ openclaw
 https://openclaw.ai/
 https://github.com/openclaw/openclaw/tree/main
 https://soul.md/
+
+### SEO
+https://github.com/AgriciDaniel/claude-seo
