@@ -10,3 +10,16 @@ https://soul.md/
 
 ### SEO
 https://github.com/AgriciDaniel/claude-seo
+
+### Agents Talking
+https://walkie.sh/
+https://github.com/vikasprogrammer/walkie
+https://www.npmjs.com/package/hyperswarm
+
+https://agentmesh.online/
+https://github.com/amitayks/agentmesh
+
+https://connectclaw.io/
+https://github.com/osipov-anton/connectclaw
+
+### SKILL GRAPH
